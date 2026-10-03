@@ -31,6 +31,21 @@ The inspection tool reports unique complete structures (including transposes),
 first/best scores, graph degrees, search counters, and diagnostic elapsed time.
 Wall-clock time never controls the search.
 
+Search uses an immutable word-letter index and cached placement geometry, with
+reversible array-based occupancy, bounds, crossing counts and direction counts.
+The search materializes `Puzzle` objects only for unique completed candidates;
+completed-board metrics retain their existing implementation. Candidate ordering
+and final scoring are unchanged; the budgets above have not been reduced.
+Full candidate checks count calls to the incremental validator after safe
+crossing-opportunity/span/bounds filtering and deduplication. The inspection tool
+also reports raw indexed proposals, each filter's rejections, legal candidates,
+and visited-state hits/misses so skipped work is not hidden in the check count.
+`candidatesRejected` counts full-validator rejections; span/bounds counts are
+proposal rejections, and occupied-crossing skips count opportunities, not words.
+Use `dart run tool/inspect_generator.dart 1 2 3 42 100 20261003` for the six-seed
+comparison. Timings include generation/index setup, exclude output/VM startup,
+and are observational (the first seed also pays JIT warm-up costs).
+
 No backend, ads, payments, authentication, analytics, or store infrastructure is
 included. “Arrowword” remains a working name.
 

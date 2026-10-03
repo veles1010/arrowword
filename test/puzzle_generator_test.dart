@@ -8,6 +8,14 @@ import 'package:flutter_test/flutter_test.dart';
 const seeds = [1, 2, 3, 42, 100, 20261003];
 const generator = PuzzleGenerator();
 const config = PuzzleGenerationConfig();
+const baselineScores = {
+  1: 3610,
+  2: 3700,
+  3: 3538,
+  42: 4028,
+  100: 3231,
+  20261003: 3695,
+};
 
 String signature(Puzzle puzzle) => puzzle.answers
     .map(
@@ -177,6 +185,24 @@ void main() {
       expect(result.isSuccess, isTrue, reason: result.failureReason);
       verifyGenerated(result.puzzle!);
       expect(result.metrics!.phantomAdjacencyCount, 0);
+      if (seed == 20261003) {
+        expect(result.metrics!.crossingCount, greaterThanOrEqualTo(11));
+        expect(result.metrics!.leafAnswerCount, lessThanOrEqualTo(1));
+      }
+      expect(
+        result.bestCompleteScore,
+        greaterThanOrEqualTo(baselineScores[seed]!),
+      );
+      // A broad deterministic work-count guard, not a machine-speed assertion.
+      expect(result.candidateChecks, lessThan(1400000));
+      expect(
+        result.candidateChecks,
+        result.legalCandidates + result.candidatesRejected,
+      );
+      expect(
+        result.searchNodes,
+        result.visitedStateHits + result.visitedStateMisses,
+      );
       expect(result.completeSolutionsFound, greaterThan(1));
       expect(
         result.bestCompleteScore,
@@ -207,6 +233,12 @@ void main() {
       expect(second.completeSolutionsFound, first.completeSolutionsFound);
       expect(second.firstCompleteScore, first.firstCompleteScore);
       expect(second.anchorsTried, first.anchorsTried);
+      expect(
+        second.candidatePlacementsGenerated,
+        first.candidatePlacementsGenerated,
+      );
+      expect(second.legalCandidates, first.legalCandidates);
+      expect(second.visitedStateHits, first.visitedStateHits);
     },
   );
 

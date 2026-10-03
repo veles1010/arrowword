@@ -23,6 +23,13 @@ void main(List<String> arguments) {
       'complete ${result.completeSolutionsFound}; anchors ${result.anchorsTried}; '
       'first ${result.firstCompleteScore}; best ${result.bestCompleteScore}',
     );
+    stdout.writeln(
+      'generated ${result.candidatePlacementsGenerated}; legal ${result.legalCandidates}; '
+      'rejected by validation ${result.candidatesRejected}; duplicate ${result.duplicateCandidates}; '
+      'span rejected ${result.spanRejected}; bounds rejected ${result.boundsRejected}; '
+      'occupied crossing opportunities skipped ${result.occupiedCrossingRejected}; '
+      'visited hits/misses ${result.visitedStateHits}/${result.visitedStateMisses}',
+    );
     final puzzle = result.puzzle;
     if (puzzle == null) {
       exitCode = 1;
@@ -37,6 +44,7 @@ void main(List<String> arguments) {
     if (!validation.isValid) exitCode = 1;
     stdout.writeln(
       'bounds ${bounds.minRow}..${bounds.maxRow}, ${bounds.minColumn}..${bounds.maxColumn}; '
+      'visible ${bounds.rowCount}x${bounds.columnCount}; '
       '${metrics.horizontalCount} right / ${metrics.verticalCount} down; ${metrics.crossingCount} crossings; '
       '${metrics.meaningfulCellCount}/${metrics.boundingBoxArea} density ${metrics.density}; '
       'score ${metrics.qualityScore}; phantom ${metrics.phantomAdjacencyCount}; '
