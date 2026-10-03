@@ -20,7 +20,7 @@ void main() {
     final first = generated.puzzle!.answers.first;
     expect(generated.puzzleIndex, 1);
     expect(generated.seed, derivePuzzleSeed(prototypeBaseSeed, 1));
-    expect(generated.puzzle!.id, 'generated-v1-000001');
+    expect(generated.puzzle!.id, 'generated-v2-000001');
     expect(
       tester.widget<PuzzleScreen>(find.byType(PuzzleScreen)).puzzle,
       same(generated.puzzle),

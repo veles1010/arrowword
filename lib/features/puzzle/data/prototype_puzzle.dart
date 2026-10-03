@@ -1,17 +1,16 @@
 import '../generation/puzzle_generator.dart';
 import '../content/word_catalogue.dart';
 import '../sequence/puzzle_sequence.dart';
-import 'prototype_word_bank.dart';
+import 'word_catalogue_data.dart';
 
 const prototypeBaseSeed = 20261003;
-const prototypeCatalogueVersion = 1;
-// K=5 and K=4 fail at index 5 with 20 eligible words. K=3 completes 10.
-// The general sequence default remains five; no automatic relaxation occurs.
-const prototypeSequenceCooldown = 3;
+const prototypeCatalogueVersion = 2;
+// Catalogue v2 passes the 30-puzzle stress run without cooldown relaxation.
+const prototypeSequenceCooldown = 5;
 const prototypeGenerationConfig = PuzzleGenerationConfig();
 final prototypeCatalogue = WordCatalogue(
   version: prototypeCatalogueVersion,
-  entries: prototypeWordBank,
+  entries: catalogueWords,
 );
 const prototypeSequenceConfig = PuzzleSequenceConfig(
   baseSeed: prototypeBaseSeed,

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:arrowword/features/puzzle/data/prototype_word_bank.dart';
+import 'package:arrowword/features/puzzle/data/word_catalogue_data.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_generator.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_validator.dart';
@@ -12,7 +12,7 @@ void main(List<String> arguments) {
       )) {
     final stopwatch = Stopwatch()..start();
     final result = const PuzzleGenerator().generate(
-      wordBank: prototypeWordBank,
+      wordBank: catalogueWords,
       seed: seed,
       config: prototypeGenerationConfig,
     );

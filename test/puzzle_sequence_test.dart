@@ -1,12 +1,15 @@
 import 'package:arrowword/features/puzzle/content/word_catalogue.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
-import 'package:arrowword/features/puzzle/data/prototype_word_bank.dart';
+import 'package:arrowword/features/puzzle/data/manual_puzzle.dart';
+import 'package:arrowword/features/puzzle/data/word_catalogue_data.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_generator.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_metrics.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_validator.dart';
 import 'package:arrowword/features/puzzle/generation/word_entry.dart';
 import 'package:arrowword/features/puzzle/sequence/puzzle_sequence.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../tool/inspect_content.dart' as stress;
 
 void main() {
   final small = WordCatalogue(
@@ -214,23 +217,93 @@ void main() {
     },
   );
 
-  group('ten-puzzle sequence', () {
+  test('v2 difficulty filters expose the real eligible catalogue', () {
+    for (final allowed in [
+      {WordDifficulty.easy},
+      {WordDifficulty.easy, WordDifficulty.medium},
+      WordDifficulty.values.toSet(),
+    ]) {
+      final p = buildEligiblePool(
+        catalogue: prototypeCatalogue,
+        config: PuzzleSequenceConfig(
+          baseSeed: prototypeBaseSeed,
+          allowedDifficulties: allowed,
+        ),
+        puzzleIndex: 1,
+      );
+      expect(p.isSuccess, isTrue);
+      expect(p.entries.every((w) => allowed.contains(w.difficulty)), isTrue);
+      expect(
+        p.entries.length,
+        allowed.length == 1
+            ? 210
+            : allowed.length == 2
+            ? 285
+            : 300,
+      );
+    }
+  });
+  test('cooldown five permits first reuse only at index seven', () {
+    final words = prototypeCatalogue.entries.take(50).toList();
+    final recent = List.generate(
+      5,
+      (i) => PuzzleHistoryEntry(
+        puzzleIndex: i + 1,
+        catalogVersion: 2,
+        words: {for (final w in words.skip(i * 10).take(10)) w.id: w.solution},
+      ),
+    );
+    final six = buildEligiblePool(
+      catalogue: prototypeCatalogue,
+      config: prototypeSequenceConfig,
+      puzzleIndex: 6,
+      history: recent,
+    );
+    expect(six.entries, hasLength(250));
+    expect(
+      six.entries.any((w) => words.take(10).any((old) => old.id == w.id)),
+      isFalse,
+    );
+    final seven = buildEligiblePool(
+      catalogue: prototypeCatalogue,
+      config: prototypeSequenceConfig,
+      puzzleIndex: 7,
+      history: [
+        ...recent,
+        PuzzleHistoryEntry(
+          puzzleIndex: 6,
+          catalogVersion: 2,
+          words: {
+            for (final w in prototypeCatalogue.entries.skip(50).take(10))
+              w.id: w.solution,
+          },
+        ),
+      ],
+    );
+    expect(seven.entries, hasLength(250));
+    expect(
+      seven.entries.map((w) => w.id),
+      containsAll(words.take(10).map((w) => w.id)),
+    );
+  });
+
+  group('seven-puzzle v2 sequence', () {
     late PuzzleSequenceResult first, second;
     setUpAll(() {
       first = PuzzleSequenceGenerator(
         prototypeCatalogue,
         prototypeSequenceConfig,
-      ).generateRange();
+      ).generateRange(count: 7);
       second = PuzzleSequenceGenerator(
-        WordCatalogue(version: 1, entries: prototypeWordBank.reversed.toList()),
+        WordCatalogue(version: 2, entries: catalogueWords.reversed.toList()),
         prototypeSequenceConfig,
-      ).generateRange();
+      ).generateRange(count: 7);
     });
     test('full structure repeats exactly despite catalogue reordering', () {
       expect(first.isSuccess, isTrue, reason: first.failure?.failureReason);
       expect(second.isSuccess, isTrue, reason: second.failure?.failureReason);
-      expect(first.puzzles, hasLength(10));
-      for (var i = 0; i < 10; i++) {
+      expect(first.puzzles, hasLength(7));
+      for (var i = 0; i < 7; i++) {
         final a = first.puzzles[i], b = second.puzzles[i];
         expect(a.puzzleIndex, b.puzzleIndex);
         expect(a.seed, b.seed);
@@ -250,8 +323,53 @@ void main() {
         isNot(puzzleStructuralSignature(first.puzzles[1].puzzle!)),
       );
     });
+    test('stress gate accepts every valid sequence result', () {
+      for (var i = 0; i < first.puzzles.length; i++) {
+        expect(
+          () => stress.verifyStressPuzzle(
+            first.puzzles[i],
+            first.puzzles.take(i).toList(),
+          ),
+          returnsNormally,
+        );
+      }
+    });
+    test('stress gate throws on generation failure, not just a warning', () {
+      final r = first.puzzles.first;
+      final failure = SequencePuzzleResult(
+        puzzleIndex: 1,
+        seed: r.seed,
+        catalogVersion: 2,
+        pool: r.pool,
+        failureReason: 'Search budget exhausted',
+      );
+      expect(() => stress.verifyStressPuzzle(failure, []), throwsStateError);
+    });
+    test('stress gate rejects historical phantom-run fixture', () {
+      final r = first.puzzles.first;
+      final invalid = SequencePuzzleResult(
+        puzzleIndex: 1,
+        seed: r.seed,
+        catalogVersion: 2,
+        pool: r.pool,
+        puzzle: manualPuzzle,
+      );
+      expect(() => stress.verifyStressPuzzle(invalid, []), throwsStateError);
+    });
+    test('stress gate rejects premature reuse but allows distance six', () {
+      final r = first.puzzles.first;
+      SequencePuzzleResult reuse(int index) => SequencePuzzleResult(
+        puzzleIndex: index,
+        seed: r.seed,
+        catalogVersion: 2,
+        pool: r.pool,
+        puzzle: r.puzzle,
+      );
+      expect(() => stress.verifyStressPuzzle(reuse(6), [r]), throwsStateError);
+      expect(() => stress.verifyStressPuzzle(reuse(7), [r]), returnsNormally);
+    });
     test(
-      'all ten enforce strict validity, unique answers, bounds and minima',
+      'all seven enforce strict validity, unique answers, bounds and minima',
       () {
         for (final result in first.puzzles) {
           final p = result.puzzle!, m = result.generation!.metrics!;
@@ -284,9 +402,10 @@ void main() {
       'repeat distance is strictly greater than cooldown for ids and solutions',
       () {
         final analysis = SequenceRepeatAnalysis(first.puzzles);
-        expect(analysis.minimumDistance, 4);
-        expect(analysis.indicesByWord.length, 54);
-        expect(analysis.repeatedWordCount, 41);
+        if (analysis.minimumDistance != null) {
+          expect(analysis.minimumDistance, greaterThanOrEqualTo(6));
+        }
+        expect(prototypeSequenceCooldown, 5);
         for (final distance
             in analysis.minimumDistanceByWord.values.whereType<int>()) {
           expect(distance, greaterThan(prototypeSequenceCooldown));
@@ -305,38 +424,20 @@ void main() {
         }
       },
     );
-    test(
-      'strict cooldowns 5 and 4 fail transparently at index 5, not relaxed',
-      () {
-        for (final k in [5, 4]) {
-          final result =
-              PuzzleSequenceGenerator(
-                prototypeCatalogue,
-                PuzzleSequenceConfig(
-                  baseSeed: prototypeBaseSeed,
-                  cooldownPuzzles: k,
-                ),
-              ).generateNext(
-                puzzleIndex: 5,
-                history: first.puzzles
-                    .take(4)
-                    .map((p) => p.toHistory())
-                    .toList(),
-              );
-          expect(result.isSuccess, isFalse);
-          expect(result.puzzle, isNull);
-          expect(result.puzzleIndex, 5);
-          expect(result.seed, 212570333);
-          expect(result.pool.entries, hasLength(20));
-          expect(result.pool.excludedRecentIds, hasLength(40));
-          expect(result.generation, isNotNull);
-          expect(
-            result.failureReason,
-            contains(result.generation!.failureReason!),
-          );
-        }
-      },
-    );
+    test('bounded search failure stays explicit with full v2 pool', () {
+      final result = PuzzleSequenceGenerator(
+        prototypeCatalogue,
+        const PuzzleSequenceConfig(
+          baseSeed: prototypeBaseSeed,
+          generation: PuzzleGenerationConfig(maxSearchNodes: 1),
+        ),
+      ).generateNext(puzzleIndex: 1);
+      expect(result.isSuccess, isFalse);
+      expect(result.puzzle, isNull);
+      expect(result.pool.entries, hasLength(300));
+      expect(result.generation, isNotNull);
+      expect(result.failureReason, contains(result.generation!.failureReason!));
+    });
     test(
       'range access replays missing prefix, yielding identical puzzle indices',
       () {

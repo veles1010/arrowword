@@ -1,7 +1,9 @@
-import '../generation/word_entry.dart';
+import 'package:arrowword/features/puzzle/generation/word_entry.dart';
 
 /// Small, local vocabulary for the experimental generator; not a dictionary.
-const prototypeWordBank = <WordEntry>[
+// Frozen pre-expansion input for exact search/performance regressions only.
+// Runtime generation always uses the complete v2 catalogue.
+const legacyWordBank = <WordEntry>[
   WordEntry('APPLE', 'Elma', id: 'apple', tags: ['food']),
   WordEntry('HOUSE', 'Ev', id: 'house', tags: ['home']),
   WordEntry('WATER', 'Su', id: 'water', tags: ['nature']),

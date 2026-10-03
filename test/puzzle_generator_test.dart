@@ -1,9 +1,10 @@
-import 'package:arrowword/features/puzzle/data/prototype_word_bank.dart';
 import 'package:arrowword/features/puzzle/domain/puzzle.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_generator.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_validator.dart';
 import 'package:arrowword/features/puzzle/generation/word_entry.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'fixtures/catalogue_v1.dart';
 
 const seeds = [1, 2, 3, 42, 100, 20261003];
 const generator = PuzzleGenerator();
@@ -160,20 +161,14 @@ void main() {
   final results = <int, PuzzleGenerationResult>{};
   setUpAll(() {
     for (final seed in seeds) {
-      results[seed] = generator.generate(
-        wordBank: prototypeWordBank,
-        seed: seed,
-      );
+      results[seed] = generator.generate(wordBank: legacyWordBank, seed: seed);
     }
   });
 
-  test('curated bank has 60 unique common-word entries of length 4–7', () {
-    expect(prototypeWordBank, hasLength(60));
-    expect(
-      prototypeWordBank.map((word) => word.solution).toSet(),
-      hasLength(60),
-    );
-    for (final word in prototypeWordBank) {
+  test('v1 performance fixture retains 60 unique entries of length 4–7', () {
+    expect(legacyWordBank, hasLength(60));
+    expect(legacyWordBank.map((word) => word.solution).toSet(), hasLength(60));
+    for (final word in legacyWordBank) {
       expect(word.solution, matches(RegExp(r'^[A-Z]{4,7}$')));
       expect(word.turkishClue.trim(), isNotEmpty);
     }
@@ -223,7 +218,7 @@ void main() {
     () {
       final first = results[20261003]!;
       final second = generator.generate(
-        wordBank: prototypeWordBank,
+        wordBank: legacyWordBank,
         seed: 20261003,
       );
       expect(signature(second.puzzle!), signature(first.puzzle!));
@@ -273,7 +268,7 @@ void main() {
   });
 
   test('word normalization and bank order do not alter generation', () {
-    final reordered = prototypeWordBank.reversed
+    final reordered = legacyWordBank.reversed
         .map(
           (word) =>
               WordEntry(' ${word.solution.toLowerCase()} ', word.turkishClue),
@@ -320,7 +315,7 @@ void main() {
       const PuzzleGenerationConfig(maxBacktracks: 1),
     ]) {
       final result = generator.generate(
-        wordBank: prototypeWordBank,
+        wordBank: legacyWordBank,
         seed: 20261003,
         config: limited,
       );
@@ -346,7 +341,7 @@ void main() {
     expect(
       generator
           .generate(
-            wordBank: prototypeWordBank,
+            wordBank: legacyWordBank,
             seed: 1,
             config: const PuzzleGenerationConfig(rows: 0),
           )

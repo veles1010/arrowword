@@ -3,23 +3,46 @@ import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
 import 'package:arrowword/features/puzzle/generation/word_entry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'fixtures/catalogue_v1.dart';
+
 void main() {
   WordCatalogue catalogue(List<WordEntry> words) =>
       WordCatalogue(version: 1, entries: words);
   Set<String> codes(List<WordEntry> words) =>
       catalogue(words).issues.map((i) => i.code).toSet();
-  test('prototype catalogue has valid stable metadata and unchanged size', () {
-    final c = prototypeCatalogue;
-    expect(c.isValid, isTrue);
-    expect(c.issues, isEmpty);
-    expect(c.entries, hasLength(60));
-    expect(c.entries.map((w) => w.id).toSet(), hasLength(60));
-    expect(c.health.difficultyCounts, {
-      WordDifficulty.easy: 54,
-      WordDifficulty.medium: 6,
-      WordDifficulty.hard: 0,
-    });
-    expect(c.health.lengthCounts, {4: 25, 5: 30, 6: 4, 7: 1});
+  test(
+    'v2 catalogue has 300 valid, crossable entries and deliberate metadata',
+    () {
+      final c = prototypeCatalogue;
+      expect(c.isValid, isTrue);
+      expect(c.issues, isEmpty);
+      expect(c.version, 2);
+      expect(c.health.lowPartnerIds(maximum: 0), isEmpty);
+      expect(c.entries.every((w) => w.tags.isNotEmpty), isTrue);
+      expect(c.entries, hasLength(300));
+      expect(c.entries.map((w) => w.id).toSet(), hasLength(300));
+      expect(c.health.difficultyCounts, {
+        WordDifficulty.easy: 210,
+        WordDifficulty.medium: 75,
+        WordDifficulty.hard: 15,
+      });
+      expect(c.health.lengthCounts, {4: 68, 5: 102, 6: 99, 7: 31});
+    },
+  );
+  test('all 60 original pairs and metadata survive v2 unchanged', () {
+    expect(legacyWordBank, hasLength(60));
+    final entries = {for (final w in prototypeCatalogue.entries) w.id: w};
+    for (final original in legacyWordBank) {
+      final current = entries[original.id]!;
+      expect(current.solution, original.solution);
+      expect(current.turkishClue, original.turkishClue);
+      expect(current.difficulty, original.difficulty);
+      expect(current.tags, original.tags);
+    }
+    expect(
+      entries.keys.toSet().difference(legacyWordBank.map((w) => w.id).toSet()),
+      hasLength(240),
+    );
   });
   test(
     'normalizes solutions/clues but preserves explicit identity and metadata',
