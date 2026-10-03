@@ -98,6 +98,7 @@ class PuzzleGenerator {
     }
     final words = <WordEntry>[];
     final seen = <String>{};
+    final ids = <String>{};
     for (final entry in wordBank) {
       final solution = entry.solution.trim().toUpperCase();
       if (!RegExp(r'^[A-Z]{2,}$').hasMatch(solution) ||
@@ -107,7 +108,10 @@ class PuzzleGenerator {
       if (!seen.add(solution)) {
         return fail('Duplicate normalized solution: $solution.');
       }
-      words.add(WordEntry(solution, entry.turkishClue.trim()));
+      if (entry.id.trim().isEmpty || !ids.add(entry.id)) {
+        return fail('Duplicate or empty content id: ${entry.id}.');
+      }
+      words.add(entry.normalized());
     }
     words.removeWhere(
       (word) => word.solution.length >= max(config.rows, config.columns),

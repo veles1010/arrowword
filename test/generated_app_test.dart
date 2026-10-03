@@ -1,13 +1,13 @@
 import 'package:arrowword/app/app.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
-import 'package:arrowword/features/puzzle/data/prototype_word_bank.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_generator.dart';
+import 'package:arrowword/features/puzzle/sequence/puzzle_sequence.dart';
 import 'package:arrowword/features/puzzle/presentation/puzzle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  late PuzzleGenerationResult generated;
+  late SequencePuzzleResult generated;
   setUpAll(() => generated = generatePrototypePuzzle());
 
   testWidgets('fixed-seed generated board renders and survives app rebuild', (
@@ -18,6 +18,9 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(ArrowwordApp(generation: generated));
     final first = generated.puzzle!.answers.first;
+    expect(generated.puzzleIndex, 1);
+    expect(generated.seed, derivePuzzleSeed(prototypeBaseSeed, 1));
+    expect(generated.puzzle!.id, 'generated-v1-000001');
     expect(
       tester.widget<PuzzleScreen>(find.byType(PuzzleScreen)).puzzle,
       same(generated.puzzle),
@@ -51,11 +54,13 @@ void main() {
   testWidgets('generation failure displays reason without manual fallback', (
     tester,
   ) async {
-    final failure = const PuzzleGenerator().generate(
-      wordBank: prototypeWordBank,
-      seed: prototypeSeed,
-      config: const PuzzleGenerationConfig(maxSearchNodes: 1),
-    );
+    final failure = PuzzleSequenceGenerator(
+      prototypeCatalogue,
+      const PuzzleSequenceConfig(
+        baseSeed: prototypeBaseSeed,
+        generation: PuzzleGenerationConfig(maxSearchNodes: 1),
+      ),
+    ).generateNext(puzzleIndex: 1);
     await tester.pumpWidget(ArrowwordApp(generation: failure));
     expect(find.byType(PuzzleScreen), findsNothing);
     expect(find.textContaining('Bulmaca oluşturulamadı'), findsOneWidget);

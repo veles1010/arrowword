@@ -6,9 +6,10 @@ import 'package:arrowword/features/puzzle/generation/puzzle_generator.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_validator.dart';
 
 void main(List<String> arguments) {
-  for (final seed in (arguments.isEmpty ? ['$prototypeSeed'] : arguments).map(
-    int.parse,
-  )) {
+  for (final seed
+      in (arguments.isEmpty ? ['$prototypeBaseSeed'] : arguments).map(
+        int.parse,
+      )) {
     final stopwatch = Stopwatch()..start();
     final result = const PuzzleGenerator().generate(
       wordBank: prototypeWordBank,

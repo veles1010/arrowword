@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../features/puzzle/generation/puzzle_generator.dart';
+import '../features/puzzle/sequence/puzzle_sequence.dart';
 import '../features/puzzle/presentation/puzzle_screen.dart';
 
 class ArrowwordApp extends StatelessWidget {
   const ArrowwordApp({required this.generation, super.key});
-  final PuzzleGenerationResult generation;
+  final SequencePuzzleResult generation;
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Arrowword Prototipi',

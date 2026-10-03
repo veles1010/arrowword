@@ -59,7 +59,7 @@ class SearchCatalog {
   }
 
   PuzzleAnswer answer(SearchPlacement p) => PuzzleAnswer(
-    id: words[p.word].solution.toLowerCase(),
+    id: words[p.word].id,
     solution: words[p.word].solution,
     turkishClue: words[p.word].turkishClue,
     start: GridPosition(p.row, p.column),
