@@ -56,16 +56,51 @@ Map<T, int> histogram<T extends Comparable<dynamic>>(Iterable<T> values) {
 }
 
 void main(List<String> arguments) {
-  final count = arguments.isEmpty ? 30 : int.parse(arguments.single);
+  final counts = arguments.where((a) => !a.startsWith('--')).toList();
+  final count = counts.isEmpty ? 30 : int.parse(counts.single);
+  final known = {'--compare', '--unbalanced', '--naive'};
+  if (arguments.any((a) => a.startsWith('--') && !known.contains(a))) {
+    throw ArgumentError('Use [count] [--compare | --unbalanced | --naive].');
+  }
+  if (arguments.contains('--compare')) {
+    final baseline = inspectSequence(count, balanced: false);
+    final naive = inspectSequence(count, balanced: true, bounded: false);
+    final fair = inspectSequence(count, balanced: true);
+    stdout.writeln(
+      '\n## Comparison (same records and seed, current-run timings)\n',
+    );
+    stdout.writeln('| Metric | Unbalanced | Naive v3 | Bounded support |');
+    stdout.writeln('|---|---|---|---|');
+    for (final key in baseline.keys) {
+      stdout.writeln(
+        '| $key | ${baseline[key]} | ${naive[key]} | ${fair[key]} |',
+      );
+    }
+  } else {
+    inspectSequence(
+      count,
+      balanced: !arguments.contains('--unbalanced'),
+      bounded: !arguments.contains('--naive'),
+    );
+  }
+}
+
+Map<String, num> inspectSequence(
+  int count, {
+  required bool balanced,
+  bool bounded = true,
+}) {
   if (count < 1) throw ArgumentError('Count must be positive.');
   final c = prototypeCatalogue, h = c.health;
   if (!c.isValid ||
-      c.version != 2 ||
+      c.version != 3 ||
       h.lowPartnerIds(maximum: 0).isNotEmpty ||
       h.totalCount != 300) {
-    throw StateError('Invalid v2 catalogue: ${c.issues}');
+    throw StateError('Invalid v3 catalogue: ${c.issues}');
   }
-  stdout.writeln('# Catalogue v2 stress report\n');
+  stdout.writeln(
+    '# Catalogue v3 stress report — balanced=$balanced, bounded=$bounded\n',
+  );
   stdout.writeln(
     'Catalogue v${c.version}: ${h.totalCount} entries; ${h.uniqueSolutionCount} unique; issues ${c.issues}.',
   );
@@ -100,7 +135,9 @@ void main(List<String> arguments) {
   );
   final sequence = PuzzleSequenceGenerator(
     c,
-    const PuzzleSequenceConfig(
+    PuzzleSequenceConfig(
+      usageBalancingEnabled: balanced,
+      boundedSupportEnabled: bounded,
       baseSeed: prototypeBaseSeed,
       cooldownPuzzles: 5,
       generation: prototypeGenerationConfig,
@@ -108,9 +145,11 @@ void main(List<String> arguments) {
   );
   final results = <SequencePuzzleResult>[], times = <int>[];
   stdout.writeln(
-    '| Index | ID | Seed | Eligible | Score | Crossings | Leaves | Rows×cols | Density | ms | Checks | Nodes | Complete |',
+    '| Index | ID | Seed | Eligible | Generation pool | Tiers | Attempts | Score | Crossings | Leaves | Rows×cols | Density | ms (all attempts) | Checks (all attempts) | Nodes (final attempt) | Complete (final attempt) |',
   );
-  stdout.writeln('|---|---|---|---|---|---|---|---|---|---|---|---|---|');
+  stdout.writeln(
+    '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|',
+  );
   for (var index = 1; index <= count; index++) {
     final watch = Stopwatch()..start();
     final r = sequence.generateNext(
@@ -119,13 +158,44 @@ void main(List<String> arguments) {
     );
     watch.stop();
     verifyStressPuzzle(r, results);
+    final verified = buildEligiblePool(
+      catalogue: c,
+      config: sequence.config,
+      puzzleIndex: index,
+      history: results.map((r) => r.toHistory()).toList(),
+    );
+    if (!verified.isSuccess) throw StateError(verified.failureReason!);
     results.add(r);
     times.add(watch.elapsedMilliseconds);
     final g = r.generation!, m = g.metrics!;
     stdout.writeln(
-      '| $index | ${r.puzzle!.id} | ${r.seed} | ${r.pool.entries.length} | ${m.qualityScore} | ${m.crossingCount} | ${m.leafAnswerCount} | ${m.displayRowCount}×${m.displayColumnCount} | ${m.density.toStringAsFixed(4)} | ${times.last} | ${g.candidateChecks} | ${g.searchNodes} | ${g.completeSolutionsFound} |',
+      '| $index | ${r.puzzle!.id} | ${r.seed} | ${r.pool.entries.length} | ${r.generationPoolCount} | ${r.finalAttempt!.pool.includedUsageTiers} | ${r.attempts.length} | ${m.qualityScore} | ${m.crossingCount} | ${m.leafAnswerCount} | ${m.displayRowCount}×${m.displayColumnCount} | ${m.density.toStringAsFixed(4)} | ${times.last} | ${r.totalCandidateChecks} | ${g.searchNodes} | ${g.completeSolutionsFound} |',
     );
   }
+  stdout.writeln('\nAnswers and attempt outcomes:');
+  for (final r in results) {
+    stdout.writeln(
+      '- ${r.puzzleIndex}: ${r.puzzle!.answers.map((a) => a.solution).join(', ')}; cooldown excluded ${r.pool.excludedRecentIds.length}; min usage ${r.minimumEligibleUsage}; widened ${r.usagePreferenceWidened}; ${r.attempts.map((a) => 'tiers=${a.pool.includedUsageTiers}, pool=${a.pool.entries.length}, ${a.failureReason ?? 'success'}').join(' / ')}',
+    );
+  }
+  stdout.writeln(
+    'Attempts min / average / max: ${summary(results.map((r) => r.attempts.length))}.',
+  );
+  stdout.writeln('Support diagnostics:');
+  for (final r in results) {
+    final selected = r.finalAttempt!;
+    stdout.writeln(
+      '- ${r.puzzleIndex}: target pool ${selected.pool.targetIds.length}; candidates ${selected.pool.supportCandidateCount}; offered ${selected.pool.supportIds}; selected target/support ${selected.selectedTargetCount}/${selected.selectedSupportCount}; successes ${r.attempts.where((a) => a.isSuccess).length}; ${r.selectionReason}',
+    );
+    for (final a in r.attempts) {
+      stdout.writeln(
+        '  stage: support ${a.pool.supportIds.length}; ids ${a.pool.supportIds}; tiers ${a.pool.includedUsageTiers}; selected target/support ${a.selectedTargetCount}/${a.selectedSupportCount}; ${a.failureReason ?? 'success'}',
+      );
+    }
+  }
+  stdout.writeln(
+    'Chosen support-size histogram: ${histogram(results.map((r) => r.finalAttempt!.pool.supportIds.length))}; target/support answers average: ${results.fold<int>(0, (n, r) => n + r.finalAttempt!.selectedTargetCount) / count}/${results.fold<int>(0, (n, r) => n + r.finalAttempt!.selectedSupportCount) / count}.',
+  );
   final metrics = results.map((r) => r.generation!.metrics!).toList();
   final scores = metrics.map((m) => m.qualityScore).toList()..sort();
   stdout.writeln(
@@ -150,7 +220,7 @@ void main(List<String> arguments) {
     'Time ms min / average / max: ${summary(times)}; total ${times.reduce((a, b) => a + b)} ms.',
   );
   stdout.writeln(
-    'Candidate checks min / average / max: ${summary(results.map((r) => r.generation!.candidateChecks))}.',
+    'Candidate checks min / average / max: ${summary(results.map((r) => r.totalCandidateChecks))}.',
   );
   final repeat = SequenceRepeatAnalysis(results);
   final usage = {
@@ -193,4 +263,64 @@ void main(List<String> arguments) {
       '- ${a.solution} — ${a.turkishClue} — ${a.direction.name} — start(${a.start.row},${a.start.column}) — clue(${a.cluePosition.row},${a.cluePosition.column})',
     );
   }
+  final byId = {for (final w in c.entries) w.id: w};
+  final slots = results
+      .expand((r) => r.puzzle!.answers)
+      .map((a) => byId[a.id]!)
+      .toList();
+  final used = repeat.indicesByWord.keys.map((id) => byId[id]!).toList();
+  stdout.writeln(
+    'Difficulty slots: ${histogram(slots.map((w) => w.difficulty.name))}; unique: ${histogram(used.map((w) => w.difficulty.name))}.',
+  );
+  stdout.writeln(
+    'Length slots: ${histogram(slots.map((w) => w.solution.length))}; unique: ${histogram(used.map((w) => w.solution.length))}.',
+  );
+  for (final length in [4, 5, 6, 7]) {
+    final n = used.where((w) => w.solution.length == length).length;
+    stdout.writeln(
+      'Length $length coverage: $n/${h.lengthCounts[length]} (${(100 * n / h.lengthCounts[length]!).toStringAsFixed(2)}%).',
+    );
+  }
+  double average(Iterable<num> values) =>
+      values.fold<num>(0, (a, b) => a + b) / values.length;
+  return {
+    'unique words': used.length,
+    'coverage percent': 100 * used.length / c.entries.length,
+    'maximum usage': top.first.value,
+    'unused': usage.values.where((n) => n == 0).length,
+    'maximum quality': scores.last,
+    'minimum crossings': metrics
+        .map((m) => m.crossingCount)
+        .reduce((a, b) => a < b ? a : b),
+    'maximum crossings': metrics
+        .map((m) => m.crossingCount)
+        .reduce((a, b) => a > b ? a : b),
+    'ten-column boards': metrics
+        .where((m) => m.displayColumnCount == 10)
+        .length,
+    'minimum repeat distance': gaps.isEmpty
+        ? 0
+        : gaps.reduce((a, b) => a < b ? a : b),
+    'average repeat distance': gaps.isEmpty ? 0 : average(gaps),
+    'maximum repeat distance': gaps.isEmpty
+        ? 0
+        : gaps.reduce((a, b) => a > b ? a : b),
+    'minimum ms': times.reduce((a, b) => a < b ? a : b),
+    'maximum ms': times.reduce((a, b) => a > b ? a : b),
+    'total ms': times.reduce((a, b) => a + b),
+    'maximum attempts': results
+        .map((r) => r.attempts.length)
+        .reduce((a, b) => a > b ? a : b),
+    'maximum candidate checks': results
+        .map((r) => r.totalCandidateChecks)
+        .reduce((a, b) => a > b ? a : b),
+    'average quality': average(scores),
+    'minimum quality': scores.first,
+    'average crossings': average(metrics.map((m) => m.crossingCount)),
+    'average ms': average(times),
+    'average attempts': average(results.map((r) => r.attempts.length)),
+    'average candidate checks': average(
+      results.map((r) => r.totalCandidateChecks),
+    ),
+  };
 }

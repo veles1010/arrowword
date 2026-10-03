@@ -31,6 +31,7 @@ void main() {
   }) => PuzzleSequenceConfig(
     baseSeed: prototypeBaseSeed,
     cooldownPuzzles: cooldown,
+    usageBalancingEnabled: false,
     allowedDifficulties: allowed,
     generation: const PuzzleGenerationConfig(
       targetAnswerCount: 1,
@@ -217,7 +218,7 @@ void main() {
     },
   );
 
-  test('v2 difficulty filters expose the real eligible catalogue', () {
+  test('v3 difficulty filters expose the real eligible catalogue', () {
     for (final allowed in [
       {WordDifficulty.easy},
       {WordDifficulty.easy, WordDifficulty.medium},
@@ -249,7 +250,7 @@ void main() {
       5,
       (i) => PuzzleHistoryEntry(
         puzzleIndex: i + 1,
-        catalogVersion: 2,
+        catalogVersion: 3,
         words: {for (final w in words.skip(i * 10).take(10)) w.id: w.solution},
       ),
     );
@@ -272,7 +273,7 @@ void main() {
         ...recent,
         PuzzleHistoryEntry(
           puzzleIndex: 6,
-          catalogVersion: 2,
+          catalogVersion: 3,
           words: {
             for (final w in prototypeCatalogue.entries.skip(50).take(10))
               w.id: w.solution,
@@ -287,7 +288,7 @@ void main() {
     );
   });
 
-  group('seven-puzzle v2 sequence', () {
+  group('seven-puzzle v3 sequence', () {
     late PuzzleSequenceResult first, second;
     setUpAll(() {
       first = PuzzleSequenceGenerator(
@@ -295,7 +296,7 @@ void main() {
         prototypeSequenceConfig,
       ).generateRange(count: 7);
       second = PuzzleSequenceGenerator(
-        WordCatalogue(version: 2, entries: catalogueWords.reversed.toList()),
+        WordCatalogue(version: 3, entries: catalogueWords.reversed.toList()),
         prototypeSequenceConfig,
       ).generateRange(count: 7);
     });
@@ -306,6 +307,19 @@ void main() {
       for (var i = 0; i < 7; i++) {
         final a = first.puzzles[i], b = second.puzzles[i];
         expect(a.puzzleIndex, b.puzzleIndex);
+        expect(a.catalogVersion, b.catalogVersion);
+        expect(a.generationPoolCount, b.generationPoolCount);
+        expect(a.minimumEligibleUsage, b.minimumEligibleUsage);
+        expect(a.maximumIncludedUsage, b.maximumIncludedUsage);
+        expect(
+          a.attempts.map((x) => x.pool.includedUsageTiers),
+          b.attempts.map((x) => x.pool.includedUsageTiers),
+        );
+        expect(
+          a.attempts.map((x) => x.pool.entries.map((w) => w.id)),
+          b.attempts.map((x) => x.pool.entries.map((w) => w.id)),
+        );
+        expect(a.totalCandidateChecks, b.totalCandidateChecks);
         expect(a.seed, b.seed);
         expect(a.puzzle!.id, b.puzzle!.id);
         expect(
@@ -339,7 +353,7 @@ void main() {
       final failure = SequencePuzzleResult(
         puzzleIndex: 1,
         seed: r.seed,
-        catalogVersion: 2,
+        catalogVersion: 3,
         pool: r.pool,
         failureReason: 'Search budget exhausted',
       );
@@ -350,7 +364,7 @@ void main() {
       final invalid = SequencePuzzleResult(
         puzzleIndex: 1,
         seed: r.seed,
-        catalogVersion: 2,
+        catalogVersion: 3,
         pool: r.pool,
         puzzle: manualPuzzle,
       );
@@ -361,7 +375,7 @@ void main() {
       SequencePuzzleResult reuse(int index) => SequencePuzzleResult(
         puzzleIndex: index,
         seed: r.seed,
-        catalogVersion: 2,
+        catalogVersion: 3,
         pool: r.pool,
         puzzle: r.puzzle,
       );
@@ -424,7 +438,7 @@ void main() {
         }
       },
     );
-    test('bounded search failure stays explicit with full v2 pool', () {
+    test('bounded search failure stays explicit with full v3 pool', () {
       final result = PuzzleSequenceGenerator(
         prototypeCatalogue,
         const PuzzleSequenceConfig(

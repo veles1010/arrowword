@@ -19,8 +19,10 @@ void main() {
     await tester.pumpWidget(ArrowwordApp(generation: generated));
     final first = generated.puzzle!.answers.first;
     expect(generated.puzzleIndex, 1);
+    expect(generated.generationPoolCount, 300);
+    expect(generated.attempts.single.pool.includedUsageTiers, [0]);
     expect(generated.seed, derivePuzzleSeed(prototypeBaseSeed, 1));
-    expect(generated.puzzle!.id, 'generated-v2-000001');
+    expect(generated.puzzle!.id, 'generated-v3-000001');
     expect(
       tester.widget<PuzzleScreen>(find.byType(PuzzleScreen)).puzzle,
       same(generated.puzzle),

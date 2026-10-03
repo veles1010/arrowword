@@ -10,25 +10,22 @@ void main() {
       WordCatalogue(version: 1, entries: words);
   Set<String> codes(List<WordEntry> words) =>
       catalogue(words).issues.map((i) => i.code).toSet();
-  test(
-    'v2 catalogue has 300 valid, crossable entries and deliberate metadata',
-    () {
-      final c = prototypeCatalogue;
-      expect(c.isValid, isTrue);
-      expect(c.issues, isEmpty);
-      expect(c.version, 2);
-      expect(c.health.lowPartnerIds(maximum: 0), isEmpty);
-      expect(c.entries.every((w) => w.tags.isNotEmpty), isTrue);
-      expect(c.entries, hasLength(300));
-      expect(c.entries.map((w) => w.id).toSet(), hasLength(300));
-      expect(c.health.difficultyCounts, {
-        WordDifficulty.easy: 210,
-        WordDifficulty.medium: 75,
-        WordDifficulty.hard: 15,
-      });
-      expect(c.health.lengthCounts, {4: 68, 5: 102, 6: 99, 7: 31});
-    },
-  );
+  test('v3 compatibility catalogue has 300 valid, crossable entries and deliberate metadata', () {
+    final c = prototypeCatalogue;
+    expect(c.isValid, isTrue);
+    expect(c.issues, isEmpty);
+    expect(c.version, 3);
+    expect(c.health.lowPartnerIds(maximum: 0), isEmpty);
+    expect(c.entries.every((w) => w.tags.isNotEmpty), isTrue);
+    expect(c.entries, hasLength(300));
+    expect(c.entries.map((w) => w.id).toSet(), hasLength(300));
+    expect(c.health.difficultyCounts, {
+      WordDifficulty.easy: 210,
+      WordDifficulty.medium: 75,
+      WordDifficulty.hard: 15,
+    });
+    expect(c.health.lengthCounts, {4: 68, 5: 102, 6: 99, 7: 31});
+  });
   test('all 60 original pairs and metadata survive v2 unchanged', () {
     expect(legacyWordBank, hasLength(60));
     final entries = {for (final w in prototypeCatalogue.entries) w.id: w};

@@ -4,8 +4,8 @@ import '../sequence/puzzle_sequence.dart';
 import 'word_catalogue_data.dart';
 
 const prototypeBaseSeed = 20261003;
-const prototypeCatalogueVersion = 2;
-// Catalogue v2 passes the 30-puzzle stress run without cooldown relaxation.
+// Same 300 records as v2; v3 changes sequence selection, not vocabulary.
+const prototypeCatalogueVersion = 3;
 const prototypeSequenceCooldown = 5;
 const prototypeGenerationConfig = PuzzleGenerationConfig();
 final prototypeCatalogue = WordCatalogue(
