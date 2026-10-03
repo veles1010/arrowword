@@ -1,4 +1,5 @@
 import 'package:arrowword/app/app.dart';
+import 'package:arrowword/app/puzzle_session.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_generator.dart';
 import 'package:arrowword/features/puzzle/sequence/puzzle_sequence.dart';
@@ -8,7 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late SequencePuzzleResult generated;
-  setUpAll(() => generated = generatePrototypePuzzle());
+  late PuzzleSession session;
+  setUpAll(() {
+    session = PuzzleSession();
+    generated = session.current;
+  });
+  tearDownAll(() => session.dispose());
 
   testWidgets('fixed-seed generated board renders and survives app rebuild', (
     tester,
@@ -16,7 +22,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(320, 640);
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(ArrowwordApp(generation: generated));
+    await tester.pumpWidget(ArrowwordApp(session: session));
     final first = generated.puzzle!.answers.first;
     expect(generated.puzzleIndex, 1);
     expect(generated.generationPoolCount, 300);
@@ -34,7 +40,7 @@ void main() {
     );
     await tester.enterText(find.byType(TextField), first.solution[0]);
     tester.view.viewInsets = const FakeViewPadding(bottom: 240);
-    await tester.pumpWidget(ArrowwordApp(generation: generated));
+    await tester.pumpWidget(ArrowwordApp(session: session));
     expect(
       tester.widget<PuzzleScreen>(find.byType(PuzzleScreen)).puzzle,
       same(generated.puzzle),
@@ -56,14 +62,18 @@ void main() {
   testWidgets('generation failure displays reason without manual fallback', (
     tester,
   ) async {
-    final failure = PuzzleSequenceGenerator(
-      prototypeCatalogue,
-      const PuzzleSequenceConfig(
-        baseSeed: prototypeBaseSeed,
-        generation: PuzzleGenerationConfig(maxSearchNodes: 1),
+    final failedSession = PuzzleSession(
+      generator: PuzzleSequenceGenerator(
+        prototypeCatalogue,
+        const PuzzleSequenceConfig(
+          baseSeed: prototypeBaseSeed,
+          generation: PuzzleGenerationConfig(maxSearchNodes: 1),
+        ),
       ),
-    ).generateNext(puzzleIndex: 1);
-    await tester.pumpWidget(ArrowwordApp(generation: failure));
+    );
+    addTearDown(failedSession.dispose);
+    final failure = failedSession.current;
+    await tester.pumpWidget(ArrowwordApp(session: failedSession));
     expect(find.byType(PuzzleScreen), findsNothing);
     expect(find.textContaining('Bulmaca oluşturulamadı'), findsOneWidget);
     expect(find.textContaining(failure.failureReason!), findsOneWidget);

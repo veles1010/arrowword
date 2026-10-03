@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../features/puzzle/sequence/puzzle_sequence.dart';
+import 'puzzle_session.dart';
 import '../features/puzzle/presentation/puzzle_screen.dart';
 
 class ArrowwordApp extends StatelessWidget {
-  const ArrowwordApp({required this.generation, super.key});
-  final SequencePuzzleResult generation;
+  const ArrowwordApp({required this.session, super.key});
+  final PuzzleSession session;
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Arrowword Prototipi',
@@ -14,20 +14,31 @@ class ArrowwordApp extends StatelessWidget {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff426B5A)),
     ),
-    home: generation.isSuccess
-        ? PuzzleScreen(puzzle: generation.puzzle!)
-        : Scaffold(
-            appBar: AppBar(title: const Text('Bulmaca Prototipi')),
-            body: SafeArea(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    'Bulmaca oluşturulamadı.\nPrototip üretim hatası:\n${generation.failureReason}',
+    home: ListenableBuilder(
+      listenable: session,
+      builder: (context, _) {
+        final generation = session.current;
+        return generation.isSuccess
+            ? PuzzleScreen(
+                key: ValueKey(generation.puzzle!.id),
+                puzzle: generation.puzzle!,
+                title: 'Bulmaca ${generation.puzzleIndex}',
+                onNextPuzzle: session.nextPuzzle,
+              )
+            : Scaffold(
+                appBar: AppBar(title: const Text('Bulmaca Prototipi')),
+                body: SafeArea(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        'Bulmaca oluşturulamadı.\nPrototip üretim hatası:\n${generation.failureReason}',
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
+              );
+      },
+    ),
   );
 }

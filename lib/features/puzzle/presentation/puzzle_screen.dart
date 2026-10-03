@@ -6,8 +6,15 @@ import 'board_size.dart';
 import 'clue_text.dart';
 
 class PuzzleScreen extends StatefulWidget {
-  const PuzzleScreen({required this.puzzle, super.key});
+  const PuzzleScreen({
+    required this.puzzle,
+    this.title = 'Bulmaca Prototipi',
+    this.onNextPuzzle,
+    super.key,
+  });
   final Puzzle puzzle;
+  final String title;
+  final VoidCallback? onNextPuzzle;
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
 }
@@ -57,11 +64,19 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                 FilledButton(
                   onPressed: () {
                     Navigator.pop(c);
+                    if (widget.onNextPuzzle != null) {
+                      widget.onNextPuzzle!();
+                      return;
+                    }
                     shown = false;
                     game.reset();
                     focus.requestFocus();
                   },
-                  child: const Text('Yeniden Başlat'),
+                  child: Text(
+                    widget.onNextPuzzle == null
+                        ? 'Yeniden Başlat'
+                        : 'Sonraki Bulmaca',
+                  ),
                 ),
               ],
             ),
@@ -87,7 +102,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     final keyboardOpen = MediaQuery.viewInsetsOf(c).bottom > 0;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(title: const Text('Bulmaca Prototipi')),
+      appBar: AppBar(title: Text(widget.title)),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, contentConstraints) {
