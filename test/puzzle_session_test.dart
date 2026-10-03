@@ -99,6 +99,8 @@ void main() {
     final session = PuzzleSession(generator: _RecordedGenerator(results));
     addTearDown(session.dispose);
     await tester.pumpWidget(ArrowwordApp(session: session));
+    await tester.tap(find.text('Başla'));
+    await tester.pumpAndSettle();
     expect(find.text('Bulmaca 1'), findsOneWidget);
     final oldState = tester.state(find.byType(PuzzleScreen));
     for (final answer in session.current.puzzle!.answers) {
@@ -134,6 +136,10 @@ void main() {
       );
     }
     expect(find.text('Bulmaca tamamlandı!'), findsNothing);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Bulmaca 2'), findsOneWidget);
+    expect(find.text('Devam Et'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
   testWidgets('next-generation failure shows Turkish prototype error', (
@@ -144,6 +150,8 @@ void main() {
     );
     addTearDown(session.dispose);
     await tester.pumpWidget(ArrowwordApp(session: session));
+    await tester.tap(find.text('Başla'));
+    await tester.pumpAndSettle();
     session.nextPuzzle();
     await tester.pump();
     expect(find.byType(PuzzleScreen), findsNothing);

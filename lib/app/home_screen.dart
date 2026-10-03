@@ -1,0 +1,57 @@
+import 'package:flutter/material.dart';
+
+import 'puzzle_session.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({
+    required this.session,
+    required this.puzzleBuilder,
+    super.key,
+  });
+  final PuzzleSession session;
+  final WidgetBuilder puzzleBuilder;
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Future<void> _openPuzzle() async {
+    await Navigator.of(context)
+        .push<void>(MaterialPageRoute(builder: widget.puzzleBuilder));
+    // Letter changes do not notify the whole session. Refresh the CTA on return.
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: widget.session,
+    builder: (context, _) {
+      final session = widget.session;
+      final fresh = session.current.puzzleIndex == 1 && session.letters.isEmpty;
+      return Scaffold(
+        appBar: AppBar(title: const Text('Arrowword')),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Bulmaca ${session.current.puzzleIndex}',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    onPressed: session.current.isSuccess ? _openPuzzle : null,
+                    child: Text(fresh ? 'Başla' : 'Devam Et'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}

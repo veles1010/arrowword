@@ -225,6 +225,7 @@ void main() {
       final restored = await open(store);
       expect(game(restored).isComplete, isTrue);
       await tester.pumpWidget(ArrowwordApp(session: restored));
+      await tester.tap(find.text('Devam Et'));
       await tester.pumpAndSettle();
       expect(find.text('Bulmaca tamamlandı!'), findsOneWidget);
       await tester.tap(find.text('Sonraki Bulmaca'));

@@ -22,7 +22,9 @@ void main() {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(320, 640);
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(ArrowwordApp(session: session));
+    await tester.pumpWidget(
+      ArrowwordApp(session: session, openPuzzleDirectly: true),
+    );
     final first = generated.puzzle!.answers.first;
     expect(generated.puzzleIndex, 1);
     expect(generated.generationPoolCount, 300);
@@ -40,7 +42,9 @@ void main() {
     );
     await tester.enterText(find.byType(TextField), first.solution[0]);
     tester.view.viewInsets = const FakeViewPadding(bottom: 240);
-    await tester.pumpWidget(ArrowwordApp(session: session));
+    await tester.pumpWidget(
+      ArrowwordApp(session: session, openPuzzleDirectly: true),
+    );
     expect(
       tester.widget<PuzzleScreen>(find.byType(PuzzleScreen)).puzzle,
       same(generated.puzzle),

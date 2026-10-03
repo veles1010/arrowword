@@ -22,5 +22,7 @@ Future<void> main() async {
     store: SharedPreferencesPuzzleProgressStore(),
     developmentIndex: startIndex,
   );
-  runApp(ArrowwordApp(session: session));
+  runApp(
+    ArrowwordApp(session: session, openPuzzleDirectly: startIndex != null),
+  );
 }
