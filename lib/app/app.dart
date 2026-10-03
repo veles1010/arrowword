@@ -24,6 +24,8 @@ class ArrowwordApp extends StatelessWidget {
                 puzzle: generation.puzzle!,
                 title: 'Bulmaca ${generation.puzzleIndex}',
                 onNextPuzzle: session.nextPuzzle,
+                initialLetters: session.letters,
+                onLettersChanged: session.updateLetters,
               )
             : Scaffold(
                 appBar: AppBar(title: const Text('Bulmaca Prototipi')),

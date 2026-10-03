@@ -2,13 +2,21 @@ import 'package:flutter/foundation.dart';
 
 import '../features/puzzle/data/prototype_puzzle.dart';
 import '../features/puzzle/sequence/puzzle_sequence.dart';
+import '../features/puzzle/domain/puzzle.dart';
+import 'puzzle_progress_store.dart';
 
-/// Session-only progression, retaining every successfully generated index.
+/// Progression with optional current-board storage and in-memory full history.
 class PuzzleSession extends ChangeNotifier {
-  PuzzleSession({PuzzleSequenceGenerator? generator, int startIndex = 1})
-    : _generator =
-          generator ??
-          PuzzleSequenceGenerator(prototypeCatalogue, prototypeSequenceConfig) {
+  PuzzleSession({
+    PuzzleSequenceGenerator? generator,
+    int startIndex = 1,
+    this.store,
+  }) : _generator =
+           generator ??
+           PuzzleSequenceGenerator(
+             prototypeCatalogue,
+             prototypeSequenceConfig,
+           ) {
     if (startIndex < 1 || startIndex > 0xffffffff) {
       throw ArgumentError.value(startIndex, 'startIndex');
     }
@@ -18,6 +26,104 @@ class PuzzleSession extends ChangeNotifier {
     }
   }
   final PuzzleSequenceGenerator _generator;
+  final PuzzleProgressStore? store;
+  Map<GridPosition, String> _letters = {};
+  Map<GridPosition, String> get letters => Map.unmodifiable(_letters);
+  Future<void> _writes = Future.value();
+  Future<void> get flush => _writes;
+
+  /// Restoring index N replays 1..N once; high indices may need optimization later.
+  static Future<PuzzleSession> restore({
+    required PuzzleProgressStore store,
+    PuzzleSequenceGenerator? generator,
+    int? developmentIndex,
+  }) async {
+    if (developmentIndex != null) {
+      return PuzzleSession(generator: generator, startIndex: developmentIndex);
+    }
+    generator ??= PuzzleSequenceGenerator(
+      prototypeCatalogue,
+      prototypeSequenceConfig,
+    );
+    try {
+      final raw = await store.read();
+      if (raw != null) {
+        final saved = PuzzleProgress.decode(raw);
+        if (saved.catalogVersion != generator.catalogue.version) {
+          throw const FormatException('Incompatible catalogue');
+        }
+        final session = PuzzleSession(
+          generator: generator,
+          startIndex: saved.puzzleIndex,
+          store: store,
+        );
+        if (!session.current.isSuccess ||
+            session.current.puzzle!.id != saved.puzzleId ||
+            session.current.generation!.metrics!.structuralSignature !=
+                saved.signature) {
+          session.dispose();
+          throw const FormatException('Puzzle identity mismatch');
+        }
+        final restored = <GridPosition, String>{};
+        for (final entry in saved.letters.entries) {
+          final match = RegExp(r'^(\d+),(\d+)$').firstMatch(entry.key);
+          if (match == null || !RegExp(r'^[A-Z]$').hasMatch(entry.value)) {
+            continue;
+          }
+          final row = int.tryParse(match[1]!), column = int.tryParse(match[2]!);
+          if (row == null || column == null) continue;
+          final position = GridPosition(row, column);
+          if (session.current.puzzle!.answersAt(position).isNotEmpty) {
+            restored[position] = entry.value;
+          }
+        }
+        session._letters = restored;
+        return session;
+      }
+    } catch (error) {
+      debugPrint('Ignoring puzzle progress: $error');
+      try {
+        await store.clear();
+      } catch (error) {
+        debugPrint('Progress clear failed: $error');
+      }
+    }
+    return PuzzleSession(generator: generator, store: store);
+  }
+
+  void updateLetters(Map<GridPosition, String> letters) {
+    if (!current.isSuccess) return;
+    final valid = {
+      for (final entry in letters.entries)
+        if (current.puzzle!.answersAt(entry.key).isNotEmpty &&
+            RegExp(r'^[A-Z]$').hasMatch(entry.value))
+          entry.key: entry.value,
+    };
+    if (mapEquals(_letters, valid)) return;
+    _letters = valid;
+    _save();
+  }
+
+  void _save() {
+    if (store == null || !current.isSuccess) return;
+    final record = PuzzleProgress(
+      catalogVersion: current.catalogVersion,
+      puzzleIndex: current.puzzleIndex,
+      puzzleId: current.puzzle!.id,
+      signature: current.generation!.metrics!.structuralSignature,
+      letters: {
+        for (final entry in _letters.entries)
+          '${entry.key.row},${entry.key.column}': entry.value,
+      },
+    ).encode();
+    // Serialize snapshots so a slow older write cannot overwrite newer progress.
+    _writes = _writes.then((_) => store!.write(record)).catchError((
+      Object error,
+    ) {
+      debugPrint('Progress save failed: $error');
+    });
+  }
+
   final List<PuzzleHistoryEntry> _history = [];
   late SequencePuzzleResult current;
   List<PuzzleHistoryEntry> get history => List.unmodifiable(_history);
@@ -29,6 +135,10 @@ class PuzzleSession extends ChangeNotifier {
   void nextPuzzle() {
     if (!current.isSuccess) return;
     _generate(current.puzzleIndex + 1);
+    if (current.isSuccess) {
+      _letters = {};
+      _save();
+    }
     notifyListeners();
   }
 }

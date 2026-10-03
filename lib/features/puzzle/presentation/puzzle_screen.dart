@@ -10,11 +10,15 @@ class PuzzleScreen extends StatefulWidget {
     required this.puzzle,
     this.title = 'Bulmaca Prototipi',
     this.onNextPuzzle,
+    this.initialLetters = const {},
+    this.onLettersChanged,
     super.key,
   });
   final Puzzle puzzle;
   final String title;
   final VoidCallback? onNextPuzzle;
+  final Map<GridPosition, String> initialLetters;
+  final ValueChanged<Map<GridPosition, String>>? onLettersChanged;
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
 }
@@ -28,9 +32,15 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   @override
   void initState() {
     super.initState();
-    game = PuzzleGame(widget.puzzle)..addListener(_changed);
+    game = PuzzleGame(widget.puzzle)..restoreLetters(widget.initialLetters);
+    game.addListener(_changed);
     input = TextEditingController(text: s);
     focus = FocusNode();
+    if (game.isComplete) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _changed();
+      });
+    }
   }
 
   @override
@@ -42,6 +52,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   }
 
   void _changed() {
+    widget.onLettersChanged?.call(game.enteredLetters);
     if (mounted) {
       setState(() {});
     }

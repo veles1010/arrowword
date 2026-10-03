@@ -30,7 +30,12 @@ missing lifetime history is an explicit failure. IDs are now
 `generated-v3-000001`, etc. V3 changes selection policy, not catalogue records or
 seed arithmetic. Old-version history is rejected, not migrated. Disabled balancing
 is developer-only comparison mode and retains cooldown-window history semantics.
-There is no persistence or progression UI. Puzzle 1 still offers all 300 words.
+Completion advances to the next puzzle. A single versioned local shared_preferences
+record saves only the current index/identity and entered letters. Restore replays
+Puzzle 1..N to rebuild history; high indices may need a later startup-performance
+optimization. Corrupt/incompatible progress resets safely to empty Puzzle 1.
+Debug ARROWWORD_PUZZLE_INDEX launches ignore and never overwrite player progress.
+No statistics, archives, selection UI or cloud state are stored.
 
 ## Generator and verification
 

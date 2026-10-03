@@ -14,6 +14,18 @@ class PuzzleGame extends ChangeNotifier {
   PuzzleAnswer get activeAnswer => _activeAnswer;
   GridPosition get selectedPosition => _selectedPosition;
   String? letterAt(GridPosition p) => _letters[p];
+  Map<GridPosition, String> get enteredLetters => Map.unmodifiable(_letters);
+  void restoreLetters(Map<GridPosition, String> letters) {
+    _letters.clear();
+    for (final entry in letters.entries) {
+      if (puzzle.answersAt(entry.key).isNotEmpty &&
+          RegExp(r'^[A-Z]$').hasMatch(entry.value)) {
+        _letters[entry.key] = entry.value;
+      }
+    }
+    notifyListeners();
+  }
+
   bool isActive(GridPosition p) => _activeAnswer.positions.contains(p);
   bool isSelected(GridPosition p) => p == _selectedPosition;
   bool isIncorrect(GridPosition p) =>
