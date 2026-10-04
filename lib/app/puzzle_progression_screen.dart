@@ -13,11 +13,13 @@ class PuzzleProgressionScreen extends StatefulWidget {
     required this.session,
     required this.puzzleBuilder,
     this.rewardedAdFactory,
+    this.inShell = false,
     super.key,
   });
 
   final PuzzleSession session;
   final WidgetBuilder puzzleBuilder;
+  final bool inShell;
   final RewardedHintAdService Function()? rewardedAdFactory;
 
   @override
@@ -54,7 +56,10 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
       final current = session.current.puzzleIndex;
       final scores = session.completedScores;
       return Scaffold(
-        appBar: AppBar(title: const Text('Bulmacalar')),
+        appBar: AppBar(
+          title: const Text('Bulmacalar'),
+          automaticallyImplyLeading: !widget.inShell,
+        ),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
 
 import 'puzzle_session.dart';
-import 'home_screen.dart';
+import 'app_shell.dart';
 import 'daily_session.dart';
 import 'app_settings.dart';
 import 'arrowword_theme.dart';
@@ -35,7 +35,7 @@ class ArrowwordApp extends StatelessWidget {
       themeMode: settings?.themeMode ?? ThemeMode.system,
       home: openPuzzleDirectly || !session.current.isSuccess
           ? _PuzzleFlow(session: session, rewardedAdFactory: rewardedAdFactory)
-          : HomeScreen(
+          : AppShell(
               session: session,
               settings: settings,
               dailySession: dailySession,

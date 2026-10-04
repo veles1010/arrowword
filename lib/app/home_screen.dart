@@ -19,11 +19,13 @@ class HomeScreen extends StatefulWidget {
     this.rewardedAdFactory,
     this.dailySession,
     this.settings,
+    this.inShell = false,
     super.key,
   });
   final PuzzleSession session;
   final DailySession? dailySession;
   final AppSettings? settings;
+  final bool inShell;
   final WidgetBuilder puzzleBuilder;
   final RewardedHintAdService Function()? rewardedAdFactory;
   @override
@@ -116,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           session.completedThrough == 0;
       return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: !widget.inShell,
           title: const Text('Arrowword'),
           actions: [
             if (widget.settings != null)
@@ -163,14 +166,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         child: Text(fresh ? 'Başla' : 'Devam Et'),
                       ),
                       const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: _openProgression,
-                        child: const Text('Bulmacalar'),
-                      ),
-                      TextButton(
-                        onPressed: _openStatistics,
-                        child: const Text('İstatistikler'),
-                      ),
+                      if (!widget.inShell)
+                        TextButton(
+                          onPressed: _openProgression,
+                          child: const Text('Bulmacalar'),
+                        ),
+                      if (!widget.inShell)
+                        TextButton(
+                          onPressed: _openStatistics,
+                          child: const Text('İstatistikler'),
+                        ),
                       if (widget.dailySession != null) ...[
                         const SizedBox(height: 12),
                         _dailyCard(context, widget.dailySession!),
@@ -208,17 +213,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
               if (daily.statistics.currentStreak > 0)
                 Text('${daily.statistics.currentStreak} günlük seri'),
-              TextButton(
-                onPressed: () async {
-                  await Navigator.of(context).push<void>(
-                    MaterialPageRoute(
-                      builder: (_) => DailyHistoryScreen(session: daily),
-                    ),
-                  );
-                  _returnedHome();
-                },
-                child: const Text('Günlük Geçmiş'),
-              ),
+              if (!widget.inShell)
+                TextButton(
+                  onPressed: () async {
+                    await Navigator.of(context).push<void>(
+                      MaterialPageRoute(
+                        builder: (_) => DailyHistoryScreen(session: daily),
+                      ),
+                    );
+                    _returnedHome();
+                  },
+                  child: const Text('Günlük Geçmiş'),
+                ),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(

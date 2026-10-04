@@ -49,6 +49,8 @@ installed version/build information. Settings use a separate preference key;
 normal schema 5 and Daily schema 1 are unchanged.
 
 Home opens normal play, the puzzle progression grid, local statistics or the Daily.
+The four-destination shell preserves tab state, with tap/continuous drag navigation;
+gameplay and Daily history remain nested routes. System Back from a secondary tab returns Home.
 Scoring v1 records active-play time, hints and incorrect checks; background, covered
 routes and rewarded-ad time do not count. Completed puzzle replays are fresh,
 memory-only attempts. Only a higher score (or equal score with a faster time)

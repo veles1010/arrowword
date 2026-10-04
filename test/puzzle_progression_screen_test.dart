@@ -147,7 +147,7 @@ void main() {
       await tester.pageBack();
       await tester.pumpAndSettle();
       expect(find.byType(PuzzleProgressionScreen), findsOneWidget);
-      await tester.pageBack();
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
     },

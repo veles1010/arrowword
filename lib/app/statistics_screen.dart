@@ -5,14 +5,23 @@ import 'puzzle_session.dart';
 import 'daily_session.dart';
 
 class StatisticsScreen extends StatelessWidget {
-  const StatisticsScreen({required this.session, this.dailySession, super.key});
+  const StatisticsScreen({
+    required this.session,
+    this.dailySession,
+    this.inShell = false,
+    super.key,
+  });
 
   final PuzzleSession session;
   final DailySession? dailySession;
+  final bool inShell;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('İstatistikler')),
+    appBar: AppBar(
+      title: const Text('İstatistikler'),
+      automaticallyImplyLeading: !inShell,
+    ),
     body: SafeArea(
       child: ListenableBuilder(
         listenable: Listenable.merge([session, ?dailySession]),

@@ -227,7 +227,8 @@ void main() {
       await tester.tap(find.text('İstatistikler'));
       await tester.pumpAndSettle();
       expect(find.byType(StatisticsScreen), findsOneWidget);
-      await tester.pageBack();
+      // Top-level tabs have no Back arrow; system Back returns Home.
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.text('Arrowword'), findsOneWidget);
       expect(n.current.puzzleIndex, 2);
@@ -572,7 +573,7 @@ void main() {
         200,
       );
       expect(tester.takeException(), isNull);
-      await tester.pageBack();
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Bulmacalar'));
       await tester.tap(find.text('Bulmacalar'));
@@ -588,7 +589,7 @@ void main() {
         await tester.pageBack();
         await tester.pumpAndSettle();
       }
-      await tester.pageBack();
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.byKey(const ValueKey('daily-action')));
       await tester.tap(find.byKey(const ValueKey('daily-action')));
