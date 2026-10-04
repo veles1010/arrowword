@@ -23,34 +23,52 @@ class PuzzleReplayScreen extends StatefulWidget {
 }
 
 class _PuzzleReplayScreenState extends State<PuzzleReplayScreen> {
-  late final PuzzleReplayAttempt attempt;
+  PuzzleReplayAttempt? _attempt;
+  bool _loading = true;
   @override
   void initState() {
     super.initState();
-    attempt = PuzzleReplayAttempt(
-      session: widget.session,
-      puzzleIndex: widget.puzzleIndex,
-    );
+    // Paint the route/loading state before bounded synchronous reconstruction.
+    // Generate only once for this route, never during rebuilds.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future<void>(() {
+        if (!mounted) return;
+        try {
+          _attempt = PuzzleReplayAttempt(
+            session: widget.session,
+            puzzleIndex: widget.puzzleIndex,
+          );
+        } catch (_) {
+          // Internal reconstruction errors must not escape into player UI.
+        }
+        if (mounted) setState(() => _loading = false);
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final generation = attempt.generation;
-    if (!generation.isSuccess) {
+    final attempt = _attempt;
+    if (_loading || attempt == null || !attempt.generation.isSuccess) {
       return Scaffold(
         appBar: AppBar(title: Text('Bulmaca ${widget.puzzleIndex}')),
         body: SafeArea(
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: Text(
-                'Bulmaca tekrar açılamadı.\n${generation.failureReason}',
-              ),
+              child: _loading
+                  ? const CircularProgressIndicator(
+                      semanticsLabel: 'Bulmaca hazırlanıyor',
+                    )
+                  : const Text(
+                      'Bulmaca tekrar oluşturulamadı. Lütfen tekrar deneyin.',
+                    ),
             ),
           ),
         ),
       );
     }
+    final generation = attempt.generation;
     return PuzzleScreen(
       puzzle: generation.puzzle!,
       title: 'Bulmaca ${widget.puzzleIndex} · Tekrar Oyna',

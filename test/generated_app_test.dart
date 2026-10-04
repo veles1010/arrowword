@@ -63,24 +63,30 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('generation failure displays reason without manual fallback', (
-    tester,
-  ) async {
-    final failedSession = PuzzleSession(
-      generator: PuzzleSequenceGenerator(
-        prototypeCatalogue,
-        const PuzzleSequenceConfig(
-          baseSeed: prototypeBaseSeed,
-          generation: PuzzleGenerationConfig(maxSearchNodes: 1),
+  testWidgets(
+    'generation failure hides internal reason without manual fallback',
+    (tester) async {
+      final failedSession = PuzzleSession(
+        generator: PuzzleSequenceGenerator(
+          prototypeCatalogue,
+          const PuzzleSequenceConfig(
+            baseSeed: prototypeBaseSeed,
+            generation: PuzzleGenerationConfig(maxSearchNodes: 1),
+          ),
         ),
-      ),
-    );
-    addTearDown(failedSession.dispose);
-    final failure = failedSession.current;
-    await tester.pumpWidget(ArrowwordApp(session: failedSession));
-    expect(find.byType(PuzzleScreen), findsNothing);
-    expect(find.textContaining('Bulmaca oluşturulamadı'), findsOneWidget);
-    expect(find.textContaining(failure.failureReason!), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+      );
+      addTearDown(failedSession.dispose);
+      final failure = failedSession.current;
+      await tester.pumpWidget(ArrowwordApp(session: failedSession));
+      expect(find.byType(PuzzleScreen), findsNothing);
+      expect(find.textContaining('Bulmaca oluşturulamadı'), findsOneWidget);
+      expect(find.textContaining(failure.failureReason!), findsNothing);
+      expect(find.textContaining('Lütfen tekrar deneyin'), findsOneWidget);
+      expect(
+        tester.widget<MaterialApp>(find.byType(MaterialApp)).title,
+        'Arrowword',
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

@@ -457,12 +457,16 @@ void main() {
       final current = n.current;
       final d = await daily(
         generator: (_) =>
-            DailyPuzzleGeneration.failure('Günün bulmacası oluşturulamadı.'),
+            DailyPuzzleGeneration.failure('INTERNAL_SEARCH_BUDGET_FAILURE'),
       );
       await tester.pumpWidget(ArrowwordApp(session: n, dailySession: d));
       await tester.tap(find.byKey(const ValueKey('daily-action')));
       await tester.pumpAndSettle();
-      expect(find.text('Günün bulmacası oluşturulamadı.'), findsOneWidget);
+      expect(
+        find.text('Günün bulmacası oluşturulamadı. Lütfen tekrar deneyin.'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('INTERNAL_SEARCH'), findsNothing);
       expect(find.byType(PuzzleScreen), findsNothing);
       expect(n.current, same(current));
       expect(tester.takeException(), isNull);

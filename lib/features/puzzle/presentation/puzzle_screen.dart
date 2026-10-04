@@ -15,7 +15,7 @@ final puzzleRouteObserver = RouteObserver<ModalRoute<dynamic>>();
 class PuzzleScreen extends StatefulWidget {
   const PuzzleScreen({
     required this.puzzle,
-    this.title = 'Bulmaca Prototipi',
+    this.title = 'Bulmaca',
     this.subtitle,
     this.onNextPuzzle,
     this.initialLetters = const {},

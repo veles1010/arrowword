@@ -27,7 +27,7 @@ class ArrowwordApp extends StatelessWidget {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: settings ?? session,
     builder: (context, _) => MaterialApp(
-      title: 'Arrowword Prototipi',
+      title: 'Arrowword',
       debugShowCheckedModeBanner: false,
       navigatorObservers: [puzzleRouteObserver],
       theme: ArrowwordTheme.light(),
@@ -91,13 +91,13 @@ class _PuzzleFlow extends StatelessWidget {
               onCompleted: session.recognizeCompletion,
             )
           : Scaffold(
-              appBar: AppBar(title: const Text('Bulmaca Prototipi')),
+              appBar: AppBar(title: const Text('Bulmaca')),
               body: SafeArea(
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      'Bulmaca oluşturulamadı.\nPrototip üretim hatası:\n${generation.failureReason}',
+                      'Bulmaca oluşturulamadı. Lütfen tekrar deneyin.',
                     ),
                   ),
                 ),

@@ -13,6 +13,13 @@ class FakeShare implements DailyResultShareService {
   Future<void> share(String text, {Rect? origin}) async => texts.add(text);
 }
 
+class FailingShare implements DailyResultShareService {
+  @override
+  Future<void> share(String text, {Rect? origin}) async {
+    throw StateError('INTERNAL_SHARE_FAILURE');
+  }
+}
+
 DailyPuzzleScore result(String date) => DailyPuzzleScore.calculate(
   dateKey: date,
   dailyPuzzleId: dailyPuzzleId(date),
@@ -53,6 +60,30 @@ void main() {
     addTearDown(s.dispose);
     await pump(tester, DailyHistoryScreen(session: s));
     expect(find.text('Henüz tamamlanan günlük bulmaca yok.'), findsOneWidget);
+  });
+  testWidgets('sharing failure is friendly and permits another attempt', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      DailyResultScreen(
+        result: result('2026-10-04'),
+        shareService: FailingShare(),
+      ),
+    );
+    await tester.ensureVisible(find.text('Paylaş'));
+    await tester.tap(find.text('Paylaş'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Sonuç paylaşılamadı. Lütfen tekrar deneyin.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('INTERNAL_SHARE'), findsNothing);
+    expect(
+      tester.widget<OutlinedButton>(find.byType(OutlinedButton)).onPressed,
+      isNotNull,
+    );
+    expect(tester.takeException(), isNull);
   });
   testWidgets('newest first with details and no replay controls', (
     tester,

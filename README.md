@@ -73,7 +73,7 @@ unfinished Daily and retains immutable completed results by date. Yesterday's
 unfinished letters are not today's attempt. Completing across midnight keeps the
 attempt's original date (also shown while playing). Home rechecks the local date
 on resume and route return; Daily rechecks on entry. A completed Daily opens its result, with no second scored
-attempt or replay. Daily history is stored locally; a history UI is not included.
+attempt or replay. Daily history is stored locally and shown in Günlük Geçmiş.
 Invalid Daily entries are isolated where possible without touching normal saves.
 Normal progression remains schema 5. No backend/global leaderboard or cloud sync
 exists; a future online Daily may need a canonical server date/timezone.
@@ -125,13 +125,36 @@ and consent/UMP are not configured; this app is not monetization-release-ready.
 Hints are granted only for earned rewards, with no free fallback on ad failure.
 Configuration follows [Google's Flutter rewarded-ad guide](https://developers.google.com/admob/flutter/rewarded).
 
-## Unresolved release checklist
+## Release checklist
 
-- Confirm final name, identifiers and store metadata/icons/screenshots.
-- Configure production AdMob App IDs/unit IDs and UMP/consent before monetized release.
-- Replace Android's current debug signing fallback with externally supplied release signing.
-- Publish/configure a real privacy-policy URL (none is currently configured).
-- Verify iOS simulator/device, signing and archive on macOS/Xcode; unavailable on Windows.
+Implemented: core gameplay, persisted progression/scoring, replay best scores,
+Daily/history/streaks/sharing, statistics, themes, Settings/About and fluid navigation.
+
+Pending before store release:
+
+- Final icon and splash assets (current Flutter placeholders); final store metadata/screenshots.
+- Publish/configure an Arrowword privacy-policy URL; none is currently configured.
+- Supply Android release keystore/secrets locally. Debug signing is never used for release.
+- Verify iOS signing/team, simulator/device build and archive on macOS/Xcode.
+- Configure production AdMob App IDs/unit IDs and UMP/consent; decide required iOS privacy/ATT disclosures. Current ads remain TEST-only.
+
+Android release signing reads ignored `android/key.properties`: `storePassword`,
+`keyPassword`, `keyAlias`, `storeFile`. The file path may be absolute or relative
+to `android/`; use forward slashes on Windows. Supply your own existing release
+keystore, never commit credentials, and do not use the debug key. Missing/invalid
+configuration deliberately fails release tasks with an actionable error; debug
+builds need no release credentials. See [Android signing guidance](https://developer.android.com/studio/publish/app-signing).
+
+Version is currently `1.0.0+1`; About reads installed metadata dynamically.
+Every future store upload must use a monotonically increasing build number.
+
+Brand asset replacements: Android legacy `ic_launcher.png` at 48/72/96/144/192px
+(mdpi through xxxhdpi); add an adaptive icon with 108dp foreground/background
+layers and a monochrome layer where appropriate. iOS AppIcon slots are present:
+20pt (1x/2x/3x), 29pt (1x/2x/3x), 40pt (1x/2x/3x), 60pt (2x/3x),
+76pt (1x/2x), 83.5pt (2x), and 1024px marketing icon. Final splash design is
+still pending: Android launch backgrounds/Android 12+ splash configuration and
+iOS LaunchScreen with LaunchImage 1x/2x/3x assets. No final logo is supplied.
 
 Android uses Flutter SDK defaults (currently min 24 / target 36), with INTERNET
 and dependency-required network/ad permissions. iOS deployment target is 15.0.

@@ -18,12 +18,14 @@ class _Fixtures extends PuzzleSequenceGenerator {
   _Fixtures(this.fixture) : super(prototypeCatalogue, prototypeSequenceConfig);
   final SequencePuzzleResult fixture;
   bool failReplay = false;
+  int calls = 0;
 
   @override
   SequencePuzzleResult generateNext({
     required int puzzleIndex,
     List<PuzzleHistoryEntry> history = const [],
   }) {
+    calls++;
     if (failReplay) throw StateError('Replay generation failed');
     return SequencePuzzleResult(
       puzzleIndex: puzzleIndex,
@@ -435,10 +437,35 @@ void main() {
       await open(tester, session);
       expect(find.byType(PuzzleScreen), findsNothing);
       expect(find.textContaining('oluşturulamadı'), findsWidgets);
+      expect(find.textContaining('Replay generation failed'), findsNothing);
       expect(tester.takeException(), isNull);
       expect(session.current, same(current));
       expect(session.completedThrough, 1);
       expect(session.completedScores, isEmpty);
     },
   );
+  testWidgets('replay paints loading and reconstructs once per route', (
+    tester,
+  ) async {
+    final generator = _Fixtures(fixture);
+    final session = sessionAt(generator: generator);
+    final before = generator.calls;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PuzzleReplayScreen(
+          session: session,
+          puzzleIndex: 1,
+          rewardedAdFactory: () => FakeRewardedHintAdService(),
+        ),
+      ),
+    );
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(generator.calls, before);
+    await tester.pumpAndSettle();
+    expect(find.byType(PuzzleScreen), findsOneWidget);
+    expect(generator.calls, before + 1);
+    await tester.pump();
+    expect(generator.calls, before + 1);
+    expect(tester.takeException(), isNull);
+  });
 }

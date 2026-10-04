@@ -142,7 +142,7 @@ void main() {
     expect(find.text('Devam Et'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('next-generation failure shows Turkish prototype error', (
+  testWidgets('next-generation failure shows safe Turkish error', (
     tester,
   ) async {
     final session = PuzzleSession(
@@ -156,7 +156,8 @@ void main() {
     await tester.pump();
     expect(find.byType(PuzzleScreen), findsNothing);
     expect(find.textContaining('Bulmaca oluşturulamadı.'), findsOneWidget);
-    expect(find.textContaining('Test generation failure'), findsOneWidget);
+    expect(find.textContaining('Test generation failure'), findsNothing);
+    expect(find.textContaining('Lütfen tekrar deneyin'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

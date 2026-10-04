@@ -79,11 +79,11 @@ class _DailyPuzzleScreenState extends State<DailyPuzzleScreen> {
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: _loading
-                  ? const CircularProgressIndicator()
+                  ? const CircularProgressIndicator(
+                      semanticsLabel: 'Günün bulmacası hazırlanıyor',
+                    )
                   : Text(
-                      _error ??
-                          attempt?.generation.failureReason ??
-                          'Günün bulmacası açılamadı.',
+                      _error ?? 'Günün bulmacası oluşturulamadı. Lütfen tekrar deneyin.',
                     ),
             ),
           ),

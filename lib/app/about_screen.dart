@@ -9,8 +9,9 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-  late final Future<PackageInfo> _info =
-      (widget.loadInfo ?? PackageInfo.fromPlatform)();
+  late final Future<PackageInfo> _info = Future<PackageInfo>.sync(
+    widget.loadInfo ?? PackageInfo.fromPlatform,
+  );
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Hakkında')),

@@ -23,6 +23,29 @@ class _BadStore implements SettingsStore {
 }
 
 void main() {
+  for (final synchronous in [true, false]) {
+    testWidgets('About safely handles package info failure sync=$synchronous', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AboutScreen(
+            loadInfo: () {
+              if (synchronous) throw StateError('INTERNAL_PACKAGE_FAILURE');
+              return Future<PackageInfo>.error(
+                StateError('INTERNAL_PACKAGE_FAILURE'),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Arrowword'), findsOneWidget);
+      expect(find.text('Sürüm bilgisi alınamadı.'), findsOneWidget);
+      expect(find.textContaining('INTERNAL_PACKAGE'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
   test('malformed storage and write failures are safe', () async {
     final s = await AppSettings.restore(_BadStore());
     expect(s.themeMode, ThemeMode.system);
