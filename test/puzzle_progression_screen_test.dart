@@ -37,8 +37,20 @@ class _Fixtures extends PuzzleSequenceGenerator {
 }
 
 Finder _tile(int index) => find.byKey(ValueKey('puzzle-tile-$index'));
+Finder _score(int index) => find.byKey(ValueKey('puzzle-score-$index'));
 Finder _status(int index, String text) =>
     find.descendant(of: _tile(index), matching: find.text(text));
+
+Map<GridPosition, String> _solution(PuzzleSession session) => {
+  for (final answer in session.current.puzzle!.answers)
+    for (var i = 0; i < answer.length; i++)
+      answer.positions[i]: answer.solution[i],
+};
+
+void _complete(PuzzleSession session) {
+  session.updateLetters(_solution(session));
+  session.recognizeCompletion();
+}
 
 Future<void> _openProgression(
   WidgetTester tester,
@@ -75,9 +87,11 @@ void main() {
     (tester) async {
       await _openProgression(tester, sessionAt(1));
       expect(_status(1, 'Devam Et'), findsOneWidget);
+      expect(_score(1), findsNothing);
       for (var index = 2; index <= 6; index++) {
         await tester.ensureVisible(_tile(index));
         expect(_status(index, 'Kilitli'), findsOneWidget);
+        expect(_score(index), findsNothing);
         expect(
           find.descendant(
             of: _tile(index),
@@ -98,6 +112,9 @@ void main() {
     for (var index = 1; index <= 5; index++) {
       await tester.ensureVisible(_tile(index));
       expect(_status(index, 'Tamamlandı'), findsOneWidget);
+      expect(_score(index), findsNothing);
+      expect(_status(index, '0 puan'), findsNothing);
+      expect(_status(index, '-'), findsNothing);
       await tester.tap(_tile(index));
       await tester.pumpAndSettle();
       expect(find.byType(PuzzleScreen), findsNothing);
@@ -138,11 +155,7 @@ void main() {
     await _openProgression(tester, session);
     await tester.tap(_tile(1));
     await tester.pumpAndSettle();
-    final expected = <GridPosition, String>{
-      for (final answer in session.current.puzzle!.answers)
-        for (var i = 0; i < answer.length; i++)
-          answer.positions[i]: answer.solution[i],
-    };
+    final expected = _solution(session);
     for (final entry in expected.entries) {
       await tester.tap(
         find.byKey(ValueKey('cell-${entry.key.row}-${entry.key.column}')),
@@ -152,14 +165,31 @@ void main() {
     }
     await tester.pumpAndSettle();
     expect(session.completedThrough, 1);
+    final score = session.completedScores[1]!.score;
+    await tester.tap(find.text('Kapat'));
+    await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(_status(1, 'Devam Et'), findsOneWidget);
+    expect(_status(1, '$score puan'), findsOneWidget);
+    expect(_score(1), findsOneWidget);
+    await tester.tap(_tile(1));
+    await tester.pumpAndSettle();
+    expect(find.text('Sonraki Bulmaca'), findsOneWidget);
     await tester.tap(find.text('Sonraki Bulmaca'));
     await tester.pumpAndSettle();
     expect(session.current.puzzleIndex, 2);
     await tester.pageBack();
     await tester.pumpAndSettle();
     expect(_status(1, 'Tamamlandı'), findsOneWidget);
+    expect(_status(1, '$score puan'), findsOneWidget);
     expect(_status(2, 'Devam Et'), findsOneWidget);
+    expect(_score(2), findsNothing);
     expect(_status(3, 'Kilitli'), findsOneWidget);
+    expect(_score(3), findsNothing);
+    await tester.tap(_tile(1));
+    await tester.pumpAndSettle();
+    expect(find.byType(PuzzleScreen), findsNothing);
     await tester.ensureVisible(_tile(7));
     expect(_status(7, 'Kilitli'), findsOneWidget);
     expect(_tile(8), findsNothing);
@@ -170,14 +200,12 @@ void main() {
   ) async {
     final session = sessionAt(1);
     await _openProgression(tester, session);
-    session.updateLetters({
-      for (final answer in session.current.puzzle!.answers)
-        for (var i = 0; i < answer.length; i++)
-          answer.positions[i]: answer.solution[i],
-    });
-    session.recognizeCompletion();
+    _complete(session);
     await tester.pumpAndSettle();
     expect(session.completedThrough, 1);
+    expect(_status(1, 'Devam Et'), findsOneWidget);
+    expect(_status(1, '${session.currentScore!.score} puan'), findsOneWidget);
+    expect(_score(1), findsOneWidget);
     await tester.tap(_tile(1));
     await tester.pumpAndSettle();
     expect(find.byType(PuzzleScreen), findsOneWidget);
@@ -213,13 +241,78 @@ void main() {
     );
   });
 
-  testWidgets('high current index scrolls into view safely', (tester) async {
+  testWidgets('recreated session displays its persisted completed score', (
+    tester,
+  ) async {
+    final store = MemoryPuzzleProgressStore();
+    final session = sessionAt(1, store: store);
+    session.checkpointElapsed(const Duration(seconds: 75));
+    _complete(session);
+    final score = session.currentScore!.score;
+    await session.flush;
+    final restored = await PuzzleSession.restore(
+      store: store,
+      generator: _Fixtures(fixture),
+    );
+    addTearDown(restored.dispose);
+    await _openProgression(tester, restored);
+    expect(_status(1, 'Devam Et'), findsOneWidget);
+    expect(_status(1, '$score puan'), findsOneWidget);
+    expect(_score(1), findsOneWidget);
+    expect(_score(2), findsNothing);
+    expect(_score(3), findsNothing);
+    await tester.tap(_tile(1));
+    await tester.pumpAndSettle();
+    expect(find.byType(PuzzleScreen), findsOneWidget);
+    await tester.tap(find.text('Sonraki Bulmaca'));
+    await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(_status(1, 'Tamamlandı'), findsOneWidget);
+    expect(_status(1, '$score puan'), findsOneWidget);
+    expect(_score(2), findsNothing);
+    await tester.tap(_tile(1));
+    await tester.pumpAndSettle();
+    expect(find.byType(PuzzleScreen), findsNothing);
+  });
+
+  testWidgets('a genuine earned zero score is shown, not treated as legacy', (
+    tester,
+  ) async {
+    final session = sessionAt(1);
+    session.updateAttemptProgress(
+      _solution(session),
+      {},
+      const Duration(seconds: 600),
+      40,
+    );
+    session.recognizeCompletion();
+    expect(session.currentScore!.score, 0);
+    await _openProgression(tester, session);
+    expect(_status(1, '0 puan'), findsOneWidget);
+    expect(_score(1), findsOneWidget);
+  });
+
+  testWidgets('high scored current index fits compact enlarged text', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(320, 568));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await _openProgression(tester, sessionAt(1000));
+    tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    final session = sessionAt(1000);
+    _complete(session);
+    await _openProgression(tester, session);
     expect(_tile(1000).hitTestable(), findsOneWidget);
     expect(_status(1000, 'Devam Et'), findsOneWidget);
+    expect(_score(1000), findsOneWidget);
+    expect(
+      _status(1000, '${session.currentScore!.score} puan'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
+    tester.platformDispatcher.clearTextScaleFactorTestValue();
+    await tester.pumpAndSettle();
     await tester.tap(_tile(1000));
     await tester.pumpAndSettle();
     expect(find.byType(PuzzleScreen), findsOneWidget);

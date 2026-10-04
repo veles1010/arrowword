@@ -47,6 +47,7 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
     builder: (context, _) {
       final session = widget.session;
       final current = session.current.puzzleIndex;
+      final scores = session.completedScores;
       return Scaffold(
         appBar: AppBar(title: const Text('Bulmacalar')),
         body: SafeArea(
@@ -76,6 +77,7 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                     final index = offset + 1;
                     final isCurrent = index == current;
                     final completed = index <= session.completedThrough;
+                    final score = completed ? scores[index] : null;
                     final locked = index > current;
                     final colors = Theme.of(context).colorScheme;
                     final label = locked
@@ -85,7 +87,7 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                         : 'Tamamlandı';
                     return Semantics(
                       label:
-                          'Bulmaca $index, $label${isCurrent && completed ? ', tamamlandı' : ''}',
+                          'Bulmaca $index, $label${isCurrent && completed ? ', tamamlandı' : ''}${score == null ? '' : ', ${score.score} puan'}',
                       child: Material(
                         color: isCurrent
                             ? colors.primaryContainer
@@ -143,6 +145,23 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                                   label,
                                   style: const TextStyle(fontSize: 12),
                                 ),
+                                if (score != null)
+                                  Flexible(
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        '${score.score} puan',
+                                        key: ValueKey('puzzle-score-$index'),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: isCurrent
+                                              ? colors.onPrimaryContainer
+                                              : colors.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
