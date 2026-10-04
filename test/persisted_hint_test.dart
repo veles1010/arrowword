@@ -1,4 +1,5 @@
 import 'package:arrowword/app/app.dart';
+import 'package:arrowword/features/puzzle/ads/rewarded_hint_ad_service.dart';
 import 'package:arrowword/app/puzzle_progress_store.dart';
 import 'package:arrowword/app/puzzle_session.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
@@ -141,10 +142,15 @@ void main() {
         for (var i = 0; i < a.length; i++) a.positions[i]: a.solution[i],
     }..remove(p);
     s.updateLetters(solution);
-    await tester.pumpWidget(ArrowwordApp(session: s));
+    await tester.pumpWidget(
+      ArrowwordApp(
+        session: s,
+        rewardedAdFactory: FakeRewardedHintAdService.new,
+      ),
+    );
     await tester.tap(find.text('Devam Et'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Harf Aç'));
+    await tester.tap(find.text('Reklamla Harf Aç'));
     await tester.pumpAndSettle();
     await s.flush;
     expect(find.text('Bulmaca tamamlandı!'), findsOneWidget);

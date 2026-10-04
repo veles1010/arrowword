@@ -12,14 +12,16 @@ class PuzzleGame extends ChangeNotifier {
   Set<GridPosition> get revealedCells => Set.unmodifiable(_revealed);
   int get hintsUsed => _revealed.length;
   bool isHint(GridPosition p) => _revealed.contains(p);
-  bool get canRevealSelected =>
-      puzzle.answersAt(_selectedPosition).isNotEmpty &&
-      !isHint(_selectedPosition) &&
-      letterAt(_selectedPosition) != _expected(_selectedPosition);
-  bool revealSelectedLetter() {
-    if (!canRevealSelected) return false;
-    _revealed.add(_selectedPosition);
-    _letters[_selectedPosition] = _expected(_selectedPosition);
+  bool get canRevealSelected => canRevealAt(_selectedPosition);
+  bool canRevealAt(GridPosition position) =>
+      puzzle.answersAt(position).isNotEmpty &&
+      !isHint(position) &&
+      letterAt(position) != _expected(position);
+  bool revealSelectedLetter() => revealLetter(_selectedPosition);
+  bool revealLetter(GridPosition position) {
+    if (!canRevealAt(position)) return false;
+    _revealed.add(position);
+    _letters[position] = _expected(position);
     _showValidation = false;
     notifyListeners();
     return true;

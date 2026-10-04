@@ -66,7 +66,7 @@ generation takes longer. The <=2 wide-board and <=2 mean-attempt goals remain un
 - [Balanced/unbalanced v3 comparison](docs/catalogue_v3_stress.md)
 - [Three-way bounded-support comparison](docs/catalogue_v3_support_stress.md)
 
-No backend, downloaded dictionary, ads, payments, analytics or store infrastructure.
+No backend, downloaded dictionary, production ads, payments, analytics or store infrastructure.
 
 ```bash
 flutter pub get
@@ -80,3 +80,11 @@ dart run tool/inspect_content.dart --unbalanced # Developer-only v2-style select
 dart run tool/inspect_content.dart 7     # Shorter diagnostic sequence, same policy
 dart run tool/inspect_generator.dart 1 2 3 42 100 20261003 # Raw full-catalogue search
 ```
+
+## Rewarded hint development configuration
+
+“Reklamla Harf Aç” currently uses only Google's rewarded test ads. Sample app IDs
+and ad units are TEST-ONLY and must be replaced before release. Release AdMob IDs
+and consent/UMP are not configured; this app is not monetization-release-ready.
+Hints are granted only for earned rewards, with no free fallback on ad failure.
+Configuration follows [Google's Flutter rewarded-ad guide](https://developers.google.com/admob/flutter/rewarded).

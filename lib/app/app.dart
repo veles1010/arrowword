@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
+
 import 'puzzle_session.dart';
 import 'home_screen.dart';
 import '../features/puzzle/presentation/puzzle_screen.dart';
@@ -8,9 +10,11 @@ class ArrowwordApp extends StatelessWidget {
   const ArrowwordApp({
     required this.session,
     this.openPuzzleDirectly = false,
+    this.rewardedAdFactory,
     super.key,
   });
   final PuzzleSession session;
+  final RewardedHintAdService Function()? rewardedAdFactory;
   final bool openPuzzleDirectly;
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -21,17 +25,21 @@ class ArrowwordApp extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff426B5A)),
     ),
     home: openPuzzleDirectly || !session.current.isSuccess
-        ? _PuzzleFlow(session: session)
+        ? _PuzzleFlow(session: session, rewardedAdFactory: rewardedAdFactory)
         : HomeScreen(
             session: session,
-            puzzleBuilder: (_) => _PuzzleFlow(session: session),
+            puzzleBuilder: (_) => _PuzzleFlow(
+              session: session,
+              rewardedAdFactory: rewardedAdFactory,
+            ),
           ),
   );
 }
 
 class _PuzzleFlow extends StatelessWidget {
-  const _PuzzleFlow({required this.session});
+  const _PuzzleFlow({required this.session, this.rewardedAdFactory});
   final PuzzleSession session;
+  final RewardedHintAdService Function()? rewardedAdFactory;
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: session,
@@ -41,6 +49,7 @@ class _PuzzleFlow extends StatelessWidget {
           ? PuzzleScreen(
               key: ValueKey(generation.puzzle!.id),
               puzzle: generation.puzzle!,
+              rewardedAdFactory: rewardedAdFactory,
               title: 'Bulmaca ${generation.puzzleIndex}',
               onNextPuzzle: session.nextPuzzle,
               initialLetters: session.letters,

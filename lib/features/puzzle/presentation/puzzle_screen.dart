@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../domain/puzzle.dart';
 import '../domain/puzzle_game.dart';
+import '../ads/rewarded_hint_ad_service.dart';
 import 'board_size.dart';
 import 'clue_text.dart';
 
@@ -15,9 +16,11 @@ class PuzzleScreen extends StatefulWidget {
     this.onCompleted,
     this.initialRevealedCells = const {},
     this.onProgressChanged,
+    this.rewardedAdFactory,
     super.key,
   });
   final Puzzle puzzle;
+  final RewardedHintAdService Function()? rewardedAdFactory;
   final String title;
   final VoidCallback? onNextPuzzle;
   final Map<GridPosition, String> initialLetters;
@@ -36,9 +39,14 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   late final TextEditingController input;
   late final FocusNode focus;
   bool shown = false;
+  late final RewardedHintAdService ads;
+  bool requestingHint = false;
   @override
   void initState() {
     super.initState();
+    ads = widget.rewardedAdFactory?.call() ?? UnavailableHintAdService();
+    ads.addListener(_adChanged);
+    ads.preload();
     game = PuzzleGame(widget.puzzle)
       ..restoreLetters(
         widget.initialLetters,
@@ -56,10 +64,50 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
 
   @override
   void dispose() {
+    ads.removeListener(_adChanged);
+    ads.dispose();
     game.dispose();
     input.dispose();
     focus.dispose();
     super.dispose();
+  }
+
+  void _adChanged() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _requestHint() async {
+    final position = game.selectedPosition;
+    if (requestingHint || !game.canRevealAt(position)) return;
+    if (!ads.isReady) {
+      _adUnavailable();
+      ads.preload();
+      return;
+    }
+    setState(() => requestingHint = true);
+    focus.unfocus();
+    HintAdResult result;
+    try {
+      result = await ads.show();
+    } catch (_) {
+      result = HintAdResult.failed;
+    }
+    if (!mounted) return;
+    setState(() => requestingHint = false);
+    if (result == HintAdResult.earned) {
+      // Selection can change during an ad; grant only to the captured target.
+      game.revealLetter(position);
+    } else if (result != HintAdResult.dismissed) {
+      _adUnavailable();
+    }
+  }
+
+  void _adUnavailable() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Reklam şu anda hazır değil. Lütfen tekrar deneyin.'),
+      ),
+    );
   }
 
   void _changed() {
@@ -243,10 +291,19 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
                           ),
-                          onPressed: game.canRevealSelected
-                              ? game.revealSelectedLetter
+                          onPressed:
+                              game.canRevealSelected &&
+                                  !ads.isLoading &&
+                                  !requestingHint
+                              ? _requestHint
                               : null,
-                          child: const Text('Harf Aç'),
+                          child: Text(
+                            ads.isLoading
+                                ? 'Reklam hazırlanıyor'
+                                : 'Reklamla Harf Aç',
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
