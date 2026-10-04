@@ -45,21 +45,27 @@ class PuzzleProgress {
     required this.signature,
     required this.letters,
     int? completedThrough,
-    this.schemaVersion = 3,
+    this.schemaVersion = 4,
     this.history = const [],
+    this.revealedCells = const [],
+    this.hintsUsed = 0,
   }) : completedThrough = completedThrough ?? puzzleIndex - 1;
   final int catalogVersion, puzzleIndex;
   final int completedThrough, schemaVersion;
   final String puzzleId, signature;
   final Map<String, String> letters;
   final List<ProgressHistoryEntry> history;
+  final List<String> revealedCells;
+  final int hintsUsed;
   String encode() => jsonEncode({
     'schemaVersion': schemaVersion,
-    if (schemaVersion == 3)
+    if (schemaVersion >= 3)
       'history': [
         for (final entry in history)
           {'puzzleIndex': entry.puzzleIndex, 'wordIds': entry.wordIds},
       ],
+    if (schemaVersion >= 4) 'revealedCells': revealedCells,
+    if (schemaVersion >= 4) 'hintsUsed': hintsUsed,
     'completedThrough': completedThrough,
     'catalogVersion': catalogVersion,
     'puzzleIndex': puzzleIndex,
@@ -70,7 +76,7 @@ class PuzzleProgress {
   static PuzzleProgress decode(String record) {
     final data = jsonDecode(record);
     if (data is! Map ||
-        ![1, 2, 3].contains(data['schemaVersion']) ||
+        ![1, 2, 3, 4].contains(data['schemaVersion']) ||
         data['catalogVersion'] is! int ||
         data['puzzleIndex'] is! int ||
         data['puzzleIndex'] < 1 ||
@@ -90,7 +96,7 @@ class PuzzleProgress {
       throw const FormatException('Invalid completion progression');
     }
     final history = <ProgressHistoryEntry>[];
-    if (data['schemaVersion'] == 3) {
+    if (data['schemaVersion'] >= 3) {
       final stored = data['history'];
       if (stored is! List || stored.length != data['puzzleIndex'] - 1) {
         throw const FormatException('Missing contiguous puzzle history');
@@ -111,7 +117,22 @@ class PuzzleProgress {
         );
       }
     }
+    final revealed = <String>[];
+    if (data['schemaVersion'] >= 4) {
+      if (data['revealedCells'] is! List ||
+          (data['revealedCells'] as List).any((p) => p is! String) ||
+          data['hintsUsed'] is! int) {
+        throw const FormatException('Invalid hint progress');
+      }
+      revealed.addAll(List<String>.from(data['revealedCells']));
+      if (revealed.toSet().length != revealed.length ||
+          data['hintsUsed'] != revealed.length) {
+        throw const FormatException('Invalid hint count');
+      }
+    }
     return PuzzleProgress(
+      revealedCells: revealed,
+      hintsUsed: revealed.length,
       history: history,
       schemaVersion: data['schemaVersion'],
       completedThrough: completed,

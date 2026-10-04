@@ -8,6 +8,23 @@ class PuzzleGame extends ChangeNotifier {
   }
   final Puzzle puzzle;
   final Map<GridPosition, String> _letters = {};
+  final Set<GridPosition> _revealed = {};
+  Set<GridPosition> get revealedCells => Set.unmodifiable(_revealed);
+  int get hintsUsed => _revealed.length;
+  bool isHint(GridPosition p) => _revealed.contains(p);
+  bool get canRevealSelected =>
+      puzzle.answersAt(_selectedPosition).isNotEmpty &&
+      !isHint(_selectedPosition) &&
+      letterAt(_selectedPosition) != _expected(_selectedPosition);
+  bool revealSelectedLetter() {
+    if (!canRevealSelected) return false;
+    _revealed.add(_selectedPosition);
+    _letters[_selectedPosition] = _expected(_selectedPosition);
+    _showValidation = false;
+    notifyListeners();
+    return true;
+  }
+
   late PuzzleAnswer _activeAnswer;
   late GridPosition _selectedPosition;
   bool _showValidation = false;
@@ -15,12 +32,22 @@ class PuzzleGame extends ChangeNotifier {
   GridPosition get selectedPosition => _selectedPosition;
   String? letterAt(GridPosition p) => _letters[p];
   Map<GridPosition, String> get enteredLetters => Map.unmodifiable(_letters);
-  void restoreLetters(Map<GridPosition, String> letters) {
+  void restoreLetters(
+    Map<GridPosition, String> letters, {
+    Set<GridPosition> revealedCells = const {},
+  }) {
     _letters.clear();
+    _revealed.clear();
     for (final entry in letters.entries) {
       if (puzzle.answersAt(entry.key).isNotEmpty &&
           RegExp(r'^[A-Z]$').hasMatch(entry.value)) {
         _letters[entry.key] = entry.value;
+      }
+    }
+    for (final p in revealedCells) {
+      if (puzzle.answersAt(p).isNotEmpty) {
+        _revealed.add(p);
+        _letters[p] = _expected(p);
       }
     }
     notifyListeners();
@@ -49,6 +76,7 @@ class PuzzleGame extends ChangeNotifier {
   }
 
   void enterLetter(String s) {
+    if (isHint(_selectedPosition)) return;
     final l = s.toUpperCase();
     if (!RegExp(r'^[A-Z]$').hasMatch(l)) return;
     _letters[_selectedPosition] = l;
@@ -61,13 +89,14 @@ class PuzzleGame extends ChangeNotifier {
   }
 
   void backspace() {
+    if (isHint(_selectedPosition)) return;
     if (_letters.containsKey(_selectedPosition)) {
       _letters.remove(_selectedPosition);
     } else {
       final i = _activeAnswer.positions.indexOf(_selectedPosition);
       if (i > 0) {
         _selectedPosition = _activeAnswer.positions[i - 1];
-        _letters.remove(_selectedPosition);
+        if (!isHint(_selectedPosition)) _letters.remove(_selectedPosition);
       }
     }
     _showValidation = false;
@@ -81,7 +110,7 @@ class PuzzleGame extends ChangeNotifier {
 
   bool get isComplete => _positions.every((p) => _letters[p] == _expected(p));
   void reset() {
-    _letters.clear();
+    _letters.removeWhere((p, _) => !isHint(p));
     _showValidation = false;
     _activeAnswer = puzzle.answers.first;
     _selectedPosition = _activeAnswer.positions.first;

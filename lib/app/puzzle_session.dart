@@ -39,6 +39,9 @@ class PuzzleSession extends ChangeNotifier {
   final PuzzleProgressStore? store;
   Map<GridPosition, String> _letters = {};
   Map<GridPosition, String> get letters => Map.unmodifiable(_letters);
+  Set<GridPosition> _revealed = {};
+  Set<GridPosition> get revealedCells => Set.unmodifiable(_revealed);
+  int get hintsUsed => _revealed.length;
   int _completedThrough = 0;
   int get completedThrough => _completedThrough;
   Future<void> _writes = Future.value();
@@ -65,7 +68,7 @@ class PuzzleSession extends ChangeNotifier {
           throw const FormatException('Incompatible catalogue');
         }
         final prefix = <PuzzleHistoryEntry>[];
-        if (saved.schemaVersion == 3) {
+        if (saved.schemaVersion >= 3) {
           final byId = {
             for (final word in generator.catalogue.entries)
               word.id: word.solution,
@@ -86,7 +89,7 @@ class PuzzleSession extends ChangeNotifier {
             );
           }
         }
-        final session = saved.schemaVersion == 3
+        final session = saved.schemaVersion >= 3
             ? PuzzleSession._fromHistory(
                 generator,
                 store,
@@ -119,8 +122,21 @@ class PuzzleSession extends ChangeNotifier {
           }
         }
         session._letters = restored;
+        for (final coordinate in saved.revealedCells) {
+          final match = RegExp(r'^(\d+),(\d+)$').firstMatch(coordinate);
+          if (match == null) continue;
+          final row = int.tryParse(match[1]!), column = int.tryParse(match[2]!);
+          if (row == null || column == null) continue;
+          final p = GridPosition(row, column);
+          if (session.current.puzzle!.answersAt(p).isNotEmpty) {
+            session._revealed.add(p);
+          }
+        }
+        for (final p in session._revealed) {
+          session._letters[p] = session._expected(p);
+        }
         session._completedThrough = saved.completedThrough;
-        if (saved.schemaVersion < 3) {
+        if (saved.schemaVersion < 4) {
           session._save();
           await session.flush;
         }
@@ -138,6 +154,18 @@ class PuzzleSession extends ChangeNotifier {
   }
 
   void updateLetters(Map<GridPosition, String> letters) {
+    updateProgress(letters, _revealed);
+  }
+
+  String _expected(GridPosition p) {
+    final answer = current.puzzle!.answersAt(p).first;
+    return answer.solution[answer.positions.indexOf(p)];
+  }
+
+  void updateProgress(
+    Map<GridPosition, String> letters,
+    Set<GridPosition> revealed,
+  ) {
     if (!current.isSuccess) return;
     final valid = {
       for (final entry in letters.entries)
@@ -145,8 +173,16 @@ class PuzzleSession extends ChangeNotifier {
             RegExp(r'^[A-Z]$').hasMatch(entry.value))
           entry.key: entry.value,
     };
-    if (mapEquals(_letters, valid)) return;
+    final locks = {
+      for (final p in revealed)
+        if (current.puzzle!.answersAt(p).isNotEmpty) p,
+    };
+    for (final p in locks) {
+      valid[p] = _expected(p);
+    }
+    if (mapEquals(_letters, valid) && setEquals(_revealed, locks)) return;
     _letters = valid;
+    _revealed = locks;
     _save();
   }
 
@@ -159,9 +195,13 @@ class PuzzleSession extends ChangeNotifier {
       signature: current.generation!.metrics!.structuralSignature,
       letters: {
         for (final entry in _letters.entries)
-          '${entry.key.row},${entry.key.column}': entry.value,
+          if (!_revealed.contains(entry.key))
+            '${entry.key.row},${entry.key.column}': entry.value,
       },
       completedThrough: completedThrough,
+      revealedCells: [for (final p in _revealed) '${p.row},${p.column}']
+        ..sort(),
+      hintsUsed: hintsUsed,
       history: [
         for (final entry in _history.where(
           (entry) => entry.puzzleIndex < current.puzzleIndex,
@@ -196,6 +236,7 @@ class PuzzleSession extends ChangeNotifier {
       // Next is offered by gameplay only after recognized completion.
       _completedThrough = previousIndex;
       _letters = {};
+      _revealed = {};
       _save();
     }
     notifyListeners();

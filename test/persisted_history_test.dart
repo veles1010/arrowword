@@ -110,7 +110,7 @@ void main() {
     expect(migrated.completedThrough, 2);
     expect(migrated.letters.values, ['A']);
     final saved = PuzzleProgress.decode(store.record!);
-    expect(saved.schemaVersion, 3);
+    expect(saved.schemaVersion, 4);
     expect(saved.history.map((h) => h.puzzleIndex), [1]);
     expect(saved.history.single.wordIds, hasLength(10));
     expect(jsonDecode(store.record!)['history'].single.keys.toSet(), {

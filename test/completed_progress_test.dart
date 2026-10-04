@@ -106,7 +106,7 @@ void main() {
       expect(s.current.puzzleIndex, index);
       expect(s.completedThrough, index - 1);
       expect(s.letters.values, ['A']);
-      expect(jsonDecode(store.record!)['schemaVersion'], 3);
+      expect(jsonDecode(store.record!)['schemaVersion'], 4);
       expect(PuzzleProgress.decode(store.record!).letters, data['letters']);
     }
     final old = jsonDecode(record(1)) as Map<String, dynamic>;

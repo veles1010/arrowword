@@ -44,7 +44,8 @@ class _PuzzleFlow extends StatelessWidget {
               title: 'Bulmaca ${generation.puzzleIndex}',
               onNextPuzzle: session.nextPuzzle,
               initialLetters: session.letters,
-              onLettersChanged: session.updateLetters,
+              initialRevealedCells: session.revealedCells,
+              onProgressChanged: session.updateProgress,
               onCompleted: session.recognizeCompletion,
             )
           : Scaffold(

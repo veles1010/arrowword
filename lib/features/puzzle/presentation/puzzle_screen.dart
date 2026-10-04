@@ -13,6 +13,8 @@ class PuzzleScreen extends StatefulWidget {
     this.initialLetters = const {},
     this.onLettersChanged,
     this.onCompleted,
+    this.initialRevealedCells = const {},
+    this.onProgressChanged,
     super.key,
   });
   final Puzzle puzzle;
@@ -21,6 +23,9 @@ class PuzzleScreen extends StatefulWidget {
   final Map<GridPosition, String> initialLetters;
   final ValueChanged<Map<GridPosition, String>>? onLettersChanged;
   final VoidCallback? onCompleted;
+  final Set<GridPosition> initialRevealedCells;
+  final void Function(Map<GridPosition, String>, Set<GridPosition>)?
+  onProgressChanged;
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
 }
@@ -34,7 +39,11 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   @override
   void initState() {
     super.initState();
-    game = PuzzleGame(widget.puzzle)..restoreLetters(widget.initialLetters);
+    game = PuzzleGame(widget.puzzle)
+      ..restoreLetters(
+        widget.initialLetters,
+        revealedCells: widget.initialRevealedCells,
+      );
     game.addListener(_changed);
     input = TextEditingController(text: s);
     focus = FocusNode();
@@ -54,6 +63,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   }
 
   void _changed() {
+    widget.onProgressChanged?.call(game.enteredLetters, game.revealedCells);
     widget.onLettersChanged?.call(game.enteredLetters);
     if (mounted) {
       setState(() {});
@@ -220,13 +230,31 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                     children: [
                       Expanded(
                         child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                          ),
                           onPressed: game.reset,
                           child: const Text('Temizle'),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                          ),
+                          onPressed: game.canRevealSelected
+                              ? game.revealSelectedLetter
+                              : null,
+                          child: const Text('Harf Aç'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
                         child: FilledButton(
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                          ),
                           onPressed: game.check,
                           child: const Text('Kontrol Et'),
                         ),
@@ -345,6 +373,7 @@ class _Cell extends StatelessWidget {
             game.letterAt(p) ?? '',
             style: Theme.of(c).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
+              decoration: game.isHint(p) ? TextDecoration.underline : null,
               color: bad
                   ? cs.onErrorContainer
                   : selected
