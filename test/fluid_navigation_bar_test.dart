@@ -8,6 +8,7 @@ void main() {
     WidgetTester tester, {
     bool dark = false,
     double scale = 1,
+    bool reducedMotion = false,
   }) async {
     final commits = <int>[];
     var index = 0;
@@ -15,7 +16,10 @@ void main() {
       MaterialApp(
         theme: dark ? ArrowwordTheme.dark() : ArrowwordTheme.light(),
         home: MediaQuery(
-          data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+          data: MediaQueryData(
+            textScaler: TextScaler.linear(scale),
+            disableAnimations: reducedMotion,
+          ),
           child: Scaffold(
             bottomNavigationBar: StatefulBuilder(
               builder: (context, setState) => FluidNavigationBar(
@@ -45,7 +49,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         tester.getTopLeft(getPill()).dx,
-        closeTo(tester.getTopLeft(item(i)).dx, .01),
+        closeTo(tester.getTopLeft(item(i)).dx + 4, .01),
       );
       expect(
         tester
@@ -101,13 +105,13 @@ void main() {
     await tester.drag(item(0), const Offset(-2000, 0));
     await tester.pumpAndSettle();
     expect(commits.last, 0);
-    expect(tester.getTopLeft(getPill()).dx, tester.getTopLeft(item(0)).dx);
+    expect(tester.getTopLeft(getPill()).dx, tester.getTopLeft(item(0)).dx + 4);
     await tester.drag(item(0), const Offset(2000, 0));
     await tester.pumpAndSettle();
     expect(commits.last, 3);
     expect(
       tester.getTopLeft(getPill()).dx,
-      closeTo(tester.getTopLeft(item(3)).dx, .01),
+      closeTo(tester.getTopLeft(item(3)).dx + 4, .01),
     );
   });
   testWidgets('tiny movement and vertical intent do not switch', (
@@ -139,4 +143,28 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(tester.getSize(item(0)).height, greaterThanOrEqualTo(48));
   });
+  testWidgets(
+    'very large labels expand safely and reduced motion settles immediately',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await pump(tester, scale: 3, reducedMotion: true);
+      await tester.tap(item(3));
+      await tester.pump();
+      expect(
+        tester.getTopLeft(getPill()).dx,
+        closeTo(tester.getTopLeft(item(3)).dx + 4, .01),
+      );
+      expect(
+        tester.getSize(getPill()).width,
+        tester.getSize(item(3)).width - 8,
+      );
+      for (final label in shellLabels) {
+        expect(find.text(label), findsOneWidget);
+      }
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

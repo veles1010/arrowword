@@ -86,6 +86,66 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets(
+    'haptic fires once per actual tap/release commit and never on preview/startup',
+    (tester) async {
+      final (session, daily) = await pump(tester);
+      var haptics = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AppShell(
+            session: session,
+            dailySession: daily,
+            puzzleBuilder: (_) => const SizedBox(),
+            selectionHaptic: () async {
+              haptics++;
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(haptics, 0);
+      await tab(tester, 1);
+      expect(haptics, 1);
+      await tab(tester, 1);
+      expect(haptics, 1);
+      final item = find.byKey(const ValueKey('navigation-1'));
+      final width = tester.getSize(item).width;
+      final gesture = await tester.startGesture(tester.getCenter(item));
+      await gesture.moveBy(Offset(width * .7, 0));
+      await tester.pump();
+      expect(haptics, 1);
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(haptics, 2);
+      final second = find.byKey(const ValueKey('navigation-2'));
+      final back = await tester.startGesture(tester.getCenter(second));
+      await back.moveBy(Offset(width * .3, 0));
+      await tester.pump();
+      await back.up();
+      await tester.pumpAndSettle();
+      expect(haptics, 2);
+    },
+  );
+  testWidgets('unsupported haptics fail silently without changing navigation', (
+    tester,
+  ) async {
+    final (session, daily) = await pump(tester);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AppShell(
+          session: session,
+          dailySession: daily,
+          puzzleBuilder: (_) => const SizedBox(),
+          selectionHaptic: () => throw UnsupportedError('haptics'),
+        ),
+      ),
+    );
+    await tab(tester, 2);
+    expect(find.byType(DailyLandingScreen), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('startup Home is clean; all tabs and system Back work', (
     tester,
   ) async {

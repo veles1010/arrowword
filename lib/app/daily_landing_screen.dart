@@ -53,13 +53,13 @@ class _DailyLandingScreenState extends State<DailyLandingScreen> {
                 builder: (context, _) {
                   final result = daily.todayResult;
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
                           'Günün Bulmacası',
-                          style: Theme.of(context).textTheme.headlineSmall,
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 12),
                         Text(formatDailyDate(daily.dateKey)),
