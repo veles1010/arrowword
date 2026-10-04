@@ -97,6 +97,61 @@ void main() {
     return s;
   }
 
+  testWidgets('Daily statistics stay separate from normal best scores', (
+    tester,
+  ) async {
+    final d = await daily(
+      store: MemoryDailyProgressStore(
+        DailyProgress(
+          results: {
+            '2026-10-03': DailyPuzzleScore.calculate(
+              dateKey: '2026-10-03',
+              dailyPuzzleId: dailyPuzzleId('2026-10-03'),
+              elapsedSeconds: 80,
+              hintsUsed: 0,
+              wrongChecks: 0,
+            ),
+          },
+        ).encode(),
+      ),
+    );
+    final n = normal();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StatisticsScreen(session: n, dailySession: d),
+      ),
+    );
+    final scroll = find.byType(SingleChildScrollView);
+    await tester.drag(scroll, const Offset(0, -1500));
+    await tester.pumpAndSettle();
+    expect(find.text('Günlük tamamlanan'), findsOneWidget);
+    expect(find.text('Güncel seri'), findsOneWidget);
+    expect(d.statistics.currentStreak, 1);
+    expect(d.statistics.totalCompletedDaily, 1);
+    n.recordReplayScore(
+      CompletedPuzzleScore.calculate(
+        puzzleIndex: 1,
+        elapsedSeconds: 60,
+        hintsUsed: 0,
+        wrongChecks: 0,
+      ),
+    );
+    await tester.pump();
+    expect(d.statistics.currentStreak, 1);
+    expect(d.statistics.totalCompletedDaily, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('unfinished Daily exposes no sharing or history replay', (
+    tester,
+  ) async {
+    final d = await daily();
+    await tester.pumpWidget(MaterialApp(home: DailyPuzzleScreen(session: d)));
+    await tester.pumpAndSettle();
+    expect(find.text('Paylaş'), findsNothing);
+    expect(find.byType(PuzzleScreen), findsOneWidget);
+  });
+
   Future<void> open(
     WidgetTester tester,
     DailySession s, {

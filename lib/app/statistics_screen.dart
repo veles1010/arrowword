@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'player_statistics.dart';
 import 'puzzle_session.dart';
+import 'daily_session.dart';
 
 class StatisticsScreen extends StatelessWidget {
-  const StatisticsScreen({required this.session, super.key});
+  const StatisticsScreen({required this.session, this.dailySession, super.key});
 
   final PuzzleSession session;
+  final DailySession? dailySession;
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('İstatistikler')),
     body: SafeArea(
       child: ListenableBuilder(
-        listenable: session,
+        listenable: Listenable.merge([session, ?dailySession]),
         builder: (context, _) {
           final statistics = PlayerStatistics.fromScores(
             completedThrough: session.completedThrough,
@@ -107,6 +109,41 @@ class StatisticsScreen extends StatelessWidget {
                           'Puanı olmayan eski tamamlamalar yalnızca tamamlanan bulmaca sayısına eklenir.',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
+                        if (dailySession != null) ...[
+                          const SizedBox(height: 24),
+                          Text(
+                            'Günlük bulmacalar',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: gap,
+                            runSpacing: gap,
+                            children: [
+                              _StatisticCard(
+                                width: cardWidth,
+                                icon: Icons.today,
+                                label: 'Günlük tamamlanan',
+                                value:
+                                    '${dailySession!.statistics.totalCompletedDaily}',
+                              ),
+                              _StatisticCard(
+                                width: cardWidth,
+                                icon: Icons.local_fire_department_outlined,
+                                label: 'Güncel seri',
+                                value:
+                                    '${dailySession!.statistics.currentStreak}',
+                              ),
+                              _StatisticCard(
+                                width: cardWidth,
+                                icon: Icons.calendar_month,
+                                label: 'En uzun seri',
+                                value:
+                                    '${dailySession!.statistics.longestStreak}',
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     );
                   },

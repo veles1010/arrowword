@@ -4,6 +4,9 @@ import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
 import '../features/puzzle/presentation/puzzle_completion.dart';
 import '../features/puzzle/presentation/puzzle_screen.dart';
 import 'daily_session.dart';
+import 'daily_history_screen.dart';
+import 'daily_statistics.dart';
+import 'daily_result_share_service.dart';
 
 /// Daily owns a separate resumable attempt, never a normal progression session.
 class DailyPuzzleScreen extends StatefulWidget {
@@ -11,12 +14,14 @@ class DailyPuzzleScreen extends StatefulWidget {
     required this.session,
     this.rewardedAdFactory,
     this.monotonicNow,
+    this.shareService,
     super.key,
   });
 
   final DailySession session;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final Duration Function()? monotonicNow;
+  final DailyResultShareService? shareService;
 
   @override
   State<DailyPuzzleScreen> createState() => _DailyPuzzleScreenState();
@@ -55,7 +60,13 @@ class _DailyPuzzleScreenState extends State<DailyPuzzleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_completed != null) return DailyResultScreen(result: _completed!);
+    if (_completed != null) {
+      return DailyResultScreen(
+        result: _completed!,
+        session: widget.session,
+        shareService: widget.shareService,
+      );
+    }
     final attempt = _attempt;
     if (_loading ||
         _error != null ||
@@ -111,9 +122,46 @@ String _details(DailyPuzzleScore result) => puzzleResultDetails(
 );
 
 /// An immutable completed Daily is a result, not a second scored play attempt.
-class DailyResultScreen extends StatelessWidget {
-  const DailyResultScreen({required this.result, super.key});
+class DailyResultScreen extends StatefulWidget {
+  const DailyResultScreen({
+    required this.result,
+    this.session,
+    this.shareService,
+    super.key,
+  });
   final DailyPuzzleScore result;
+  final DailySession? session;
+  final DailyResultShareService? shareService;
+
+  @override
+  State<DailyResultScreen> createState() => _DailyResultScreenState();
+}
+
+class _DailyResultScreenState extends State<DailyResultScreen> {
+  bool _sharing = false;
+  int get _streak => widget.session?.statistics.currentStreak ?? 0;
+
+  Future<void> _share(BuildContext buttonContext) async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
+    final box = buttonContext.findRenderObject() as RenderBox?;
+    try {
+      await (widget.shareService ?? NativeDailyResultShareService()).share(
+        dailyResultShareText(widget.result, streak: _streak),
+        origin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sonuç paylaşılamadı. Lütfen tekrar deneyin.'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -129,9 +177,27 @@ class DailyResultScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
-            Text(result.dateKey),
+            Text(formatDailyDate(widget.result.dateKey)),
             const SizedBox(height: 20),
-            Text(_details(result)),
+            Text(_details(widget.result)),
+            if (_streak > 0) Text('$_streak günlük seri'),
+            Builder(
+              builder: (buttonContext) => OutlinedButton.icon(
+                onPressed: _sharing ? null : () => _share(buttonContext),
+                icon: const Icon(Icons.share_outlined),
+                label: const Text('Paylaş'),
+              ),
+            ),
+            if (widget.session != null)
+              TextButton(
+                onPressed: () => Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        DailyHistoryScreen(session: widget.session!),
+                  ),
+                ),
+                child: const Text('Günlük Geçmiş'),
+              ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(),

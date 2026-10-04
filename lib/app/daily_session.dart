@@ -5,6 +5,7 @@ import '../features/puzzle/data/prototype_puzzle.dart';
 import '../features/puzzle/domain/puzzle.dart';
 import '../features/puzzle/generation/puzzle_metrics.dart';
 import 'daily_progress_store.dart';
+import 'daily_statistics.dart';
 
 export 'daily_progress_store.dart' show DailyPuzzleScore;
 
@@ -29,6 +30,8 @@ class DailySession extends ChangeNotifier {
   String get dateKey => _dateKey;
   DailyPuzzleScore? get todayResult => _results[_dateKey];
   Map<String, DailyPuzzleScore> get results => Map.unmodifiable(_results);
+  DailyStatistics get statistics =>
+      DailyStatistics.fromDates(_results.keys, today: _dateKey);
   Future<void> get flush => _writes;
   bool get hasCurrentProgress =>
       todayResult == null && _savedAttempt?.dateKey == _dateKey;

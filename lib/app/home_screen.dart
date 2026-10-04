@@ -7,6 +7,8 @@ import 'puzzle_progression_screen.dart';
 import 'daily_session.dart';
 import 'daily_puzzle_screen.dart';
 import 'statistics_screen.dart';
+import 'daily_history_screen.dart';
+import 'daily_statistics.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -41,7 +43,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _openStatistics() async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
-        builder: (_) => StatisticsScreen(session: widget.session),
+        builder: (_) => StatisticsScreen(
+          session: widget.session,
+          dailySession: widget.dailySession,
+        ),
       ),
     );
     _returnedHome();
@@ -177,7 +182,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               Text(
                 result != null
                     ? 'Bugün tamamlandı · ${result.score} puan'
-                    : daily.dateKey,
+                    : formatDailyDate(daily.dateKey),
+              ),
+              if (daily.statistics.currentStreak > 0)
+                Text('${daily.statistics.currentStreak} günlük seri'),
+              TextButton(
+                onPressed: () async {
+                  await Navigator.of(context).push<void>(
+                    MaterialPageRoute(
+                      builder: (_) => DailyHistoryScreen(session: daily),
+                    ),
+                  );
+                  _returnedHome();
+                },
+                child: const Text('Günlük Geçmiş'),
               ),
               Align(
                 alignment: Alignment.centerRight,

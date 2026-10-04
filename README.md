@@ -58,6 +58,9 @@ The canonical `YYYY-MM-DD`, seed version 1 and catalogue version 3 form a stable
 and unchanged bounded generator produce the same board independently of player
 progress. At most two deterministic candidates prefer phone-readable geometry.
 The board is generated lazily on Daily entry, never while building Home.
+Günlük Geçmiş lists completed local Daily results without replay. Daily streaks
+are derived from completed calendar dates (today or yesterday keeps a streak alive).
+Completed Daily results can be shared as plain Turkish text without answers.
 
 A separate `arrowword.daily_progress` schema-1 payload resumes the most recent
 unfinished Daily and retains immutable completed results by date. Yesterday's
