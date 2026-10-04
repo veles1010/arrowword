@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'puzzle_session.dart';
+import 'puzzle_progression_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -19,6 +20,18 @@ class _HomeScreenState extends State<HomeScreen> {
     await Navigator.of(context)
         .push<void>(MaterialPageRoute(builder: widget.puzzleBuilder));
     // Letter changes do not notify the whole session. Refresh the CTA on return.
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _openProgression() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => PuzzleProgressionScreen(
+          session: widget.session,
+          puzzleBuilder: widget.puzzleBuilder,
+        ),
+      ),
+    );
     if (mounted) setState(() {});
   }
 
@@ -54,6 +67,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   FilledButton(
                     onPressed: session.current.isSuccess ? _openPuzzle : null,
                     child: Text(fresh ? 'Başla' : 'Devam Et'),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: _openProgression,
+                    child: const Text('Bulmacalar'),
                   ),
                 ],
               ),
