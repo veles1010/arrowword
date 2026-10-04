@@ -20,6 +20,7 @@ class ArrowwordApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     title: 'Arrowword Prototipi',
     debugShowCheckedModeBanner: false,
+    navigatorObservers: [puzzleRouteObserver],
     theme: ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff426B5A)),
@@ -54,7 +55,27 @@ class _PuzzleFlow extends StatelessWidget {
               onNextPuzzle: session.nextPuzzle,
               initialLetters: session.letters,
               initialRevealedCells: session.revealedCells,
-              onProgressChanged: session.updateProgress,
+              initialElapsed: session.elapsed,
+              initialWrongChecks: session.wrongChecks,
+              attemptFinalized:
+                  session.completedThrough >= generation.puzzleIndex,
+              onAttemptProgress: (letters, revealed, elapsed, checks) {
+                if (session.current.puzzleIndex == generation.puzzleIndex) {
+                  session.updateAttemptProgress(
+                    letters,
+                    revealed,
+                    elapsed,
+                    checks,
+                  );
+                }
+              },
+              onElapsedChanged: (elapsed) {
+                // Disposal of N happens after the session has already moved to N+1.
+                if (session.current.puzzleIndex == generation.puzzleIndex) {
+                  session.checkpointElapsed(elapsed);
+                }
+              },
+              scoreResult: () => session.currentScore,
               onCompleted: session.recognizeCompletion,
             )
           : Scaffold(

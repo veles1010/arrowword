@@ -3,7 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'puzzle.dart';
 
 class PuzzleGame extends ChangeNotifier {
-  PuzzleGame(this.puzzle) : _activeAnswer = puzzle.answers.first {
+  PuzzleGame(this.puzzle, {int wrongChecks = 0})
+    : assert(wrongChecks >= 0),
+      _wrongChecks = wrongChecks,
+      _activeAnswer = puzzle.answers.first {
     _selectedPosition = _activeAnswer.positions.first;
   }
   final Puzzle puzzle;
@@ -30,6 +33,8 @@ class PuzzleGame extends ChangeNotifier {
   late PuzzleAnswer _activeAnswer;
   late GridPosition _selectedPosition;
   bool _showValidation = false;
+  int _wrongChecks;
+  int get wrongChecks => _wrongChecks;
   PuzzleAnswer get activeAnswer => _activeAnswer;
   GridPosition get selectedPosition => _selectedPosition;
   String? letterAt(GridPosition p) => _letters[p];
@@ -106,6 +111,10 @@ class PuzzleGame extends ChangeNotifier {
   }
 
   void check() {
+    if (!isComplete &&
+        _letters.entries.any((e) => e.value != _expected(e.key))) {
+      _wrongChecks++;
+    }
     _showValidation = true;
     notifyListeners();
   }

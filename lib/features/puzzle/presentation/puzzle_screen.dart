@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../domain/puzzle.dart';
 import '../domain/puzzle_game.dart';
+import '../domain/puzzle_score.dart';
 import '../ads/rewarded_hint_ad_service.dart';
 import 'board_size.dart';
 import 'clue_text.dart';
+import 'active_play_timer.dart';
+
+final puzzleRouteObserver = RouteObserver<ModalRoute<dynamic>>();
 
 class PuzzleScreen extends StatefulWidget {
   const PuzzleScreen({
@@ -17,9 +22,29 @@ class PuzzleScreen extends StatefulWidget {
     this.initialRevealedCells = const {},
     this.onProgressChanged,
     this.rewardedAdFactory,
+    this.initialElapsed = Duration.zero,
+    this.initialWrongChecks = 0,
+    this.attemptFinalized = false,
+    this.onAttemptProgress,
+    this.onElapsedChanged,
+    this.scoreResult,
+    this.monotonicNow,
     super.key,
   });
   final Puzzle puzzle;
+  final Duration initialElapsed;
+  final int initialWrongChecks;
+  final bool attemptFinalized;
+  final Duration Function()? monotonicNow;
+  final void Function(
+    Map<GridPosition, String>,
+    Set<GridPosition>,
+    Duration,
+    int,
+  )?
+  onAttemptProgress;
+  final ValueChanged<Duration>? onElapsedChanged;
+  final CompletedPuzzleScore? Function()? scoreResult;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final String title;
   final VoidCallback? onNextPuzzle;
@@ -33,7 +58,8 @@ class PuzzleScreen extends StatefulWidget {
   State<PuzzleScreen> createState() => _PuzzleScreenState();
 }
 
-class _PuzzleScreenState extends State<PuzzleScreen> {
+class _PuzzleScreenState extends State<PuzzleScreen>
+    with WidgetsBindingObserver, RouteAware {
   static const s = '\u200B';
   late final PuzzleGame game;
   late final TextEditingController input;
@@ -41,18 +67,36 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   bool shown = false;
   late final RewardedHintAdService ads;
   bool requestingHint = false;
+  late final ActivePlayTimer timer;
+  late Map<GridPosition, String> _lastLetters;
+  late Set<GridPosition> _lastRevealed;
+  late int _lastChecks;
+  bool _appActive = true;
+  bool _routeVisible = true;
+  ModalRoute<dynamic>? _route;
   @override
   void initState() {
     super.initState();
     ads = widget.rewardedAdFactory?.call() ?? UnavailableHintAdService();
     ads.addListener(_adChanged);
     ads.preload();
-    game = PuzzleGame(widget.puzzle)
+    game = PuzzleGame(widget.puzzle, wrongChecks: widget.initialWrongChecks)
       ..restoreLetters(
         widget.initialLetters,
         revealedCells: widget.initialRevealedCells,
       );
     game.addListener(_changed);
+    _lastLetters = game.enteredLetters;
+    _lastRevealed = game.revealedCells;
+    _lastChecks = game.wrongChecks;
+    timer = ActivePlayTimer(
+      initialElapsed: widget.initialElapsed,
+      monotonicNow: widget.monotonicNow,
+    );
+    _appActive =
+        WidgetsBinding.instance.lifecycleState == null ||
+        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+    WidgetsBinding.instance.addObserver(this);
     input = TextEditingController(text: s);
     focus = FocusNode();
     if (game.isComplete) {
@@ -64,12 +108,72 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
 
   @override
   void dispose() {
+    timer.pause();
+    widget.onElapsedChanged?.call(timer.elapsed);
+    puzzleRouteObserver.unsubscribe(this);
+    WidgetsBinding.instance.removeObserver(this);
     ads.removeListener(_adChanged);
     ads.dispose();
     game.dispose();
     input.dispose();
     focus.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route != _route) {
+      puzzleRouteObserver.unsubscribe(this);
+      _route = route;
+      if (route != null) puzzleRouteObserver.subscribe(this, route);
+    }
+    _syncTimer();
+  }
+
+  void _syncTimer() {
+    if (_appActive &&
+        _routeVisible &&
+        !requestingHint &&
+        !shown &&
+        !game.isComplete &&
+        !widget.attemptFinalized) {
+      timer.resume();
+    } else {
+      timer.pause();
+      widget.onElapsedChanged?.call(timer.elapsed);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _appActive = state == AppLifecycleState.resumed;
+    _syncTimer();
+  }
+
+  @override
+  void didPush() {
+    _routeVisible = true;
+    _syncTimer();
+  }
+
+  @override
+  void didPopNext() {
+    _routeVisible = true;
+    _syncTimer();
+  }
+
+  @override
+  void didPushNext() {
+    _routeVisible = false;
+    _syncTimer();
+  }
+
+  @override
+  void didPop() {
+    _routeVisible = false;
+    _syncTimer();
   }
 
   void _adChanged() {
@@ -85,6 +189,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       return;
     }
     setState(() => requestingHint = true);
+    _syncTimer();
     focus.unfocus();
     HintAdResult result;
     try {
@@ -100,6 +205,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     } else if (result != HintAdResult.dismissed) {
       _adUnavailable();
     }
+    _syncTimer();
   }
 
   void _adUnavailable() {
@@ -111,6 +217,21 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   }
 
   void _changed() {
+    if (game.isComplete) timer.pause();
+    if (!mapEquals(_lastLetters, game.enteredLetters) ||
+        !setEquals(_lastRevealed, game.revealedCells) ||
+        _lastChecks != game.wrongChecks ||
+        (game.isComplete && !shown)) {
+      widget.onAttemptProgress?.call(
+        game.enteredLetters,
+        game.revealedCells,
+        timer.elapsed,
+        game.wrongChecks,
+      );
+      _lastLetters = game.enteredLetters;
+      _lastRevealed = game.revealedCells;
+      _lastChecks = game.wrongChecks;
+    }
     widget.onProgressChanged?.call(game.enteredLetters, game.revealedCells);
     widget.onLettersChanged?.call(game.enteredLetters);
     if (mounted) {
@@ -127,7 +248,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
             barrierDismissible: false,
             builder: (c) => AlertDialog(
               title: const Text('Bulmaca tamamlandı!'),
-              content: const Text('Tüm harfler doğru.'),
+              content: _completionContent(),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(c),
@@ -156,6 +277,22 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
         }
       });
     }
+  }
+
+  Widget _completionContent() {
+    final score = widget.scoreResult?.call();
+    if (score == null) {
+      return Text(
+        widget.scoreResult == null
+            ? 'Tüm harfler doğru.'
+            : 'Bu bulmaca puanlama sistemi eklenmeden önce tamamlandı.',
+      );
+    }
+    final minutes = (score.elapsedSeconds ~/ 60).toString().padLeft(2, '0');
+    final seconds = (score.elapsedSeconds % 60).toString().padLeft(2, '0');
+    return Text(
+      'Puan: ${score.score}\nSüre: $minutes:$seconds\nİpucu: ${score.hintsUsed}\nHatalı kontrol: ${score.wrongChecks}',
+    );
   }
 
   void _input(String t) {

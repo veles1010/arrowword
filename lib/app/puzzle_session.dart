@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../features/puzzle/data/prototype_puzzle.dart';
 import '../features/puzzle/sequence/puzzle_sequence.dart';
 import '../features/puzzle/domain/puzzle.dart';
+import '../features/puzzle/domain/puzzle_score.dart';
 import 'puzzle_progress_store.dart';
 
 /// Progression with optional current-board storage and in-memory full history.
@@ -42,6 +43,15 @@ class PuzzleSession extends ChangeNotifier {
   Set<GridPosition> _revealed = {};
   Set<GridPosition> get revealedCells => Set.unmodifiable(_revealed);
   int get hintsUsed => _revealed.length;
+  Duration _elapsed = Duration.zero;
+  Duration get elapsed => _elapsed;
+  int _wrongChecks = 0;
+  int get wrongChecks => _wrongChecks;
+  final Map<int, CompletedPuzzleScore> _completedScores = {};
+  Map<int, CompletedPuzzleScore> get completedScores =>
+      Map.unmodifiable(_completedScores);
+  CompletedPuzzleScore? get currentScore =>
+      _completedScores[current.puzzleIndex];
   int _completedThrough = 0;
   int get completedThrough => _completedThrough;
   Future<void> _writes = Future.value();
@@ -136,7 +146,10 @@ class PuzzleSession extends ChangeNotifier {
           session._letters[p] = session._expected(p);
         }
         session._completedThrough = saved.completedThrough;
-        if (saved.schemaVersion < 4) {
+        session._elapsed = Duration(milliseconds: saved.elapsedMilliseconds);
+        session._wrongChecks = saved.wrongChecks;
+        session._completedScores.addAll(saved.completedScores);
+        if (saved.schemaVersion < 5) {
           session._save();
           await session.flush;
         }
@@ -166,7 +179,44 @@ class PuzzleSession extends ChangeNotifier {
     Map<GridPosition, String> letters,
     Set<GridPosition> revealed,
   ) {
+    if (_setProgress(letters, revealed)) _save();
+  }
+
+  /// One snapshot per letter/check mutation, including accumulated active time.
+  void updateAttemptProgress(
+    Map<GridPosition, String> letters,
+    Set<GridPosition> revealed,
+    Duration elapsed,
+    int wrongChecks,
+  ) {
     if (!current.isSuccess) return;
+    final progressChanged = _setProgress(letters, revealed);
+    final statsChanged = _setAttempt(elapsed, wrongChecks);
+    if (progressChanged || statsChanged) _save();
+  }
+
+  bool _setAttempt(Duration elapsed, int wrongChecks) {
+    if (completedThrough >= current.puzzleIndex) return false;
+    if (elapsed.isNegative || wrongChecks < 0) {
+      throw ArgumentError('Invalid attempt');
+    }
+    final nextElapsed = elapsed > _elapsed ? elapsed : _elapsed;
+    final nextChecks = wrongChecks > _wrongChecks ? wrongChecks : _wrongChecks;
+    if (nextElapsed == _elapsed && nextChecks == _wrongChecks) return false;
+    _elapsed = nextElapsed;
+    _wrongChecks = nextChecks;
+    return true;
+  }
+
+  void checkpointElapsed(Duration elapsed) {
+    if (current.isSuccess && _setAttempt(elapsed, _wrongChecks)) _save();
+  }
+
+  bool _setProgress(
+    Map<GridPosition, String> letters,
+    Set<GridPosition> revealed,
+  ) {
+    if (!current.isSuccess) return false;
     final valid = {
       for (final entry in letters.entries)
         if (current.puzzle!.answersAt(entry.key).isNotEmpty &&
@@ -180,10 +230,10 @@ class PuzzleSession extends ChangeNotifier {
     for (final p in locks) {
       valid[p] = _expected(p);
     }
-    if (mapEquals(_letters, valid) && setEquals(_revealed, locks)) return;
+    if (mapEquals(_letters, valid) && setEquals(_revealed, locks)) return false;
     _letters = valid;
     _revealed = locks;
-    _save();
+    return true;
   }
 
   void _save() {
@@ -202,6 +252,9 @@ class PuzzleSession extends ChangeNotifier {
       revealedCells: [for (final p in _revealed) '${p.row},${p.column}']
         ..sort(),
       hintsUsed: hintsUsed,
+      elapsedMilliseconds: _elapsed.inMilliseconds,
+      wrongChecks: _wrongChecks,
+      completedScores: completedScores,
       history: [
         for (final entry in _history.where(
           (entry) => entry.puzzleIndex < current.puzzleIndex,
@@ -237,6 +290,8 @@ class PuzzleSession extends ChangeNotifier {
       _completedThrough = previousIndex;
       _letters = {};
       _revealed = {};
+      _elapsed = Duration.zero;
+      _wrongChecks = 0;
       _save();
     }
     notifyListeners();
@@ -250,6 +305,15 @@ class PuzzleSession extends ChangeNotifier {
         if (_letters[answer.positions[i]] != answer.solution[i]) return;
       }
     }
+    _completedScores.putIfAbsent(
+      current.puzzleIndex,
+      () => CompletedPuzzleScore.calculate(
+        puzzleIndex: current.puzzleIndex,
+        elapsedSeconds: _elapsed.inSeconds,
+        hintsUsed: hintsUsed,
+        wrongChecks: _wrongChecks,
+      ),
+    );
     _completedThrough = current.puzzleIndex;
     _save();
     notifyListeners();

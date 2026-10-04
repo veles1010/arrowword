@@ -136,7 +136,7 @@ void main() {
     'schema, compatibility and identity mismatch never apply old letters',
     () async {
       for (final mutation in [
-        {'schemaVersion': 5},
+        {'schemaVersion': 6},
         {'catalogVersion': 2},
         {'puzzleId': 'different'},
         {'signature': 'different'},

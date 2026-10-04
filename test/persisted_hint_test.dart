@@ -64,7 +64,7 @@ void main() {
       g.revealSelectedLetter();
       await s.flush;
       final saved = PuzzleProgress.decode(store.record!);
-      expect(saved.schemaVersion, 4);
+      expect(saved.schemaVersion, 5);
       expect(saved.revealedCells, ['${p.row},${p.column}']);
       expect(saved.hintsUsed, 1);
       expect(saved.letters, isEmpty);
@@ -107,7 +107,7 @@ void main() {
     expect(s.hintsUsed, 0);
     expect(s.revealedCells, isEmpty);
     final saved = PuzzleProgress.decode(store.record!);
-    expect(saved.schemaVersion, 4);
+    expect(saved.schemaVersion, 5);
     expect(saved.history, hasLength(1));
     expect(saved.completedThrough, 1);
   });
@@ -159,5 +159,8 @@ void main() {
     final saved = PuzzleProgress.decode(store.record!);
     expect(saved.completedThrough, 1);
     expect(saved.hintsUsed, 1);
+    expect(s.currentScore!.hintsUsed, 1);
+    expect(s.currentScore!.score, 1300);
+    expect(saved.completedScores[1]!.score, 1300);
   });
 }
