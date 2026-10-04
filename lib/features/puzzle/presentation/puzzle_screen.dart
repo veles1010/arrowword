@@ -12,6 +12,7 @@ class PuzzleScreen extends StatefulWidget {
     this.onNextPuzzle,
     this.initialLetters = const {},
     this.onLettersChanged,
+    this.onCompleted,
     super.key,
   });
   final Puzzle puzzle;
@@ -19,6 +20,7 @@ class PuzzleScreen extends StatefulWidget {
   final VoidCallback? onNextPuzzle;
   final Map<GridPosition, String> initialLetters;
   final ValueChanged<Map<GridPosition, String>>? onLettersChanged;
+  final VoidCallback? onCompleted;
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
 }
@@ -57,6 +59,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       setState(() {});
     }
     if (game.isComplete && !shown) {
+      widget.onCompleted?.call();
       shown = true;
       focus.unfocus();
       WidgetsBinding.instance.addPostFrameCallback((_) {

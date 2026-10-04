@@ -45,6 +45,7 @@ class _PuzzleFlow extends StatelessWidget {
               onNextPuzzle: session.nextPuzzle,
               initialLetters: session.letters,
               onLettersChanged: session.updateLetters,
+              onCompleted: session.recognizeCompletion,
             )
           : Scaffold(
               appBar: AppBar(title: const Text('Bulmaca Prototipi')),

@@ -136,7 +136,7 @@ void main() {
     'schema, compatibility and identity mismatch never apply old letters',
     () async {
       for (final mutation in [
-        {'schemaVersion': 2},
+        {'schemaVersion': 4},
         {'catalogVersion': 2},
         {'puzzleId': 'different'},
         {'signature': 'different'},
@@ -228,6 +228,9 @@ void main() {
       await tester.tap(find.text('Devam Et'));
       await tester.pumpAndSettle();
       expect(find.text('Bulmaca tamamlandı!'), findsOneWidget);
+      await restored.flush;
+      expect(restored.completedThrough, 1);
+      expect(PuzzleProgress.decode(store.record!).completedThrough, 1);
       await tester.tap(find.text('Sonraki Bulmaca'));
       await tester.pumpAndSettle();
       await restored.flush;

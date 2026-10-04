@@ -31,9 +31,11 @@ missing lifetime history is an explicit failure. IDs are now
 seed arithmetic. Old-version history is rejected, not migrated. Disabled balancing
 is developer-only comparison mode and retains cooldown-window history semantics.
 Completion advances to the next puzzle. A single versioned local shared_preferences
-record saves only the current index/identity and entered letters. Restore replays
-Puzzle 1..N to rebuild history; high indices may need a later startup-performance
-optimization. Corrupt/incompatible progress resets safely to empty Puzzle 1.
+schema-3 record saves current index/identity, letters, contiguous completion and
+compact historical puzzle indices/content IDs (no old grids). Normal restore
+resolves and validates that prefix, then generates only the current puzzle.
+Schema-1/2 saves replay Puzzle 1..N once to migrate; later launches avoid replay.
+Corrupt/incompatible progress resets safely to empty Puzzle 1.
 Debug ARROWWORD_PUZZLE_INDEX launches ignore and never overwrite player progress.
 No statistics, archives, selection UI or cloud state are stored.
 

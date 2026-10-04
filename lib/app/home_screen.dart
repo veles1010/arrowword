@@ -27,7 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
     listenable: widget.session,
     builder: (context, _) {
       final session = widget.session;
-      final fresh = session.current.puzzleIndex == 1 && session.letters.isEmpty;
+      final fresh =
+          session.current.puzzleIndex == 1 &&
+          session.letters.isEmpty &&
+          session.completedThrough == 0;
       return Scaffold(
         appBar: AppBar(title: const Text('Arrowword')),
         body: SafeArea(
@@ -42,6 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 24),
+                  Text(
+                    session.completedThrough == 0
+                        ? 'Henüz tamamlanan bulmaca yok'
+                        : '${session.completedThrough} bulmaca tamamlandı',
+                  ),
+                  const SizedBox(height: 16),
                   FilledButton(
                     onPressed: session.current.isSuccess ? _openPuzzle : null,
                     child: Text(fresh ? 'Başla' : 'Devam Et'),

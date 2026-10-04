@@ -24,15 +24,27 @@ class PuzzleSession extends ChangeNotifier {
       _generate(index);
       if (!current.isSuccess) break;
     }
+    _completedThrough = current.puzzleIndex - 1;
   }
   final PuzzleSequenceGenerator _generator;
+  PuzzleSession._fromHistory(
+    this._generator,
+    this.store,
+    int index,
+    List<PuzzleHistoryEntry> prefix,
+  ) {
+    _history.addAll(prefix);
+    _generate(index);
+  }
   final PuzzleProgressStore? store;
   Map<GridPosition, String> _letters = {};
   Map<GridPosition, String> get letters => Map.unmodifiable(_letters);
+  int _completedThrough = 0;
+  int get completedThrough => _completedThrough;
   Future<void> _writes = Future.value();
   Future<void> get flush => _writes;
 
-  /// Restoring index N replays 1..N once; high indices may need optimization later.
+  /// Schema 3 generates only N; old schemas replay 1..N once to migrate.
   static Future<PuzzleSession> restore({
     required PuzzleProgressStore store,
     PuzzleSequenceGenerator? generator,
@@ -52,11 +64,40 @@ class PuzzleSession extends ChangeNotifier {
         if (saved.catalogVersion != generator.catalogue.version) {
           throw const FormatException('Incompatible catalogue');
         }
-        final session = PuzzleSession(
-          generator: generator,
-          startIndex: saved.puzzleIndex,
-          store: store,
-        );
+        final prefix = <PuzzleHistoryEntry>[];
+        if (saved.schemaVersion == 3) {
+          final byId = {
+            for (final word in generator.catalogue.entries)
+              word.id: word.solution,
+          };
+          for (final entry in saved.history) {
+            if (entry.wordIds.length !=
+                    generator.config.generation.targetAnswerCount ||
+                entry.wordIds.toSet().length != entry.wordIds.length ||
+                entry.wordIds.any((id) => !byId.containsKey(id))) {
+              throw const FormatException('Invalid historical catalogue IDs');
+            }
+            prefix.add(
+              PuzzleHistoryEntry(
+                puzzleIndex: entry.puzzleIndex,
+                catalogVersion: saved.catalogVersion,
+                words: {for (final id in entry.wordIds) id: byId[id]!},
+              ),
+            );
+          }
+        }
+        final session = saved.schemaVersion == 3
+            ? PuzzleSession._fromHistory(
+                generator,
+                store,
+                saved.puzzleIndex,
+                prefix,
+              )
+            : PuzzleSession(
+                generator: generator,
+                startIndex: saved.puzzleIndex,
+                store: store,
+              );
         if (!session.current.isSuccess ||
             session.current.puzzle!.id != saved.puzzleId ||
             session.current.generation!.metrics!.structuralSignature !=
@@ -78,6 +119,11 @@ class PuzzleSession extends ChangeNotifier {
           }
         }
         session._letters = restored;
+        session._completedThrough = saved.completedThrough;
+        if (saved.schemaVersion < 3) {
+          session._save();
+          await session.flush;
+        }
         return session;
       }
     } catch (error) {
@@ -115,6 +161,16 @@ class PuzzleSession extends ChangeNotifier {
         for (final entry in _letters.entries)
           '${entry.key.row},${entry.key.column}': entry.value,
       },
+      completedThrough: completedThrough,
+      history: [
+        for (final entry in _history.where(
+          (entry) => entry.puzzleIndex < current.puzzleIndex,
+        ))
+          ProgressHistoryEntry(
+            puzzleIndex: entry.puzzleIndex,
+            wordIds: entry.words.keys.toList()..sort(),
+          ),
+      ],
     ).encode();
     // Serialize snapshots so a slow older write cannot overwrite newer progress.
     _writes = _writes.then((_) => store!.write(record)).catchError((
@@ -134,11 +190,27 @@ class PuzzleSession extends ChangeNotifier {
 
   void nextPuzzle() {
     if (!current.isSuccess) return;
+    final previousIndex = current.puzzleIndex;
     _generate(current.puzzleIndex + 1);
     if (current.isSuccess) {
+      // Next is offered by gameplay only after recognized completion.
+      _completedThrough = previousIndex;
       _letters = {};
       _save();
     }
+    notifyListeners();
+  }
+
+  /// Called by gameplay's completion recognition, never by ordinary letter saves.
+  void recognizeCompletion() {
+    if (!current.isSuccess || completedThrough >= current.puzzleIndex) return;
+    for (final answer in current.puzzle!.answers) {
+      for (var i = 0; i < answer.length; i++) {
+        if (_letters[answer.positions[i]] != answer.solution[i]) return;
+      }
+    }
+    _completedThrough = current.puzzleIndex;
+    _save();
     notifyListeners();
   }
 }

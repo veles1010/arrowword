@@ -44,12 +44,23 @@ class PuzzleProgress {
     required this.puzzleId,
     required this.signature,
     required this.letters,
-  });
+    int? completedThrough,
+    this.schemaVersion = 3,
+    this.history = const [],
+  }) : completedThrough = completedThrough ?? puzzleIndex - 1;
   final int catalogVersion, puzzleIndex;
+  final int completedThrough, schemaVersion;
   final String puzzleId, signature;
   final Map<String, String> letters;
+  final List<ProgressHistoryEntry> history;
   String encode() => jsonEncode({
-    'schemaVersion': 1,
+    'schemaVersion': schemaVersion,
+    if (schemaVersion == 3)
+      'history': [
+        for (final entry in history)
+          {'puzzleIndex': entry.puzzleIndex, 'wordIds': entry.wordIds},
+      ],
+    'completedThrough': completedThrough,
     'catalogVersion': catalogVersion,
     'puzzleIndex': puzzleIndex,
     'puzzleId': puzzleId,
@@ -59,7 +70,7 @@ class PuzzleProgress {
   static PuzzleProgress decode(String record) {
     final data = jsonDecode(record);
     if (data is! Map ||
-        data['schemaVersion'] != 1 ||
+        ![1, 2, 3].contains(data['schemaVersion']) ||
         data['catalogVersion'] is! int ||
         data['puzzleIndex'] is! int ||
         data['puzzleIndex'] < 1 ||
@@ -69,7 +80,41 @@ class PuzzleProgress {
         data['letters'] is! Map) {
       throw const FormatException('Invalid puzzle progress');
     }
+    final completed = data['schemaVersion'] == 1
+        ? data['puzzleIndex'] - 1
+        : data['completedThrough'];
+    if (completed is! int ||
+        completed < 0 ||
+        completed < data['puzzleIndex'] - 1 ||
+        completed > data['puzzleIndex']) {
+      throw const FormatException('Invalid completion progression');
+    }
+    final history = <ProgressHistoryEntry>[];
+    if (data['schemaVersion'] == 3) {
+      final stored = data['history'];
+      if (stored is! List || stored.length != data['puzzleIndex'] - 1) {
+        throw const FormatException('Missing contiguous puzzle history');
+      }
+      for (var i = 0; i < stored.length; i++) {
+        final entry = stored[i];
+        if (entry is! Map ||
+            entry['puzzleIndex'] != i + 1 ||
+            entry['wordIds'] is! List ||
+            (entry['wordIds'] as List).any((id) => id is! String)) {
+          throw const FormatException('Invalid puzzle history entry');
+        }
+        history.add(
+          ProgressHistoryEntry(
+            puzzleIndex: i + 1,
+            wordIds: List<String>.from(entry['wordIds']),
+          ),
+        );
+      }
+    }
     return PuzzleProgress(
+      history: history,
+      schemaVersion: data['schemaVersion'],
+      completedThrough: completed,
       catalogVersion: data['catalogVersion'],
       puzzleIndex: data['puzzleIndex'],
       puzzleId: data['puzzleId'],
@@ -81,4 +126,13 @@ class PuzzleProgress {
       },
     );
   }
+}
+
+class ProgressHistoryEntry {
+  const ProgressHistoryEntry({
+    required this.puzzleIndex,
+    required this.wordIds,
+  });
+  final int puzzleIndex;
+  final List<String> wordIds;
 }

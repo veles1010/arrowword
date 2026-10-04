@@ -79,6 +79,12 @@ void main() {
           puzzleId: second.puzzle!.id,
           signature: second.generation!.metrics!.structuralSignature,
           letters: {'${p.row},${p.column}': 'B'},
+          history: [
+            ProgressHistoryEntry(
+              puzzleIndex: 1,
+              wordIds: results.first.puzzle!.answers.map((a) => a.id).toList(),
+            ),
+          ],
         ).encode(),
       );
       final session = await PuzzleSession.restore(
