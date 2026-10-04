@@ -4,6 +4,7 @@ import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
 
 import 'puzzle_session.dart';
 import 'home_screen.dart';
+import 'daily_session.dart';
 import '../features/puzzle/presentation/puzzle_screen.dart';
 
 class ArrowwordApp extends StatelessWidget {
@@ -11,9 +12,11 @@ class ArrowwordApp extends StatelessWidget {
     required this.session,
     this.openPuzzleDirectly = false,
     this.rewardedAdFactory,
+    this.dailySession,
     super.key,
   });
   final PuzzleSession session;
+  final DailySession? dailySession;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final bool openPuzzleDirectly;
   @override
@@ -29,6 +32,8 @@ class ArrowwordApp extends StatelessWidget {
         ? _PuzzleFlow(session: session, rewardedAdFactory: rewardedAdFactory)
         : HomeScreen(
             session: session,
+            dailySession: dailySession,
+            rewardedAdFactory: rewardedAdFactory,
             puzzleBuilder: (_) => _PuzzleFlow(
               session: session,
               rewardedAdFactory: rewardedAdFactory,

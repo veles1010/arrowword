@@ -63,12 +63,24 @@ void main() {
     );
   });
 
-  test('malformed statistics and completed scores are rejected', () {
+  test('malformed required attempt statistics are rejected', () {
     for (final mutation in <void Function(Map<String, dynamic>)>[
       (data) => data['elapsedMilliseconds'] = -1,
       (data) => data['elapsedMilliseconds'] = 1.5,
       (data) => data['wrongChecks'] = -1,
       (data) => data['wrongChecks'] = '2',
+    ]) {
+      final data = jsonDecode(progress().encode()) as Map<String, dynamic>;
+      mutation(data);
+      expect(
+        () => PuzzleProgress.decode(jsonEncode(data)),
+        throwsFormatException,
+      );
+    }
+  });
+
+  test('malformed optional scores are dropped without losing progress', () {
+    for (final mutation in <void Function(Map<String, dynamic>)>[
       (data) => data['completedScores'] = [],
       (data) => data['completedScores'] = {
         '02': (data['completedScores'] as Map)['2'],
@@ -85,10 +97,17 @@ void main() {
     ]) {
       final data = jsonDecode(progress().encode()) as Map<String, dynamic>;
       mutation(data);
-      expect(
-        () => PuzzleProgress.decode(jsonEncode(data)),
-        throwsFormatException,
-      );
+      final restored = PuzzleProgress.decode(jsonEncode(data));
+      expect(restored.completedScores, isEmpty);
+      expect(restored.needsRewrite, isTrue);
+      expect(restored.puzzleIndex, 2);
+      expect(restored.completedThrough, 2);
+      expect(restored.letters, progress().letters);
+      expect(restored.revealedCells, progress().revealedCells);
+      expect(restored.hintsUsed, 1);
+      expect(restored.elapsedMilliseconds, 12345);
+      expect(restored.wrongChecks, 2);
+      expect(restored.history.single.wordIds, ['word']);
     }
   });
 }

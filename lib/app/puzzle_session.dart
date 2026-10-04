@@ -149,7 +149,7 @@ class PuzzleSession extends ChangeNotifier {
         session._elapsed = Duration(milliseconds: saved.elapsedMilliseconds);
         session._wrongChecks = saved.wrongChecks;
         session._completedScores.addAll(saved.completedScores);
-        if (saved.schemaVersion < 5) {
+        if (saved.schemaVersion < 5 || saved.needsRewrite) {
           session._save();
           await session.flush;
         }
@@ -276,6 +276,76 @@ class PuzzleSession extends ChangeNotifier {
   final List<PuzzleHistoryEntry> _history = [];
   late SequencePuzzleResult current;
   List<PuzzleHistoryEntry> get history => List.unmodifiable(_history);
+
+  /// Reconstruct one completed board without changing normal progression.
+  SequencePuzzleResult buildReplayPuzzle(int index) {
+    SequencePuzzleResult failure(String reason) => SequencePuzzleResult(
+      puzzleIndex: index,
+      seed: index >= 1 && index <= 0xffffffff
+          ? derivePuzzleSeed(_generator.config.baseSeed, index)
+          : current.seed,
+      catalogVersion: current.catalogVersion,
+      pool: current.pool,
+      failureReason: reason,
+    );
+    if (!current.isSuccess ||
+        index < 1 ||
+        index > completedThrough ||
+        index >= current.puzzleIndex) {
+      return failure('Bu bulmaca tekrar oynamak için uygun değil.');
+    }
+    try {
+      final prefix = _history
+          .where((entry) => entry.puzzleIndex < index)
+          .toList();
+      if (prefix.length != index - 1 ||
+          prefix.asMap().entries.any(
+            (entry) =>
+                entry.value.puzzleIndex != entry.key + 1 ||
+                entry.value.catalogVersion != current.catalogVersion,
+          )) {
+        return failure('Bulmaca geçmişi doğrulanamadı.');
+      }
+      final historical = _history.where((entry) => entry.puzzleIndex == index);
+      if (historical.length != 1) {
+        return failure('Bulmaca geçmişi bulunamadı.');
+      }
+      final result = _generator.generateNext(
+        puzzleIndex: index,
+        history: List.unmodifiable(prefix),
+      );
+      if (!result.isSuccess) {
+        return failure('Bulmaca tekrar oluşturulamadı.');
+      }
+      final reconstructed = result.toHistory();
+      if (reconstructed.puzzleIndex != index ||
+          reconstructed.catalogVersion != historical.single.catalogVersion ||
+          !mapEquals(reconstructed.words, historical.single.words)) {
+        return failure('Bulmaca geçmişi ile oluşturulan bulmaca eşleşmedi.');
+      }
+      return result;
+    } catch (_) {
+      return failure('Bulmaca tekrar oluşturulamadı.');
+    }
+  }
+
+  /// Store only an improved completed replay; the current attempt is untouched.
+  bool recordReplayScore(CompletedPuzzleScore result) {
+    final index = result.puzzleIndex;
+    if (!current.isSuccess ||
+        index < 1 ||
+        index > completedThrough ||
+        index >= current.puzzleIndex ||
+        result.scoringVersion != 1 ||
+        !isBetterPuzzleScore(result, _completedScores[index])) {
+      return false;
+    }
+    _completedScores[index] = result;
+    _save();
+    notifyListeners();
+    return true;
+  }
+
   void _generate(int index) {
     current = _generator.generateNext(puzzleIndex: index, history: history);
     if (current.isSuccess) _history.add(current.toHistory());

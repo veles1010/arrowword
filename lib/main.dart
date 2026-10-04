@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'app/app.dart';
 import 'app/development_puzzle.dart';
 import 'app/puzzle_session.dart';
+import 'app/daily_session.dart';
+import 'app/daily_progress_store.dart';
 import 'app/puzzle_progress_store.dart';
 import 'features/puzzle/ads/google_rewarded_hint_ad_service.dart';
 
@@ -27,9 +29,14 @@ Future<void> main() async {
     store: SharedPreferencesPuzzleProgressStore(),
     developmentIndex: startIndex,
   );
+  // Only metadata is read here. The Daily board is generated lazily on entry.
+  final daily = startIndex == null
+      ? await DailySession.restore(store: SharedPreferencesDailyProgressStore())
+      : null;
   runApp(
     ArrowwordApp(
       session: session,
+      dailySession: daily,
       openPuzzleDirectly: startIndex != null,
       rewardedAdFactory: createHintAdService,
     ),

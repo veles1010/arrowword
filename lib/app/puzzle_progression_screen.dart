@@ -2,18 +2,23 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import 'puzzle_session.dart';
+import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
 
-/// Read-only linear progression; only the current puzzle can be opened.
+import 'puzzle_session.dart';
+import 'puzzle_replay_screen.dart';
+
+/// Linear progression, with isolated replays of completed historical puzzles.
 class PuzzleProgressionScreen extends StatefulWidget {
   const PuzzleProgressionScreen({
     required this.session,
     required this.puzzleBuilder,
+    this.rewardedAdFactory,
     super.key,
   });
 
   final PuzzleSession session;
   final WidgetBuilder puzzleBuilder;
+  final RewardedHintAdService Function()? rewardedAdFactory;
 
   @override
   State<PuzzleProgressionScreen> createState() =>
@@ -77,6 +82,7 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                     final index = offset + 1;
                     final isCurrent = index == current;
                     final completed = index <= session.completedThrough;
+                    final replayable = completed && index < current;
                     final score = completed ? scores[index] : null;
                     final locked = index > current;
                     final colors = Theme.of(context).colorScheme;
@@ -87,7 +93,7 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                         : 'Tamamlandı';
                     return Semantics(
                       label:
-                          'Bulmaca $index, $label${isCurrent && completed ? ', tamamlandı' : ''}${score == null ? '' : ', ${score.score} puan'}',
+                          'Bulmaca $index, $label${isCurrent && completed ? ', tamamlandı' : ''}${score == null ? '' : ', ${score.score} puan'}${replayable ? ', tekrar oyna' : ''}',
                       child: Material(
                         color: isCurrent
                             ? colors.primaryContainer
@@ -104,10 +110,19 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                         clipBehavior: Clip.antiAlias,
                         child: InkWell(
                           key: ValueKey('puzzle-tile-$index'),
-                          onTap: isCurrent && session.current.isSuccess
+                          onTap:
+                              replayable ||
+                                  (isCurrent && session.current.isSuccess)
                               ? () => Navigator.of(context).push<void>(
                                   MaterialPageRoute(
-                                    builder: widget.puzzleBuilder,
+                                    builder: isCurrent
+                                        ? widget.puzzleBuilder
+                                        : (_) => PuzzleReplayScreen(
+                                            session: session,
+                                            puzzleIndex: index,
+                                            rewardedAdFactory:
+                                                widget.rewardedAdFactory,
+                                          ),
                                   ),
                                 )
                               : null,
@@ -141,9 +156,19 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  label,
-                                  style: const TextStyle(fontSize: 12),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (replayable)
+                                        const Icon(Icons.replay, size: 12),
+                                      Text(
+                                        label,
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 if (score != null)
                                   Flexible(

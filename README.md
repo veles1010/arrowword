@@ -11,7 +11,7 @@ lowercase-solution IDs, difficulty metadata and internal tags. The original 60
 word/clue pairs are preserved. Validation checks identity, characters, lengths,
 clues and tags; health inspection measures crossing partners and letter frequency.
 
-The app displays Puzzle 1, generated once through the sequence layer. Base seed
+Normal progression begins at Puzzle 1 through the sequence layer. Base seed
 **20261003** and the unchanged v1 MurmurHash3-style 32-bit seed mixer derive each
 index's seed. Locked seeds for indices 1/2/10 remain
 3255270515 / 3017514609 / 3356167200.
@@ -31,16 +31,43 @@ missing lifetime history is an explicit failure. IDs are now
 seed arithmetic. Old-version history is rejected, not migrated. Disabled balancing
 is developer-only comparison mode and retains cooldown-window history semantics.
 Completion advances to the next puzzle. A single versioned local shared_preferences
-schema-4 record saves current index/identity, letters, contiguous completion and
+schema-5 record saves current index/identity, letters, contiguous completion and
 compact historical puzzle indices/content IDs (no old grids). Normal restore
 resolves and validates that prefix, then generates only the current puzzle.
 Schema-1/2 saves replay Puzzle 1..N once to migrate; later launches avoid replay.
-Schema 3 migrates without prefix replay. Free “Harf Aç” reveals and locks one
+Schema 3/4 migrate without prefix replay. Rewarded “Reklamla Harf Aç” reveals and locks one
 selected cell; reset retains those cells. Only hint coordinates/count are saved,
 not redundant solution letters. Each new puzzle starts with zero hints.
-Corrupt/incompatible progress resets safely to empty Puzzle 1.
+Invalid core progression resets safely to empty Puzzle 1; invalid optional score
+records are dropped without losing valid progression or other scores.
 Debug ARROWWORD_PUZZLE_INDEX launches ignore and never overwrite player progress.
-No statistics, archives, selection UI or cloud state are stored.
+
+## Local play modes
+
+Home opens normal play, the puzzle progression grid, local statistics or the Daily.
+Scoring v1 records active-play time, hints and incorrect checks; background, covered
+routes and rewarded-ad time do not count. Completed puzzle replays are fresh,
+memory-only attempts. Only a higher score (or equal score with a faster time)
+replaces that puzzle's saved best; replay never changes normal progression.
+Statistics derive from those stored best records, not every attempt. Legacy
+completions without scores remain unscored.
+
+Daily Puzzle V1 uses the **device local calendar date**, not a server timezone.
+The canonical `YYYY-MM-DD`, seed version 1 and catalogue version 3 form a stable
+`daily-v1-c3-YYYY-MM-DD` identity and portable FNV-1a32 seed. The fixed catalogue
+and unchanged bounded generator produce the same board independently of player
+progress. At most two deterministic candidates prefer phone-readable geometry.
+The board is generated lazily on Daily entry, never while building Home.
+
+A separate `arrowword.daily_progress` schema-1 payload resumes the most recent
+unfinished Daily and retains immutable completed results by date. Yesterday's
+unfinished letters are not today's attempt. Completing across midnight keeps the
+attempt's original date (also shown while playing). Home rechecks the local date
+on resume and route return; Daily rechecks on entry. A completed Daily opens its result, with no second scored
+attempt or replay. Daily history is stored locally; a history UI is not included.
+Invalid Daily entries are isolated where possible without touching normal saves.
+Normal progression remains schema 5. No backend/global leaderboard or cloud sync
+exists; a future online Daily may need a canonical server date/timezone.
 
 ## Generator and verification
 

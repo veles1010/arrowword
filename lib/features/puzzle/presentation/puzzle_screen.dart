@@ -8,6 +8,7 @@ import '../ads/rewarded_hint_ad_service.dart';
 import 'board_size.dart';
 import 'clue_text.dart';
 import 'active_play_timer.dart';
+import 'puzzle_completion.dart';
 
 final puzzleRouteObserver = RouteObserver<ModalRoute<dynamic>>();
 
@@ -15,6 +16,7 @@ class PuzzleScreen extends StatefulWidget {
   const PuzzleScreen({
     required this.puzzle,
     this.title = 'Bulmaca Prototipi',
+    this.subtitle,
     this.onNextPuzzle,
     this.initialLetters = const {},
     this.onLettersChanged,
@@ -29,6 +31,7 @@ class PuzzleScreen extends StatefulWidget {
     this.onElapsedChanged,
     this.scoreResult,
     this.monotonicNow,
+    this.completion,
     super.key,
   });
   final Puzzle puzzle;
@@ -45,8 +48,10 @@ class PuzzleScreen extends StatefulWidget {
   onAttemptProgress;
   final ValueChanged<Duration>? onElapsedChanged;
   final CompletedPuzzleScore? Function()? scoreResult;
+  final PuzzleCompletionPresentation? completion;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final String title;
+  final String? subtitle;
   final VoidCallback? onNextPuzzle;
   final Map<GridPosition, String> initialLetters;
   final ValueChanged<Map<GridPosition, String>>? onLettersChanged;
@@ -65,6 +70,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   late final TextEditingController input;
   late final FocusNode focus;
   bool shown = false;
+  bool _finishingCompletion = false;
   late final RewardedHintAdService ads;
   bool requestingHint = false;
   late final ActivePlayTimer timer;
@@ -246,37 +252,60 @@ class _PuzzleScreenState extends State<PuzzleScreen>
           showDialog<void>(
             context: context,
             barrierDismissible: false,
-            builder: (c) => AlertDialog(
-              title: const Text('Bulmaca tamamlandı!'),
-              content: _completionContent(),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(c),
-                  child: const Text('Kapat'),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    Navigator.pop(c);
-                    if (widget.onNextPuzzle != null) {
-                      widget.onNextPuzzle!();
-                      return;
-                    }
-                    shown = false;
-                    game.reset();
-                    focus.requestFocus();
-                  },
-                  child: Text(
-                    widget.onNextPuzzle == null
-                        ? 'Yeniden Başlat'
-                        : 'Sonraki Bulmaca',
-                  ),
-                ),
-              ],
+            builder: (c) => PopScope<void>(
+              canPop: widget.completion == null,
+              onPopInvokedWithResult: (didPop, _) {
+                if (!didPop && widget.completion != null) _finishCompletion(c);
+              },
+              child: AlertDialog(
+                scrollable: true,
+                title: Text(widget.completion?.title ?? 'Bulmaca tamamlandı!'),
+                content:
+                    widget.completion?.contentBuilder(c) ??
+                    _completionContent(),
+                actions: widget.completion != null
+                    ? [
+                        FilledButton(
+                          onPressed: () => _finishCompletion(c),
+                          child: Text(widget.completion!.actionLabel),
+                        ),
+                      ]
+                    : [
+                        TextButton(
+                          onPressed: () => Navigator.pop(c),
+                          child: const Text('Kapat'),
+                        ),
+                        FilledButton(
+                          onPressed: () {
+                            Navigator.pop(c);
+                            if (widget.onNextPuzzle != null) {
+                              widget.onNextPuzzle!();
+                              return;
+                            }
+                            shown = false;
+                            game.reset();
+                            focus.requestFocus();
+                          },
+                          child: Text(
+                            widget.onNextPuzzle == null
+                                ? 'Yeniden Başlat'
+                                : 'Sonraki Bulmaca',
+                          ),
+                        ),
+                      ],
+              ),
             ),
           );
         }
       });
     }
+  }
+
+  void _finishCompletion(BuildContext dialogContext) {
+    if (_finishingCompletion) return;
+    _finishingCompletion = true;
+    Navigator.pop(dialogContext);
+    widget.completion!.onFinished();
   }
 
   Widget _completionContent() {
@@ -288,10 +317,13 @@ class _PuzzleScreenState extends State<PuzzleScreen>
             : 'Bu bulmaca puanlama sistemi eklenmeden önce tamamlandı.',
       );
     }
-    final minutes = (score.elapsedSeconds ~/ 60).toString().padLeft(2, '0');
-    final seconds = (score.elapsedSeconds % 60).toString().padLeft(2, '0');
     return Text(
-      'Puan: ${score.score}\nSüre: $minutes:$seconds\nİpucu: ${score.hintsUsed}\nHatalı kontrol: ${score.wrongChecks}',
+      puzzleResultDetails(
+        score: score.score,
+        elapsedSeconds: score.elapsedSeconds,
+        hintsUsed: score.hintsUsed,
+        wrongChecks: score.wrongChecks,
+      ),
     );
   }
 
@@ -311,7 +343,27 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     final keyboardOpen = MediaQuery.viewInsetsOf(c).bottom > 0;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(
+        toolbarHeight: widget.subtitle == null
+            ? null
+            : (MediaQuery.textScalerOf(c).scale(20) * 1.2 +
+                      MediaQuery.textScalerOf(c).scale(11) * 1.2 +
+                      8)
+                  .clamp(56, 96),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+            if (widget.subtitle != null)
+              Text(
+                widget.subtitle!,
+                maxLines: 1,
+                style: Theme.of(c).textTheme.labelSmall,
+              ),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, contentConstraints) {
@@ -345,6 +397,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                             child: Text(
                               '${a.turkishClue} (${a.length})',
                               key: const ValueKey('active-clue'),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(c).textTheme.titleMedium,
                             ),
                           ),

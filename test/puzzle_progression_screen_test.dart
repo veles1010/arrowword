@@ -2,6 +2,7 @@ import 'package:arrowword/app/app.dart';
 import 'package:arrowword/app/home_screen.dart';
 import 'package:arrowword/app/puzzle_progress_store.dart';
 import 'package:arrowword/app/puzzle_progression_screen.dart';
+import 'package:arrowword/app/puzzle_replay_screen.dart';
 import 'package:arrowword/app/puzzle_session.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
 import 'package:arrowword/features/puzzle/domain/puzzle.dart';
@@ -104,7 +105,7 @@ void main() {
     },
   );
 
-  testWidgets('completed and locked tiles cannot open gameplay', (
+  testWidgets('completed tiles open replay and locked tiles stay disabled', (
     tester,
   ) async {
     final session = sessionAt(6);
@@ -117,7 +118,10 @@ void main() {
       expect(_status(index, '-'), findsNothing);
       await tester.tap(_tile(index));
       await tester.pumpAndSettle();
-      expect(find.byType(PuzzleScreen), findsNothing);
+      expect(find.byType(PuzzleReplayScreen), findsOneWidget);
+      expect(find.text('Bulmaca $index · Tekrar Oyna'), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
     }
     await tester.ensureVisible(_tile(7));
     expect(_status(7, 'Kilitli'), findsOneWidget);
@@ -137,6 +141,7 @@ void main() {
       await tester.tap(_tile(6));
       await tester.pumpAndSettle();
       final screen = tester.widget<PuzzleScreen>(find.byType(PuzzleScreen));
+      expect(find.byType(PuzzleReplayScreen), findsNothing);
       expect(screen.puzzle, same(session.current.puzzle));
       expect(screen.title, 'Bulmaca 6');
       await tester.pageBack();
@@ -189,7 +194,9 @@ void main() {
     expect(_score(3), findsNothing);
     await tester.tap(_tile(1));
     await tester.pumpAndSettle();
-    expect(find.byType(PuzzleScreen), findsNothing);
+    expect(find.byType(PuzzleReplayScreen), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
     await tester.ensureVisible(_tile(7));
     expect(_status(7, 'Kilitli'), findsOneWidget);
     expect(_tile(8), findsNothing);
@@ -210,6 +217,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(PuzzleScreen), findsOneWidget);
     expect(session.current.puzzleIndex, 1);
+    expect(find.byType(PuzzleReplayScreen), findsNothing);
+    expect(find.text('Sonraki Bulmaca'), findsOneWidget);
   });
 
   testWidgets('session recreation retains completion and current letters', (
@@ -273,7 +282,7 @@ void main() {
     expect(_score(2), findsNothing);
     await tester.tap(_tile(1));
     await tester.pumpAndSettle();
-    expect(find.byType(PuzzleScreen), findsNothing);
+    expect(find.byType(PuzzleReplayScreen), findsOneWidget);
   });
 
   testWidgets('a genuine earned zero score is shown, not treated as legacy', (

@@ -1,3 +1,14 @@
+/// A replay improves the local best by score, then by completion time.
+bool isBetterPuzzleScore(
+  CompletedPuzzleScore candidate,
+  CompletedPuzzleScore? existing,
+) =>
+    existing == null ||
+    (candidate.puzzleIndex == existing.puzzleIndex &&
+        (candidate.score > existing.score ||
+            (candidate.score == existing.score &&
+                candidate.elapsedSeconds < existing.elapsedSeconds)));
+
 /// Calculates the version 1 score for a completed puzzle.
 int calculatePuzzleScore({
   required int elapsedSeconds,
@@ -14,7 +25,10 @@ int calculatePuzzleScore({
     <= 480 => 100,
     _ => 0,
   };
-  final score = 1000 + bonus - 100 * hintsUsed - 25 * wrongChecks;
+  final available = 1000 + bonus;
+  // Equivalent to clamping at zero, without overflowing on corrupt huge counts.
+  if (hintsUsed > available ~/ 100 || wrongChecks > available ~/ 25) return 0;
+  final score = available - 100 * hintsUsed - 25 * wrongChecks;
   return score < 0 ? 0 : score;
 }
 

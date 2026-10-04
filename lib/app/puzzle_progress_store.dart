@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/puzzle/domain/puzzle_score.dart';
+import 'progress_json.dart';
 
 abstract class PuzzleProgressStore {
   Future<String?> read();
@@ -54,6 +55,7 @@ class PuzzleProgress {
     this.elapsedMilliseconds = 0,
     this.wrongChecks = 0,
     this.completedScores = const {},
+    this.needsRewrite = false,
   }) : completedThrough = completedThrough ?? puzzleIndex - 1;
   final int catalogVersion, puzzleIndex;
   final int completedThrough, schemaVersion;
@@ -64,6 +66,8 @@ class PuzzleProgress {
   final int hintsUsed;
   final int elapsedMilliseconds, wrongChecks;
   final Map<int, CompletedPuzzleScore> completedScores;
+  // Recovery metadata only; never changes the persisted schema.
+  final bool needsRewrite;
   String encode() => jsonEncode({
     'schemaVersion': schemaVersion,
     if (schemaVersion >= 3)
@@ -88,10 +92,13 @@ class PuzzleProgress {
     'letters': letters,
   });
   static PuzzleProgress decode(String record) {
-    final data = jsonDecode(record);
+    final decoded = ProgressJson(record);
+    final data = decoded.value;
     if (data is! Map ||
+        data['schemaVersion'] is! int ||
         ![1, 2, 3, 4, 5].contains(data['schemaVersion']) ||
         data['catalogVersion'] is! int ||
+        data['catalogVersion'] < 1 ||
         data['puzzleIndex'] is! int ||
         data['puzzleIndex'] < 1 ||
         data['puzzleIndex'] > 0xffffffff ||
@@ -100,6 +107,10 @@ class PuzzleProgress {
         data['letters'] is! Map) {
       throw const FormatException('Invalid puzzle progress');
     }
+    if (decoded.duplicates.any((path) => path.first != 'completedScores')) {
+      throw const FormatException('Ambiguous puzzle progress');
+    }
+    var repaired = decoded.duplicates.isNotEmpty;
     final completed = data['schemaVersion'] == 1
         ? data['puzzleIndex'] - 1
         : data['completedThrough'];
@@ -118,6 +129,7 @@ class PuzzleProgress {
       for (var i = 0; i < stored.length; i++) {
         final entry = stored[i];
         if (entry is! Map ||
+            entry['puzzleIndex'] is! int ||
             entry['puzzleIndex'] != i + 1 ||
             entry['wordIds'] is! List ||
             (entry['wordIds'] as List).any((id) => id is! String)) {
@@ -153,31 +165,48 @@ class PuzzleProgress {
       final scores = data['completedScores'];
       if (elapsed is! int ||
           elapsed < 0 ||
+          elapsed > maxPersistedElapsedMilliseconds ||
           checks is! int ||
-          checks < 0 ||
-          scores is! Map) {
+          checks < 0) {
         throw const FormatException('Invalid attempt statistics');
       }
       elapsedMilliseconds = elapsed;
       wrongChecks = checks;
-      for (final entry in scores.entries) {
+      final ambiguousScores = decoded.duplicates
+          .where((path) => path.length > 1)
+          .map((path) => path[1])
+          .toSet();
+      final scoreMapAmbiguous = decoded.duplicates.any(
+        (path) => path.length == 1,
+      );
+      if (scores is! Map || scoreMapAmbiguous) repaired = true;
+      for (final entry
+          in scores is Map && !scoreMapAmbiguous
+              ? scores.entries
+              : const <MapEntry<Object?, Object?>>[]) {
         final key = entry.key;
         final index = key is String ? int.tryParse(key) : null;
         if (index == null ||
             index < 1 ||
             key != '$index' ||
             index > completed ||
-            completedScores.containsKey(index)) {
-          throw const FormatException('Invalid score index');
+            ambiguousScores.contains(key)) {
+          repaired = true;
+          continue;
         }
-        final score = CompletedPuzzleScore.fromJson(entry.value);
-        if (score.puzzleIndex != index) {
-          throw const FormatException('Mismatched score index');
+        try {
+          final score = CompletedPuzzleScore.fromJson(entry.value);
+          if (score.puzzleIndex != index) {
+            throw const FormatException('Mismatched score index');
+          }
+          completedScores[index] = score;
+        } on FormatException {
+          repaired = true;
         }
-        completedScores[index] = score;
       }
     }
     return PuzzleProgress(
+      needsRewrite: repaired,
       elapsedMilliseconds: elapsedMilliseconds,
       wrongChecks: wrongChecks,
       completedScores: completedScores,
