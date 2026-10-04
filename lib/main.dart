@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 
 import 'app/app.dart';
+import 'app/app_settings.dart';
 import 'app/development_puzzle.dart';
 import 'app/puzzle_session.dart';
 import 'app/daily_session.dart';
@@ -33,9 +34,11 @@ Future<void> main() async {
   final daily = startIndex == null
       ? await DailySession.restore(store: SharedPreferencesDailyProgressStore())
       : null;
+  final settings = await AppSettings.restore(SharedPreferencesSettingsStore());
   runApp(
     ArrowwordApp(
       session: session,
+      settings: settings,
       dailySession: daily,
       openPuzzleDirectly: startIndex != null,
       rewardedAdFactory: createHintAdService,

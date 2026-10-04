@@ -44,6 +44,10 @@ Debug ARROWWORD_PUZZLE_INDEX launches ignore and never overwrite player progress
 
 ## Local play modes
 
+Home's Ayarlar action offers persistent System/Light/Dark Material 3 themes and
+installed version/build information. Settings use a separate preference key;
+normal schema 5 and Daily schema 1 are unchanged.
+
 Home opens normal play, the puzzle progression grid, local statistics or the Daily.
 Scoring v1 records active-play time, hints and incorrect checks; background, covered
 routes and rewarded-ad time do not count. Completed puzzle replays are fresh,
@@ -118,3 +122,15 @@ and ad units are TEST-ONLY and must be replaced before release. Release AdMob ID
 and consent/UMP are not configured; this app is not monetization-release-ready.
 Hints are granted only for earned rewards, with no free fallback on ad failure.
 Configuration follows [Google's Flutter rewarded-ad guide](https://developers.google.com/admob/flutter/rewarded).
+
+## Unresolved release checklist
+
+- Confirm final name, identifiers and store metadata/icons/screenshots.
+- Configure production AdMob App IDs/unit IDs and UMP/consent before monetized release.
+- Replace Android's current debug signing fallback with externally supplied release signing.
+- Publish/configure a real privacy-policy URL (none is currently configured).
+- Verify iOS simulator/device, signing and archive on macOS/Xcode; unavailable on Windows.
+
+Android uses Flutter SDK defaults (currently min 24 / target 36), with INTERNET
+and dependency-required network/ad permissions. iOS deployment target is 15.0.
+Sample AdMob IDs remain TEST-only; no backend/global leaderboard is configured.

@@ -9,6 +9,8 @@ import 'daily_puzzle_screen.dart';
 import 'statistics_screen.dart';
 import 'daily_history_screen.dart';
 import 'daily_statistics.dart';
+import 'app_settings.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -16,10 +18,12 @@ class HomeScreen extends StatefulWidget {
     required this.puzzleBuilder,
     this.rewardedAdFactory,
     this.dailySession,
+    this.settings,
     super.key,
   });
   final PuzzleSession session;
   final DailySession? dailySession;
+  final AppSettings? settings;
   final WidgetBuilder puzzleBuilder;
   final RewardedHintAdService Function()? rewardedAdFactory;
   @override
@@ -111,7 +115,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           session.letters.isEmpty &&
           session.completedThrough == 0;
       return Scaffold(
-        appBar: AppBar(title: const Text('Arrowword')),
+        appBar: AppBar(
+          title: const Text('Arrowword'),
+          actions: [
+            if (widget.settings != null)
+              IconButton(
+                tooltip: 'Ayarlar',
+                icon: const Icon(Icons.settings_outlined),
+                onPressed: () async {
+                  await Navigator.of(context).push<void>(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          SettingsScreen(settings: widget.settings!),
+                    ),
+                  );
+                  _returnedHome();
+                },
+              ),
+          ],
+        ),
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) => SingleChildScrollView(

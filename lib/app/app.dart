@@ -5,6 +5,8 @@ import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
 import 'puzzle_session.dart';
 import 'home_screen.dart';
 import 'daily_session.dart';
+import 'app_settings.dart';
+import 'arrowword_theme.dart';
 import '../features/puzzle/presentation/puzzle_screen.dart';
 
 class ArrowwordApp extends StatelessWidget {
@@ -13,32 +15,37 @@ class ArrowwordApp extends StatelessWidget {
     this.openPuzzleDirectly = false,
     this.rewardedAdFactory,
     this.dailySession,
+    this.settings,
     super.key,
   });
   final PuzzleSession session;
   final DailySession? dailySession;
+  final AppSettings? settings;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final bool openPuzzleDirectly;
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    title: 'Arrowword Prototipi',
-    debugShowCheckedModeBanner: false,
-    navigatorObservers: [puzzleRouteObserver],
-    theme: ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff426B5A)),
-    ),
-    home: openPuzzleDirectly || !session.current.isSuccess
-        ? _PuzzleFlow(session: session, rewardedAdFactory: rewardedAdFactory)
-        : HomeScreen(
-            session: session,
-            dailySession: dailySession,
-            rewardedAdFactory: rewardedAdFactory,
-            puzzleBuilder: (_) => _PuzzleFlow(
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: settings ?? session,
+    builder: (context, _) => MaterialApp(
+      title: 'Arrowword Prototipi',
+      debugShowCheckedModeBanner: false,
+      navigatorObservers: [puzzleRouteObserver],
+      theme: ArrowwordTheme.light(),
+      darkTheme: ArrowwordTheme.dark(),
+      themeMode: settings?.themeMode ?? ThemeMode.system,
+      home: openPuzzleDirectly || !session.current.isSuccess
+          ? _PuzzleFlow(session: session, rewardedAdFactory: rewardedAdFactory)
+          : HomeScreen(
               session: session,
+              settings: settings,
+              dailySession: dailySession,
               rewardedAdFactory: rewardedAdFactory,
+              puzzleBuilder: (_) => _PuzzleFlow(
+                session: session,
+                rewardedAdFactory: rewardedAdFactory,
+              ),
             ),
-          ),
+    ),
   );
 }
 

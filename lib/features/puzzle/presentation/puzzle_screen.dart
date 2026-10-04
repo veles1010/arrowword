@@ -580,6 +580,7 @@ class _Cell extends StatelessWidget {
                         ? Icons.arrow_forward
                         : Icons.arrow_downward,
                     size: 10,
+                    color: cs.onTertiaryContainer,
                   ),
                 ),
               ],
@@ -590,6 +591,21 @@ class _Cell extends StatelessWidget {
     }
     final selected = game.isSelected(p);
     final bad = game.isIncorrect(p);
+    final hinted = game.isHint(p);
+    final edge = BorderSide(
+      color: bad
+          ? cs.error
+          : selected
+          ? cs.primary
+          : game.isActive(p)
+          ? cs.secondary
+          : cs.outlineVariant.withValues(alpha: 0.7),
+      width: selected
+          ? 2.5
+          : game.isActive(p)
+          ? 1.5
+          : 1,
+    );
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -601,32 +617,39 @@ class _Cell extends StatelessWidget {
               ? cs.primary
               : game.isActive(p)
               ? cs.secondaryContainer
+              : hinted
+              ? cs.primaryContainer
               : cs.surfaceContainerLowest,
-          border: Border.all(
-            color: selected
-                ? cs.primary
-                : game.isActive(p)
-                ? cs.secondary
-                : cs.outlineVariant.withValues(alpha: 0.7),
-            width: selected
-                ? 2.5
-                : game.isActive(p)
-                ? 1.5
-                : 1,
+          border: Border(
+            top: edge,
+            left: edge,
+            right: edge,
+            bottom: hinted
+                ? BorderSide(
+                    color: selected ? cs.onPrimary : cs.primary,
+                    width: 3,
+                  )
+                : edge,
           ),
         ),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            game.letterAt(p) ?? '',
-            style: Theme.of(c).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              decoration: game.isHint(p) ? TextDecoration.underline : null,
-              color: bad
-                  ? cs.onErrorContainer
-                  : selected
-                  ? cs.onPrimary
-                  : cs.onSurface,
+        child: Semantics(
+          label: hinted ? 'İpucuyla açıldı, kilitli' : null,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              game.letterAt(p) ?? '',
+              style: Theme.of(c).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                decoration: hinted ? TextDecoration.underline : null,
+                decorationThickness: hinted ? 2 : null,
+                color: bad
+                    ? cs.onErrorContainer
+                    : selected
+                    ? cs.onPrimary
+                    : game.isActive(p)
+                    ? cs.onSecondaryContainer
+                    : cs.onSurface,
+              ),
             ),
           ),
         ),

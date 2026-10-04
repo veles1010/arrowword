@@ -13,8 +13,11 @@ class ClueText extends StatelessWidget {
   Widget build(BuildContext context) {
     final scaler = MediaQuery.textScalerOf(context);
     final direction = Directionality.of(context);
-    final baseStyle = DefaultTextStyle.of(context).style
-        .copyWith(height: 1.1, fontWeight: FontWeight.w600);
+    final baseStyle = DefaultTextStyle.of(context).style.copyWith(
+      height: 1.1,
+      fontWeight: FontWeight.w600,
+      color: Theme.of(context).colorScheme.onTertiaryContainer,
+    );
     final words = clue.trim().split(RegExp(r'\s+'));
     final singleLine = words.join(' ');
     final candidates = [
