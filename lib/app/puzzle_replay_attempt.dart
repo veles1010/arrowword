@@ -1,4 +1,5 @@
 import '../features/puzzle/domain/puzzle.dart';
+import '../features/puzzle/domain/puzzle_difficulty.dart';
 import '../features/puzzle/domain/puzzle_score.dart';
 import '../features/puzzle/sequence/puzzle_sequence.dart';
 import 'puzzle_session.dart';
@@ -9,6 +10,7 @@ class PuzzleReplayAttempt {
     : generation = session.buildReplayPuzzle(puzzleIndex);
 
   final PuzzleSession session;
+  PuzzleDifficulty get difficulty => session.difficulty;
   final SequencePuzzleResult generation;
   Map<GridPosition, String> _letters = {};
   Set<GridPosition> _revealed = {};

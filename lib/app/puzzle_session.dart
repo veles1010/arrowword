@@ -4,6 +4,7 @@ import '../features/puzzle/data/prototype_puzzle.dart';
 import '../features/puzzle/sequence/puzzle_sequence.dart';
 import '../features/puzzle/domain/puzzle.dart';
 import '../features/puzzle/domain/puzzle_score.dart';
+import '../features/puzzle/domain/puzzle_difficulty.dart';
 import 'puzzle_progress_store.dart';
 
 /// Progression with optional current-board storage and in-memory full history.
@@ -12,12 +13,8 @@ class PuzzleSession extends ChangeNotifier {
     PuzzleSequenceGenerator? generator,
     int startIndex = 1,
     this.store,
-  }) : _generator =
-           generator ??
-           PuzzleSequenceGenerator(
-             prototypeCatalogue,
-             prototypeSequenceConfig,
-           ) {
+    this.difficulty = PuzzleDifficulty.easy,
+  }) : _generator = _generatorForTrack(difficulty, generator, store) {
     if (startIndex < 1 || startIndex > 0xffffffff) {
       throw ArgumentError.value(startIndex, 'startIndex');
     }
@@ -28,9 +25,11 @@ class PuzzleSession extends ChangeNotifier {
     _completedThrough = current.puzzleIndex - 1;
   }
   final PuzzleSequenceGenerator _generator;
+  final PuzzleDifficulty difficulty;
   PuzzleSession._fromHistory(
     this._generator,
     this.store,
+    this.difficulty,
     int index,
     List<PuzzleHistoryEntry> prefix,
   ) {
@@ -38,6 +37,22 @@ class PuzzleSession extends ChangeNotifier {
     _generate(index);
   }
   final PuzzleProgressStore? store;
+
+  static PuzzleSequenceGenerator _generatorForTrack(
+    PuzzleDifficulty difficulty,
+    PuzzleSequenceGenerator? generator,
+    PuzzleProgressStore? store,
+  ) {
+    if (store is TrackScopedProgressStore && store.difficulty != difficulty) {
+      throw ArgumentError('Progress store belongs to a different track.');
+    }
+    if (generator == null && difficulty != PuzzleDifficulty.easy) {
+      throw ArgumentError('No content provider for ${difficulty.id}.');
+    }
+    return generator ??
+        PuzzleSequenceGenerator(prototypeCatalogue, prototypeSequenceConfig);
+  }
+
   Map<GridPosition, String> _letters = {};
   Map<GridPosition, String> get letters => Map.unmodifiable(_letters);
   Set<GridPosition> _revealed = {};
@@ -62,14 +77,16 @@ class PuzzleSession extends ChangeNotifier {
     required PuzzleProgressStore store,
     PuzzleSequenceGenerator? generator,
     int? developmentIndex,
+    PuzzleDifficulty difficulty = PuzzleDifficulty.easy,
   }) async {
+    // Validate identity before recovery can clear a store. Never cross-track reset.
+    generator = _generatorForTrack(difficulty, generator, store);
     if (developmentIndex != null) {
+      if (difficulty != PuzzleDifficulty.easy) {
+        throw ArgumentError('Development puzzle override is Easy-only.');
+      }
       return PuzzleSession(generator: generator, startIndex: developmentIndex);
     }
-    generator ??= PuzzleSequenceGenerator(
-      prototypeCatalogue,
-      prototypeSequenceConfig,
-    );
     try {
       final raw = await store.read();
       if (raw != null) {
@@ -103,6 +120,7 @@ class PuzzleSession extends ChangeNotifier {
             ? PuzzleSession._fromHistory(
                 generator,
                 store,
+                difficulty,
                 saved.puzzleIndex,
                 prefix,
               )
@@ -110,6 +128,7 @@ class PuzzleSession extends ChangeNotifier {
                 generator: generator,
                 startIndex: saved.puzzleIndex,
                 store: store,
+                difficulty: difficulty,
               );
         if (!session.current.isSuccess ||
             session.current.puzzle!.id != saved.puzzleId ||
@@ -163,7 +182,11 @@ class PuzzleSession extends ChangeNotifier {
         debugPrint('Progress clear failed: $error');
       }
     }
-    return PuzzleSession(generator: generator, store: store);
+    return PuzzleSession(
+      generator: generator,
+      store: store,
+      difficulty: difficulty,
+    );
   }
 
   void updateLetters(Map<GridPosition, String> letters) {

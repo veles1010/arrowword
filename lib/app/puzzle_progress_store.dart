@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/puzzle/domain/puzzle_score.dart';
+import '../features/puzzle/domain/puzzle_difficulty.dart';
 import 'progress_json.dart';
 
 abstract class PuzzleProgressStore {
@@ -11,15 +12,54 @@ abstract class PuzzleProgressStore {
   Future<void> clear();
 }
 
-class SharedPreferencesPuzzleProgressStore implements PuzzleProgressStore {
-  final SharedPreferencesAsync _preferences = SharedPreferencesAsync();
-  static const _key = 'arrowword.puzzle_progress';
+/// Optional identity boundary for stores used by an explicit progression track.
+abstract interface class TrackScopedProgressStore
+    implements PuzzleProgressStore {
+  PuzzleDifficulty get difficulty;
+}
+
+/// Binds injected stores to a track without duplicating serialization/recovery.
+class PuzzleTrackProgressStore implements TrackScopedProgressStore {
+  PuzzleTrackProgressStore({
+    required this.difficulty,
+    required PuzzleProgressStore store,
+  }) : _store = store {
+    if (store is TrackScopedProgressStore && store.difficulty != difficulty) {
+      throw ArgumentError('Progress store belongs to a different track.');
+    }
+  }
   @override
-  Future<String?> read() => _preferences.getString(_key);
+  final PuzzleDifficulty difficulty;
+  final PuzzleProgressStore _store;
   @override
-  Future<void> write(String record) => _preferences.setString(_key, record);
+  Future<String?> read() => _store.read();
   @override
-  Future<void> clear() => _preferences.remove(_key);
+  Future<void> write(String record) => _store.write(record);
+  @override
+  Future<void> clear() => _store.clear();
+}
+
+class SharedPreferencesPuzzleProgressStore implements TrackScopedProgressStore {
+  SharedPreferencesPuzzleProgressStore({
+    this.difficulty = PuzzleDifficulty.easy,
+  });
+  @override
+  final PuzzleDifficulty difficulty;
+  // Dormant track construction must not initialize a platform storage backend.
+  late final SharedPreferencesAsync _preferences = SharedPreferencesAsync();
+  // Legacy normal/Easy key and schema must never move for naming consistency.
+  static String keyFor(PuzzleDifficulty difficulty) => switch (difficulty) {
+    PuzzleDifficulty.easy => 'arrowword.puzzle_progress',
+    PuzzleDifficulty.medium => 'arrowword.puzzle_progress.medium',
+    PuzzleDifficulty.hard => 'arrowword.puzzle_progress.hard',
+  };
+  String get key => keyFor(difficulty);
+  @override
+  Future<String?> read() => _preferences.getString(key);
+  @override
+  Future<void> write(String record) => _preferences.setString(key, record);
+  @override
+  Future<void> clear() => _preferences.remove(key);
 }
 
 class MemoryPuzzleProgressStore implements PuzzleProgressStore {

@@ -44,6 +44,15 @@ Debug ARROWWORD_PUZZLE_INDEX launches ignore and never overwrite player progress
 
 ## Local play modes
 
+Normal progression is architecturally the **Easy** track. Its legacy preference
+key, schema 5, generated-v3 IDs, seeds, content/history and scores are unchanged;
+no migration is needed. Puzzle/progression difficulty is separate from word-level
+difficulty metadata. Medium/Hard have isolated store namespaces and a reusable
+lazy session boundary, but no content provider or player UI yet: they remain
+dormant, not playable. Future content enters via track configuration. Replay uses
+its owning track's history/scores; Daily remains independent. Development index
+overrides remain Easy-only and never write player progression.
+
 Home's Ayarlar action offers persistent System/Light/Dark Material 3 themes and
 installed version/build information. Settings use a separate preference key;
 normal schema 5 and Daily schema 1 are unchanged.
