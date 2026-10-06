@@ -132,7 +132,7 @@ Daily/history/streaks/sharing, statistics, themes, Settings/About and fluid navi
 
 Pending before store release:
 
-- Final icon and splash assets (current Flutter placeholders); final store metadata/screenshots.
+- Final store metadata/screenshots.
 - Publish/configure an Arrowword privacy-policy URL; none is currently configured.
 - Supply Android release keystore/secrets locally. Debug signing is never used for release.
 - Verify iOS signing/team, simulator/device build and archive on macOS/Xcode.
@@ -148,13 +148,34 @@ builds need no release credentials. See [Android signing guidance](https://devel
 Version is currently `1.0.0+1`; About reads installed metadata dynamically.
 Every future store upload must use a monotonically increasing build number.
 
-Brand asset replacements: Android legacy `ic_launcher.png` at 48/72/96/144/192px
-(mdpi through xxxhdpi); add an adaptive icon with 108dp foreground/background
-layers and a monochrome layer where appropriate. iOS AppIcon slots are present:
+## Native branding
+
+Approved originals remain unchanged in `assets/branding/source/`. The old opaque
+icon is reference-only. `tool/generate_branding.py` (Python + Pillow, no runtime
+dependency) builds `arrowword_icon_source_clean.png`: a square RGB 1024px master
+using the transparent mark and the current theme's graphite surface. No baked
+rounding, shadows or borders. Run `python tool/generate_branding.py` to regenerate.
+
+Android legacy `ic_launcher.png` sizes are 48/72/96/144/192px (mdpi through
+xxxhdpi). Adaptive foregrounds fit the guaranteed 66dp circle within 108dp layers;
+background is solid theme graphite. Monochrome support is intentionally omitted
+rather than simplifying the detailed approved artwork. iOS AppIcon slots are:
 20pt (1x/2x/3x), 29pt (1x/2x/3x), 40pt (1x/2x/3x), 60pt (2x/3x),
-76pt (1x/2x), 83.5pt (2x), and 1024px marketing icon. Final splash design is
-still pending: Android launch backgrounds/Android 12+ splash configuration and
-iOS LaunchScreen with LaunchImage 1x/2x/3x assets. No final logo is supplied.
+76pt (1x/2x), 83.5pt (2x), and 1024px marketing icon. All icons derive directly
+from the clean master. Native splash follows device appearance before Flutter
+can read its saved theme setting. Android 12+ uses a 288dp canvas with artwork
+inside the 192dp circle. No fake second Flutter splash is used.
+Splash refinements use a splash-only cool neutral `#F5F7FB` in light appearance
+and unchanged theme graphite `#18191C` in dark appearance. Neutral A surfaces are
+mapped to graphite only in the light splash variant; blue arrow pixels and alpha
+geometry are preserved. Dark variant keeps the approved source artwork.
+Android 12+ remains mark-only inside its circular safe zone. Pre-12 Android and
+iOS center a 256x272dp/pt transparent mark + Arrowword lockup, with 192dp/pt-wide
+mark, 32dp/pt text gap and 30dp/pt wordmark. Bundled Bitstream Vera Sans Bold
+(`assets/branding/fonts/`, license included) provides identical raster typography,
+not a runtime font/dependency. iOS uses asset-catalog light/dark appearances.
+Validate actual iOS launch/asset compilation later on macOS/Xcode.
+Pixel/geometry checks: `python -m unittest discover -s tool -p test_branding.py`.
 
 Android uses Flutter SDK defaults (currently min 24 / target 36), with INTERNET
 and dependency-required network/ad permissions. iOS deployment target is 15.0.

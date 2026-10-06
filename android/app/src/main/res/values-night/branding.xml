@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Graphite from ArrowwordTheme; light neutral is splash-only. Generated. -->
+<resources>
+    <color name="arrowword_graphite">#18191C</color>
+    <color name="arrowword_splash_background">#18191C</color>
+</resources>
