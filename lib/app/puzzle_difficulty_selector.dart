@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../features/puzzle/domain/puzzle_difficulty.dart';
+import '../theme/arrowword_visuals.dart';
 
 class PuzzleDifficultySelector extends StatelessWidget {
   const PuzzleDifficultySelector({
@@ -18,7 +19,20 @@ class PuzzleDifficultySelector extends StatelessWidget {
         for (final difficulty in PuzzleDifficulty.values)
           ButtonSegment(
             value: difficulty,
-            label: Text(difficulty.turkishLabel),
+            label: Text(
+              difficulty.turkishLabel,
+              style: difficulty == selected
+                  ? TextStyle(
+                      color: ArrowwordVisuals.of(context).difficultyAccent(
+                        difficulty,
+                        Theme.of(context).colorScheme,
+                      ),
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
+                      decorationThickness: 2,
+                    )
+                  : null,
+            ),
           ),
       ],
       selected: {selected},

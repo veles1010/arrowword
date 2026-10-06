@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../theme/arrowword_visuals.dart';
+
 import '../domain/puzzle.dart';
 import '../domain/puzzle_game.dart';
 import '../domain/puzzle_score.dart';
@@ -342,6 +344,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     final bounds = widget.puzzle.displayBounds;
     final keyboardOpen = MediaQuery.viewInsetsOf(c).bottom > 0;
     return Scaffold(
+      backgroundColor: ArrowwordVisuals.of(c).puzzlePage,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         toolbarHeight: widget.subtitle == null
@@ -547,8 +550,9 @@ class _Cell extends StatelessWidget {
   @override
   Widget build(BuildContext c) {
     final cs = Theme.of(c).colorScheme;
+    final visuals = ArrowwordVisuals.of(c);
     if (cell.type == PuzzleCellType.blocked) {
-      return ColoredBox(color: cs.surface.withValues(alpha: 0.35));
+      return ColoredBox(color: visuals.unused);
     }
     if (cell.type == PuzzleCellType.clue) {
       final a = cell.clues.first;
@@ -557,8 +561,8 @@ class _Cell extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
-            color: cs.tertiaryContainer,
-            border: Border.all(color: cs.outlineVariant),
+            color: visuals.clue,
+            border: Border.all(color: visuals.gridBorder),
           ),
           child: Semantics(
             label:
@@ -598,8 +602,8 @@ class _Cell extends StatelessWidget {
           : selected
           ? cs.primary
           : game.isActive(p)
-          ? cs.secondary
-          : cs.outlineVariant.withValues(alpha: 0.7),
+          ? visuals.activeBorder
+          : visuals.gridBorder,
       width: selected
           ? 2.5
           : game.isActive(p)
@@ -616,17 +620,23 @@ class _Cell extends StatelessWidget {
               : selected
               ? cs.primary
               : game.isActive(p)
-              ? cs.secondaryContainer
+              ? hinted
+                    ? visuals.hintActive
+                    : visuals.active
               : hinted
               ? cs.primaryContainer
-              : cs.surfaceContainerLowest,
+              : visuals.cell,
           border: Border(
             top: edge,
             left: edge,
             right: edge,
             bottom: hinted
                 ? BorderSide(
-                    color: selected ? cs.onPrimary : cs.primary,
+                    color: bad
+                        ? cs.error
+                        : selected
+                        ? cs.onPrimary
+                        : cs.primary,
                     width: 3,
                   )
                 : edge,

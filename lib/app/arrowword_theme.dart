@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/arrowword_visuals.dart';
+
 /// Blue identity with neutral surfaces; semantic roles also style puzzle cells.
 abstract final class ArrowwordTheme {
   static const arrowBlue = Color(0xff3478f6);
@@ -69,6 +71,7 @@ abstract final class ArrowwordTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      extensions: [ArrowwordVisuals.forScheme(scheme)],
       scaffoldBackgroundColor: scheme.surface,
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,

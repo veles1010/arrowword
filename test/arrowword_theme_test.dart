@@ -1,4 +1,5 @@
 import 'package:arrowword/app/arrowword_theme.dart';
+import 'package:arrowword/theme/arrowword_visuals.dart';
 import 'package:arrowword/features/puzzle/data/manual_puzzle.dart';
 import 'package:arrowword/features/puzzle/domain/puzzle.dart';
 import 'package:arrowword/features/puzzle/presentation/puzzle_screen.dart';
@@ -78,7 +79,10 @@ void main() {
         await tester.tap(cell(const GridPosition(3, 2)));
         await tester.pump();
         expect(box(const GridPosition(3, 2)).color, theme.colorScheme.primary);
-        expect(box(hint).color, theme.colorScheme.secondaryContainer);
+        expect(
+          box(hint).color,
+          theme.extension<ArrowwordVisuals>()!.hintActive,
+        );
         expect((box(hint).border! as Border).bottom.width, 3);
         await tester.tap(cell(hint));
         await tester.pump();

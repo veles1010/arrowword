@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/arrowword_visuals.dart';
+
 import 'player_statistics.dart';
 import 'puzzle_session.dart';
 import 'player_puzzle_tracks.dart';
@@ -50,6 +52,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             scores: summary.scores.values,
           );
           final best = statistics.bestScore;
+          final accent = ArrowwordVisuals.of(context)
+              .difficultyAccent(_difficulty, Theme.of(context).colorScheme);
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Center(
@@ -83,6 +87,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           children: [
                             _StatisticCard(
                               key: const ValueKey('statistics-completed'),
+                              iconColor: accent,
                               width: cardWidth,
                               icon: Icons.task_alt,
                               label: 'Tamamlanan bulmaca',
@@ -90,6 +95,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-scored'),
+                              iconColor: accent,
                               width: cardWidth,
                               icon: Icons.scoreboard_outlined,
                               label: 'Puanlanan bulmaca',
@@ -97,6 +103,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-total'),
+                              iconColor: accent,
                               width: cardWidth,
                               icon: Icons.stars_outlined,
                               label: 'Toplam puan',
@@ -104,6 +111,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-average'),
+                              iconColor: accent,
                               width: cardWidth,
                               icon: Icons.calculate_outlined,
                               label: 'Ortalama puan',
@@ -113,6 +121,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-best'),
+                              iconColor: accent,
                               width: cardWidth,
                               icon: Icons.emoji_events_outlined,
                               label: 'En iyi puan',
@@ -125,6 +134,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-hint-free'),
+                              iconColor: accent,
                               width: cardWidth,
                               icon: Icons.lightbulb_outline,
                               label: 'İpuçsuz tamamlanan',
@@ -132,6 +142,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-error-free'),
+                              iconColor: accent,
                               width: cardWidth,
                               icon: Icons.check_circle_outline,
                               label: 'Hatasız tamamlanan',
@@ -205,6 +216,7 @@ class _StatisticCard extends StatelessWidget {
     required this.label,
     required this.value,
     this.detail,
+    this.iconColor,
     super.key,
   });
 
@@ -213,6 +225,7 @@ class _StatisticCard extends StatelessWidget {
   final String label;
   final String value;
   final String? detail;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -224,7 +237,10 @@ class _StatisticCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: Theme.of(context).colorScheme.primary),
+            Icon(
+              icon,
+              color: iconColor ?? Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(height: 8),
             Text(label, style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 8),

@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import '../theme/arrowword_visuals.dart';
+
 import 'package:flutter/material.dart';
 
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
@@ -196,7 +198,11 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                                             ? colors.onPrimaryContainer
                                             : locked
                                             ? colors.outline
-                                            : colors.primary,
+                                            : ArrowwordVisuals.of(context)
+                                                  .difficultyAccent(
+                                                    _difficulty,
+                                                    colors,
+                                                  ),
                                         size: 24,
                                       ),
                                       const SizedBox(height: 4),
@@ -204,7 +210,17 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                                         fit: BoxFit.scaleDown,
                                         child: Text(
                                           'Bulmaca $index',
-                                          style: const TextStyle(fontSize: 16),
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: isCurrent
+                                                ? FontWeight.w600
+                                                : FontWeight.normal,
+                                            color: isCurrent
+                                                ? colors.onPrimaryContainer
+                                                : locked
+                                                ? colors.onSurfaceVariant
+                                                : colors.onSurface,
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(height: 4),
