@@ -82,10 +82,11 @@ class PuzzleSession extends ChangeNotifier {
     // Validate identity before recovery can clear a store. Never cross-track reset.
     generator = _generatorForTrack(difficulty, generator, store);
     if (developmentIndex != null) {
-      if (difficulty != PuzzleDifficulty.easy) {
-        throw ArgumentError('Development puzzle override is Easy-only.');
-      }
-      return PuzzleSession(generator: generator, startIndex: developmentIndex);
+      return PuzzleSession(
+        generator: generator,
+        startIndex: developmentIndex,
+        difficulty: difficulty,
+      );
     }
     try {
       final raw = await store.read();

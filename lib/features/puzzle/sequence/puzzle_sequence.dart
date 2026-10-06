@@ -42,6 +42,7 @@ class PuzzleSequenceConfig {
       WordDifficulty.hard,
     },
     this.generation = const PuzzleGenerationConfig(),
+    this.puzzleIdPrefix,
   });
   final int baseSeed, cooldownPuzzles;
   final bool usageBalancingEnabled;
@@ -53,6 +54,9 @@ class PuzzleSequenceConfig {
   final int successfulSupportAttempts;
   final Set<WordDifficulty> allowedDifficulties;
   final PuzzleGenerationConfig generation;
+
+  /// Null preserves the exact legacy Easy generated-v{catalogue.version} IDs.
+  final String? puzzleIdPrefix;
 }
 
 class PuzzleHistoryEntry {
@@ -570,7 +574,7 @@ class PuzzleSequenceGenerator {
             ? 'Prefer <=9 columns first, then quality >=3500 / <=3 leaves, then quality + 180 per target answer - 400 for 10 columns among $successes successful stages; stop at quality 3900 / <=9 columns / <=3 leaves or ${config.successfulSupportAttempts} successes.'
             : 'First valid complete tier.',
         puzzle: Puzzle(
-          id: 'generated-v${catalogue.version}-${puzzleIndex.toString().padLeft(6, '0')}',
+          id: '${config.puzzleIdPrefix ?? 'generated-v${catalogue.version}'}-${puzzleIndex.toString().padLeft(6, '0')}',
           label: 'Bulmaca $puzzleIndex',
           rowCount: board.rowCount,
           columnCount: board.columnCount,

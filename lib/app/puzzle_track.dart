@@ -1,4 +1,5 @@
 import '../features/puzzle/data/prototype_puzzle.dart';
+import '../features/puzzle/data/difficulty_puzzles.dart';
 import '../features/puzzle/domain/puzzle_difficulty.dart';
 import '../features/puzzle/sequence/puzzle_sequence.dart';
 import 'puzzle_progress_store.dart';
@@ -8,7 +9,7 @@ PuzzleSequenceGenerator _legacyEasyGenerator() =>
     PuzzleSequenceGenerator(prototypeCatalogue, prototypeSequenceConfig);
 
 /// Future content/sequence policy enters through this factory, not shared state.
-/// No Medium/Hard seeds, IDs, catalogues or puzzle rules are guessed here.
+/// Versioned Medium/Hard providers live in difficulty_puzzles; Easy is unchanged.
 class PuzzleTrackConfiguration {
   const PuzzleTrackConfiguration({
     required this.difficulty,
@@ -23,10 +24,18 @@ class PuzzleTrackConfiguration {
   );
   static const medium = PuzzleTrackConfiguration(
     difficulty: PuzzleDifficulty.medium,
+    createGenerator: createMediumGenerator,
   );
   static const hard = PuzzleTrackConfiguration(
     difficulty: PuzzleDifficulty.hard,
+    createGenerator: createHardGenerator,
   );
+  static PuzzleTrackConfiguration forDifficulty(PuzzleDifficulty difficulty) =>
+      switch (difficulty) {
+        PuzzleDifficulty.easy => easy,
+        PuzzleDifficulty.medium => medium,
+        PuzzleDifficulty.hard => hard,
+      };
 }
 
 /// One lazy session/store per track. Unconfigured tracks do not read, clear,
@@ -52,11 +61,6 @@ class PuzzleTrack {
     if (!isAvailable) {
       return Future.error(
         UnsupportedError('No content provider for ${difficulty.id}.'),
-      );
-    }
-    if (developmentIndex != null && difficulty != PuzzleDifficulty.easy) {
-      return Future.error(
-        ArgumentError('Development puzzle override is Easy-only.'),
       );
     }
     if (_opening != null && _developmentIndex != developmentIndex) {

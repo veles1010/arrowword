@@ -311,8 +311,8 @@ void main() {
   });
 
   for (final configuration in [
-    PuzzleTrackConfiguration.medium,
-    PuzzleTrackConfiguration.hard,
+    const PuzzleTrackConfiguration(difficulty: PuzzleDifficulty.medium),
+    const PuzzleTrackConfiguration(difficulty: PuzzleDifficulty.hard),
   ]) {
     test(
       '${configuration.difficulty.id} is dormant/fresh, not a fake Puzzle 1',
@@ -453,7 +453,7 @@ void main() {
   });
 
   test(
-    'development override remains Easy-only and never changes player save',
+    'default development override remains Easy and never changes player save',
     () async {
       final store = _Store(savedProgress()), spy = _Spy(results);
       final original = store.record;
@@ -482,18 +482,18 @@ void main() {
       expect(store.reads, 0);
       expect(store.writes, 0);
       expect(store.record, original);
-      await expectLater(
-        PuzzleSession.restore(
-          store: PuzzleTrackProgressStore(
-            difficulty: PuzzleDifficulty.medium,
-            store: _Store(),
-          ),
+      final explicitTrack = await PuzzleSession.restore(
+        store: PuzzleTrackProgressStore(
           difficulty: PuzzleDifficulty.medium,
-          generator: _Spy(results),
-          developmentIndex: 2,
+          store: _Store(),
         ),
-        throwsArgumentError,
+        difficulty: PuzzleDifficulty.medium,
+        generator: _Spy(results),
+        developmentIndex: 2,
       );
+      addTearDown(explicitTrack.dispose);
+      expect(explicitTrack.difficulty, PuzzleDifficulty.medium);
+      expect(explicitTrack.store, isNull);
     },
   );
 

@@ -47,11 +47,46 @@ Debug ARROWWORD_PUZZLE_INDEX launches ignore and never overwrite player progress
 Normal progression is architecturally the **Easy** track. Its legacy preference
 key, schema 5, generated-v3 IDs, seeds, content/history and scores are unchanged;
 no migration is needed. Puzzle/progression difficulty is separate from word-level
-difficulty metadata. Medium/Hard have isolated store namespaces and a reusable
-lazy session boundary, but no content provider or player UI yet: they remain
-dormant, not playable. Future content enters via track configuration. Replay uses
-its owning track's history/scores; Daily remains independent. Development index
-overrides remain Easy-only and never write player progression.
+difficulty metadata. Medium/Hard v1 each have 300 new answers, descriptive Turkish
+clues, isolated stores/history and lazy internal providers. They are not exposed
+to players until Milestone 3; normal startup/UI remain Easy-only. Replay uses its
+owning track's history/scores; Daily remains independent.
+
+Medium catalogue/sequence v1 uses base seed `0x4D454431` (MED1), with IDs
+`generated-medium-v1-000001`, etc. Hard v1 uses `0x48415231` (HAR1) and
+`generated-hard-v1-000001`, etc. Both reuse the unchanged seed mixer, 10x10/10-answer
+generator, budgets, quality comparator, strict cooldown 5 and bounded support.
+No answer overlaps exist among the three catalogues. New content is local and
+manually curated, not filtered from Easy or downloaded.
+
+Developer inspection (debug/profile only; no player progress writes):
+
+```bash
+flutter run --profile --dart-define=ARROWWORD_PUZZLE_INDEX=27 --dart-define=ARROWWORD_PUZZLE_DIFFICULTY=medium
+flutter run --profile --dart-define=ARROWWORD_PUZZLE_INDEX=1 --dart-define=ARROWWORD_PUZZLE_DIFFICULTY=medium
+flutter run --profile --dart-define=ARROWWORD_PUZZLE_INDEX=11 --dart-define=ARROWWORD_PUZZLE_DIFFICULTY=medium
+flutter run --profile --dart-define=ARROWWORD_PUZZLE_INDEX=1 --dart-define=ARROWWORD_PUZZLE_DIFFICULTY=hard
+flutter run --profile --dart-define=ARROWWORD_PUZZLE_INDEX=27 --dart-define=ARROWWORD_PUZZLE_DIFFICULTY=hard
+flutter run --profile --dart-define=ARROWWORD_PUZZLE_INDEX=19 --dart-define=ARROWWORD_PUZZLE_DIFFICULTY=hard
+dart run tool/inspect_tracks.dart medium 30
+dart run tool/inspect_tracks.dart hard 30
+```
+
+Difficulty defaults to Easy and is ignored unless the index override is present.
+Release never enables it; debug and profile support direct, memory-only playtests.
+The puzzle title identifies its track/index and development mode. Completion
+shows an unsaved attempt score, with no progression/Next action. Invalid supplied
+defines show a development error without opening player stores.
+A developer index reconstructs only that track's
+prefix once; a high index may take time before the board appears. Stop the previous
+run and launch again when changing defines: hot reload cannot change them.
+Track diagnostics gate counts, clue leakage/duplicates, crossability,
+strict boards and cooldown; timings are observational. Semantic clue ambiguity
+and learner-level appropriateness still require human playtesting.
+See [v1 content and 30-puzzle validation report](docs/difficulty_v1_validation.md)
+for seed locks, coverage, geometry, timing and playtest caveats.
+The [pre-freeze semantic review](docs/difficulty_content_review.md) covers all 600
+pairs, clue-only corrections, remaining synonym edges and recommended playtests.
 
 Home's Ayarlar action offers persistent System/Light/Dark Material 3 themes and
 installed version/build information. Settings use a separate preference key;
