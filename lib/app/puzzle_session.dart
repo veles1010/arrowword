@@ -131,8 +131,10 @@ class PuzzleSession extends ChangeNotifier {
                 store: store,
                 difficulty: difficulty,
               );
-        if (!session.current.isSuccess ||
-            session.current.puzzle!.id != saved.puzzleId ||
+        // A bounded generation failure is not evidence that valid save data is
+        // corrupt. Keep it intact so a later open can retry deterministically.
+        if (!session.current.isSuccess) return session;
+        if (session.current.puzzle!.id != saved.puzzleId ||
             session.current.generation!.metrics!.structuralSignature !=
                 saved.signature) {
           session.dispose();

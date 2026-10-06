@@ -10,12 +10,17 @@ import 'daily_landing_screen.dart';
 import 'fluid_navigation_bar.dart';
 import 'home_screen.dart';
 import 'puzzle_session.dart';
+import 'player_puzzle_tracks.dart';
+import '../features/puzzle/domain/puzzle_difficulty.dart';
 import 'puzzle_progression_screen.dart';
 import 'statistics_screen.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({
-    required this.session,
+    this.session,
+    this.tracks,
+    this.trackPuzzleBuilder,
+    this.trackReplayBuilder,
     required this.puzzleBuilder,
     this.dailySession,
     this.settings,
@@ -23,7 +28,10 @@ class AppShell extends StatefulWidget {
     this.selectionHaptic,
     super.key,
   });
-  final PuzzleSession session;
+  final PuzzleSession? session;
+  final PlayerPuzzleTracks? tracks;
+  final Widget Function(PuzzleDifficulty)? trackPuzzleBuilder;
+  final Widget Function(PuzzleDifficulty, int)? trackReplayBuilder;
   final WidgetBuilder puzzleBuilder;
   final DailySession? dailySession;
   final AppSettings? settings;
@@ -85,6 +93,8 @@ class _AppShellState extends State<AppShell>
           children: [
             HomeScreen(
               session: widget.session,
+              tracks: widget.tracks,
+              onChooseDifficulty: () => _select(1),
               dailySession: widget.dailySession,
               settings: widget.settings,
               puzzleBuilder: widget.puzzleBuilder,
@@ -93,6 +103,9 @@ class _AppShellState extends State<AppShell>
             ),
             PuzzleProgressionScreen(
               session: widget.session,
+              tracks: widget.tracks,
+              trackPuzzleBuilder: widget.trackPuzzleBuilder,
+              trackReplayBuilder: widget.trackReplayBuilder,
               puzzleBuilder: widget.puzzleBuilder,
               rewardedAdFactory: widget.rewardedAdFactory,
               inShell: true,
@@ -103,6 +116,7 @@ class _AppShellState extends State<AppShell>
             ),
             StatisticsScreen(
               session: widget.session,
+              tracks: widget.tracks,
               dailySession: widget.dailySession,
               inShell: true,
             ),

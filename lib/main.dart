@@ -5,6 +5,8 @@ import 'app/app.dart';
 import 'app/app_settings.dart';
 import 'app/development_puzzle.dart';
 import 'app/puzzle_track.dart';
+import 'app/puzzle_session.dart';
+import 'app/player_puzzle_tracks.dart';
 import 'app/daily_session.dart';
 import 'app/daily_progress_store.dart';
 import 'features/puzzle/ads/google_rewarded_hint_ad_service.dart';
@@ -54,12 +56,15 @@ Future<void> main() async {
   } catch (_) {}
   // Generate outside widget builds; development replay happens once.
   final startIndex = launch?.index;
-  final session = await PuzzleTrack(
-    configuration: developmentTrackConfiguration(
-      startIndex,
-      launch?.difficulty.id ?? 'easy',
-    ),
-  ).open(developmentIndex: startIndex);
+  final PuzzleSession? session = startIndex == null
+      ? null
+      : await PuzzleTrack(
+          configuration: developmentTrackConfiguration(
+            startIndex,
+            launch?.difficulty.id ?? 'easy',
+          ),
+        ).open(developmentIndex: startIndex);
+  final tracks = startIndex == null ? await PlayerPuzzleTracks.restore() : null;
   // Only metadata is read here. The Daily board is generated lazily on entry.
   final daily = startIndex == null
       ? await DailySession.restore(store: SharedPreferencesDailyProgressStore())
@@ -68,6 +73,7 @@ Future<void> main() async {
   runApp(
     ArrowwordApp(
       session: session,
+      tracks: tracks,
       settings: settings,
       dailySession: daily,
       openPuzzleDirectly: startIndex != null,

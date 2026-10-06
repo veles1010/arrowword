@@ -44,13 +44,22 @@ Debug ARROWWORD_PUZZLE_INDEX launches ignore and never overwrite player progress
 
 ## Local play modes
 
-Normal progression is architecturally the **Easy** track. Its legacy preference
+Normal progression now offers **Kolay / Orta / Zor**, all available from the start
+through Bulmacalar's difficulty selector. Home resumes the last played track;
+browsing or replay does not change that preference. Track progress, history and
+best scores remain isolated; statistics are compared within each difficulty.
+The **Easy** track retains its legacy preference
 key, schema 5, generated-v3 IDs, seeds, content/history and scores are unchanged;
 no migration is needed. Puzzle/progression difficulty is separate from word-level
 difficulty metadata. Medium/Hard v1 each have 300 new answers, descriptive Turkish
-clues, isolated stores/history and lazy internal providers. They are not exposed
-to players until Milestone 3; normal startup/UI remain Easy-only. Replay uses its
+clues, isolated stores/history and lazy providers. Startup, Home and difficulty
+browsing read metadata only; a loading route opens the requested track's current
+board on demand, with no eager preview generation. Replay uses its
 owning track's history/scores; Daily remains independent.
+Last-played preference uses `arrowword.last_puzzle_difficulty` (`easy/medium/hard`);
+missing/invalid values default to Easy. Existing progression schema 5 and Daily
+schema 1 are unchanged. Bounded generation stays synchronous after the loading
+frame; unusually high-index legacy saves may still have a one-time migration cost.
 
 Medium catalogue/sequence v1 uses base seed `0x4D454431` (MED1), with IDs
 `generated-medium-v1-000001`, etc. Hard v1 uses `0x48415231` (HAR1) and

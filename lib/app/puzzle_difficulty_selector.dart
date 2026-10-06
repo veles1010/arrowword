@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+
+import '../features/puzzle/domain/puzzle_difficulty.dart';
+
+class PuzzleDifficultySelector extends StatelessWidget {
+  const PuzzleDifficultySelector({
+    required this.selected,
+    required this.onChanged,
+    super.key,
+  });
+  final PuzzleDifficulty selected;
+  final ValueChanged<PuzzleDifficulty> onChanged;
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: double.infinity,
+    child: SegmentedButton<PuzzleDifficulty>(
+      segments: [
+        for (final difficulty in PuzzleDifficulty.values)
+          ButtonSegment(
+            value: difficulty,
+            label: Text(difficulty.turkishLabel),
+          ),
+      ],
+      selected: {selected},
+      showSelectedIcon: false,
+      onSelectionChanged: (selection) => onChanged(selection.single),
+      style: const ButtonStyle(
+        visualDensity: VisualDensity.standard,
+        minimumSize: WidgetStatePropertyAll(Size(48, 48)),
+      ),
+    ),
+  );
+}

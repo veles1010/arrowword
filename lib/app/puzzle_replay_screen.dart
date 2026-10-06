@@ -12,12 +12,14 @@ class PuzzleReplayScreen extends StatefulWidget {
     required this.puzzleIndex,
     this.rewardedAdFactory,
     this.monotonicNow,
+    this.identifyTrack = false,
     super.key,
   });
   final PuzzleSession session;
   final int puzzleIndex;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final Duration Function()? monotonicNow;
+  final bool identifyTrack;
   @override
   State<PuzzleReplayScreen> createState() => _PuzzleReplayScreenState();
 }
@@ -51,7 +53,11 @@ class _PuzzleReplayScreenState extends State<PuzzleReplayScreen> {
     final attempt = _attempt;
     if (_loading || attempt == null || !attempt.generation.isSuccess) {
       return Scaffold(
-        appBar: AppBar(title: Text('Bulmaca ${widget.puzzleIndex}')),
+        appBar: AppBar(
+          title: Text(
+            '${widget.identifyTrack ? '${widget.session.difficulty.turkishLabel} · ' : ''}Bulmaca ${widget.puzzleIndex}',
+          ),
+        ),
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -71,7 +77,10 @@ class _PuzzleReplayScreenState extends State<PuzzleReplayScreen> {
     final generation = attempt.generation;
     return PuzzleScreen(
       puzzle: generation.puzzle!,
-      title: 'Bulmaca ${widget.puzzleIndex} · Tekrar Oyna',
+      title: widget.identifyTrack
+          ? '${widget.session.difficulty.turkishLabel} · Bulmaca ${widget.puzzleIndex}'
+          : 'Bulmaca ${widget.puzzleIndex} · Tekrar Oyna',
+      subtitle: widget.identifyTrack ? 'Tekrar Oyna' : null,
       rewardedAdFactory: widget.rewardedAdFactory,
       monotonicNow: widget.monotonicNow,
       onAttemptProgress: attempt.updateProgress,

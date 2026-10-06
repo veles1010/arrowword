@@ -2,19 +2,35 @@ import 'package:flutter/material.dart';
 
 import 'player_statistics.dart';
 import 'puzzle_session.dart';
+import 'player_puzzle_tracks.dart';
+import 'puzzle_difficulty_selector.dart';
+import '../features/puzzle/domain/puzzle_difficulty.dart';
 import 'daily_session.dart';
 
-class StatisticsScreen extends StatelessWidget {
+class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({
-    required this.session,
+    this.session,
+    this.tracks,
     this.dailySession,
     this.inShell = false,
     super.key,
   });
 
-  final PuzzleSession session;
+  final PuzzleSession? session;
+  final PlayerPuzzleTracks? tracks;
   final DailySession? dailySession;
   final bool inShell;
+  @override
+  State<StatisticsScreen> createState() => _StatisticsScreenState();
+}
+
+class _StatisticsScreenState extends State<StatisticsScreen> {
+  late PuzzleDifficulty _difficulty =
+      widget.tracks?.lastPlayed ?? PuzzleDifficulty.easy;
+  PuzzleSession? get session => widget.session;
+  PlayerPuzzleTracks? get tracks => widget.tracks;
+  DailySession? get dailySession => widget.dailySession;
+  bool get inShell => widget.inShell;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -24,11 +40,14 @@ class StatisticsScreen extends StatelessWidget {
     ),
     body: SafeArea(
       child: ListenableBuilder(
-        listenable: Listenable.merge([session, ?dailySession]),
+        listenable: Listenable.merge([?session, ?tracks, ?dailySession]),
         builder: (context, _) {
+          final summary =
+              tracks?.summary(_difficulty) ??
+              PuzzleTrackSummary.fromSession(session!);
           final statistics = PlayerStatistics.fromScores(
-            completedThrough: session.completedThrough,
-            scores: session.completedScores.values,
+            completedThrough: summary.completedThrough,
+            scores: summary.scores.values,
           );
           final best = statistics.bestScore;
           return SingleChildScrollView(
@@ -45,6 +64,14 @@ class StatisticsScreen extends StatelessWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        if (tracks != null) ...[
+                          PuzzleDifficultySelector(
+                            selected: _difficulty,
+                            onChanged: (value) =>
+                                setState(() => _difficulty = value),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
                         Text(
                           'Tamamlanan bulmacalar ve kaydedilen en iyi puanlar.',
                           style: Theme.of(context).textTheme.bodyLarge,
@@ -118,6 +145,11 @@ class StatisticsScreen extends StatelessWidget {
                           'Puanı olmayan eski tamamlamalar yalnızca tamamlanan bulmaca sayısına eklenir.',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
+                        if (tracks != null)
+                          Text(
+                            'Puanlar aynı zorluk içinde karşılaştırılır.',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
                         if (dailySession != null) ...[
                           const SizedBox(height: 24),
                           Text(
