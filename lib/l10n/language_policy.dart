@@ -2,10 +2,23 @@
 enum AppLanguagePreference {
   system('system'),
   english('en'),
-  turkish('tr');
+  turkish('tr'),
+  spanish('es'),
+  german('de'),
+  french('fr'),
+  brazilianPortuguese('pt-BR');
 
   const AppLanguagePreference(this.id);
   final String id;
+  String get autonym => switch (this) {
+    system => '',
+    english => 'English',
+    turkish => 'Türkçe',
+    spanish => 'Español',
+    german => 'Deutsch',
+    french => 'Français',
+    brazilianPortuguese => 'Português (Brasil)',
+  };
   static AppLanguagePreference parse(String? value) =>
       values.firstWhere((entry) => entry.id == value, orElse: () => system);
 }
@@ -26,6 +39,10 @@ class LanguagePolicy {
   static const production = LanguagePolicy([
     LocaleAvailability('tr', uiComplete: true, cluesComplete: true),
     LocaleAvailability('en', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('es', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('de', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('fr', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('pt-BR', uiComplete: true, cluesComplete: true),
   ]);
   final List<LocaleAvailability> locales;
   Iterable<String> get enabled =>
@@ -41,6 +58,11 @@ class LanguagePolicy {
         if (candidate.toLowerCase() == canonical) return candidate;
       }
       final base = canonical.split('-').first;
+      if (base == 'pt') {
+        // Bare Portuguese defaults to Brazil; do not reinterpret Portugal.
+        if (canonical == 'pt' && supported.contains('pt-BR')) return 'pt-BR';
+        return supported.contains('en') ? 'en' : null;
+      }
       return supported.contains(base) ? base : null;
     }
 

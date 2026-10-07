@@ -80,7 +80,12 @@ class ArrowwordApp extends StatelessWidget {
             title: 'Arrowword',
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: Locale(preview ?? productionLocale),
+            locale: Locale.fromSubtags(
+              languageCode: (preview ?? productionLocale).split('-').first,
+              countryCode: (preview ?? productionLocale).contains('-')
+                  ? (preview ?? productionLocale).split('-').last
+                  : null,
+            ),
             builder: (context, child) {
               Widget result = child!;
               if (clueResolver != null || clueCache != null) {
@@ -91,7 +96,7 @@ class ArrowwordApp extends StatelessWidget {
                   // the currently loaded UI until the new locale is ready.
                   // Only the explicit development UI-only preview may differ.
                   locale: preview == null
-                      ? Localizations.localeOf(context).languageCode
+                      ? Localizations.localeOf(context).toLanguageTag()
                       : productionLocale,
                   child: result,
                 );

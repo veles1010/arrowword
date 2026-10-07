@@ -6,6 +6,7 @@ import 'package:arrowword/features/puzzle/data/track_catalogue_data.dart';
 import 'package:arrowword/features/puzzle/localization/clue_pack.dart';
 import 'package:arrowword/features/puzzle/localization/english_clue_audit.dart';
 import 'package:arrowword/l10n/language_policy.dart';
+import 'package:arrowword/features/puzzle/localization/localized_clue_audit.dart';
 
 void main(List<String> arguments) {
   final words = [...catalogueWords, ...mediumWords, ...hardWords];
@@ -59,7 +60,8 @@ void main(List<String> arguments) {
   for (final locale in LanguagePolicy.production.locales) {
     if (locale.uiComplete) {
       final ui = jsonDecode(
-        File('lib/l10n/app_${locale.tag}.arb').readAsStringSync(),
+        File('lib/l10n/app_${locale.tag.replaceAll('-', '_')}.arb')
+            .readAsStringSync(),
       ) as Map<String, dynamic>;
       if (ui.length != referenceUi.length ||
           referenceUi.keys.any((k) => !ui.containsKey(k))) {
@@ -74,9 +76,34 @@ void main(List<String> arguments) {
           expected.keys.any((k) => !clues.containsKey(k))) {
         throw StateError('Production clue coverage: ${locale.tag}');
       }
+      if (clues.keys.join('|') != english.keys.join('|')) {
+        throw StateError('Clue key ordering: ${locale.tag}');
+      }
+      if (locale.tag != 'tr' && locale.tag != 'en') {
+        final localized = LocalizedClueAudit(words, clues, english);
+        for (final track in ['easy', 'medium', 'hard']) {
+          stdout.writeln(
+            '${locale.tag}/$track: ${jsonEncode(localized.statistics(track))}',
+          );
+        }
+        stdout.writeln(
+          '${locale.tag}: errors=${localized.errors.length}; root warnings=${localized.rootWarnings.length}; length warnings=${localized.lengthWarnings.length}; punctuation warnings=${localized.punctuationWarnings.length}',
+        );
+        for (final warning in [
+          ...localized.errors,
+          ...localized.rootWarnings,
+          ...localized.lengthWarnings,
+          ...localized.punctuationWarnings,
+        ]) {
+          stdout.writeln(warning);
+        }
+        if (localized.errors.isNotEmpty) {
+          throw StateError('Invalid ${locale.tag} clues');
+        }
+      }
     }
   }
   stdout.writeln(
-    'UI locales: tr, en. Production-complete: ${LanguagePolicy.production.enabled.join(', ')}. Turkish clues: ${actual.length}/900; exact legacy match. English: ${english.length}/900.',
+    'Production-complete: ${LanguagePolicy.production.enabled.join(', ')}. Turkish: exact legacy match. Each pack: 900/900; total: ${LanguagePolicy.production.enabled.length * 900}.',
   );
 }

@@ -251,7 +251,7 @@ void main() {
   test(
     'complete tr/en packs enable gameplay; UI-only locale remains gated',
     () {
-      expect(policy.enabled, ['tr', 'en']);
+      expect(policy.enabled, ['tr', 'en', 'es', 'de', 'fr', 'pt-BR']);
       expect(
         policy.locales.singleWhere((l) => l.tag == 'en').uiComplete,
         isTrue,
@@ -281,10 +281,14 @@ void main() {
     'fi-FI',
   ]) {
     test('production locale $tag resolves coherently with global fallback', () {
-      expect(
-        policy.resolve(AppLanguagePreference.system, [tag]),
-        tag.startsWith('tr') ? 'tr' : 'en',
-      );
+      expect(policy.resolve(AppLanguagePreference.system, [tag]), switch (tag
+          .split('-')
+          .first) {
+        'tr' => 'tr',
+        'de' => 'de',
+        'es' => 'es',
+        _ => 'en',
+      });
       expect(policy.resolve(AppLanguagePreference.english, [tag]), 'en');
       expect(policy.resolve(AppLanguagePreference.turkish, [tag]), 'tr');
     });

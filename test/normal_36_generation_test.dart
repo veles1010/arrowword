@@ -15,12 +15,15 @@ import 'fixtures/normal_end_range_locks.dart';
 void main() {
   final reports = <String, Map<String, Object?>>{};
   final packs = {
-    for (final locale in ['tr', 'en'])
+    for (final locale in ['tr', 'en', 'es', 'de', 'fr', 'pt-BR'])
       locale: decodeCluePack(
         File('assets/clues/$locale.json').readAsStringSync(),
       ),
   };
-  final resolver = LocalizedClueResolver(packs, completeLocales: {'tr', 'en'});
+  final resolver = LocalizedClueResolver(
+    packs,
+    completeLocales: packs.keys.toSet(),
+  );
   final used = <String, Set<String>>{};
   for (final entry in {
     'easy': () =>
@@ -62,6 +65,12 @@ void main() {
                 isNot(answer.turkishClue),
               );
               (used[entry.key] ??= {}).add(answer.clueId!);
+              for (final locale in packs.keys) {
+                expect(
+                  resolver.resolve(answer.clueId!, locale),
+                  packs[locale]![answer.clueId],
+                );
+              }
             }
             expect(puzzleStructuralSignature(puzzle), signature);
             expect(
@@ -117,7 +126,7 @@ void main() {
     expect(packs['en'], hasLength(900));
     expect(used.keys.toSet(), {'easy', 'medium', 'hard'});
     stdout.writeln(
-      'English IDs used by 108 boards: $total/900; per track ${used.map((track, ids) => MapEntry(track, ids.length))}',
+      'Clue IDs resolved in all six locales across 108 boards: $total/900; per track ${used.map((track, ids) => MapEntry(track, ids.length))}',
     );
   });
 }

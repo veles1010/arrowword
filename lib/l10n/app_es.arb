@@ -1,0 +1,357 @@
+{
+  "@@locale": "es",
+  "home": "Inicio",
+  "puzzles": "Puzles",
+  "daily": "Diario",
+  "statistics": "Estadísticas",
+  "settings": "Ajustes",
+  "about": "Acerca de",
+  "appearance": "Apariencia",
+  "theme": "Tema",
+  "system": "Sistema",
+  "light": "Claro",
+  "dark": "Oscuro",
+  "appInformation": "Información de la app",
+  "easy": "Fácil",
+  "medium": "Medio",
+  "hard": "Difícil",
+  "puzzle": "Puzle",
+  "clear": "Borrar",
+  "check": "Comprobar",
+  "continueGame": "Continuar",
+  "start": "Empezar",
+  "replay": "Volver a jugar",
+  "replayLower": "repetición",
+  "play": "Jugar",
+  "resume": "Continuar",
+  "dailyTitle": "Puzle diario",
+  "dailyHistory": "Historial diario",
+  "seeResult": "Ver resultado",
+  "share": "Compartir",
+  "returnHome": "Volver al inicio",
+  "returnPuzzles": "Volver a los puzles",
+  "chooseDifficulty": "Elegir dificultad",
+  "viewPuzzles": "Ver puzles",
+  "nextPuzzle": "Siguiente puzle",
+  "close": "Cerrar",
+  "back": "Volver",
+  "closeSession": "Cerrar sesión de juego",
+  "restart": "Empezar de nuevo",
+  "retry": "Reintentar",
+  "locked": "Bloqueado",
+  "completed": "Completado",
+  "completedLower": "completado",
+  "score": "Puntuación",
+  "time": "Tiempo",
+  "hints": "Pistas",
+  "wrongChecks": "Comprobaciones fallidas",
+  "best": "Mejor",
+  "thisAttempt": "Este intento",
+  "newRecord": "¡Nuevo récord!",
+  "puzzleCompleted": "¡Puzle completado!",
+  "dailyCompleted": "¡Puzle diario completado!",
+  "rewardHint": "Revelar con anuncio",
+  "adLoading": "Cargando anuncio",
+  "adUnavailable": "No hay anuncios disponibles. Inténtalo de nuevo.",
+  "puzzleLoading": "Preparando puzle…",
+  "puzzlePreparing": "Preparando puzle",
+  "dailyPreparing": "Preparando el puzle diario",
+  "generationError": "No se pudo preparar el puzle. Inténtalo de nuevo.",
+  "shareError": "No se pudo compartir el resultado. Inténtalo de nuevo.",
+  "dailyUnavailable": "El puzle diario no está disponible en esta sesión.",
+  "emptyHistory": "Aún no has completado ningún puzle diario.",
+  "noScore": "Todavía no",
+  "completedPuzzles": "Puzles completados",
+  "scoredPuzzles": "Puzles con puntuación",
+  "totalScore": "Puntuación total",
+  "averageScore": "Puntuación media",
+  "bestScore": "Mejor puntuación",
+  "hintFree": "Sin pistas",
+  "errorFree": "Sin errores",
+  "dailyStatistics": "Puzles diarios",
+  "dailyCount": "Diarios completados",
+  "currentStreak": "Racha actual",
+  "longestStreak": "Racha más larga",
+  "statisticsIntro": "Puzles completados y mejores puntuaciones guardadas.",
+  "statisticsExplanation": "Las estadísticas usan la mejor puntuación guardada de cada puzle. Los anteriores sin puntuación solo cuentan como completados.",
+  "withinDifficulty": "Compara puntuaciones de la misma dificultad.",
+  "hintLocked": "Revelada con pista, bloqueada",
+  "development": "Desarrollo · El progreso no se guarda",
+  "allCorrect": "Todas las letras son correctas.",
+  "legacyScore": "Este puzle se completó antes de introducir las puntuaciones.",
+  "appDescription": "Descubre palabras en inglés mediante pistas. Puzles de progresión, repeticiones y un puzle diario.",
+  "workingName": "Arrowword es un nombre provisional; el nombre definitivo aún no está decidido.",
+  "versionLoading": "Cargando información de versión…",
+  "versionUnavailable": "La información de versión no está disponible ahora.",
+  "puzzleNumber": "Puzle {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty} · Puzle {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "Puzle {number} · Repetición",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "¡Nivel {difficulty} completado!",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "{completed} / {total} completados",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score} puntos",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "Completado hoy · {score} puntos",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "{count, plural, =1{Racha de 1 día} other{Racha de {count} días}}",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "{count, plural, =1{1 puzle completado} other{{count} puzles completados}}",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "Versión {version} · Compilación {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "Puzle {number} · {seconds} s",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "Registro anterior · {seconds} s",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration} · {hints, plural, =1{1 pista} other{{hints} pistas}} · {checks, plural, =1{1 comprobación fallida} other{{checks} comprobaciones fallidas}}",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue} ({length})",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}, {length, plural, =1{1 letra} other{{length} letras}}, {direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "horizontal",
+  "down": "vertical",
+  "tileSemantics": "Puzle {number}, {status}{completed, select, yes{, completado} other{}}{scored, select, yes{, {score} puntos} other{}}{replayable, select, yes{, repetición} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label}: {score}\n{hasBest, select, yes{Mejor: {best}\n} other{}}Tiempo: {duration}\nPistas: {hints}\nComprobaciones fallidas: {checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — Puzle diario\n{date}\n\nPuntuación: {score}\nTiempo: {duration}\nPistas: {hints}\nComprobaciones fallidas: {checks}{hasStreak, select, yes{\nRacha: {streak, plural, =1{1 día} other{{streak} días}}} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{day} de {month} de {year}",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "Esta pista no está disponible ahora.",
+  "uiPreview": "Desarrollo · Solo vista previa de la interfaz inglesa",
+  "invalidDevConfig": "No se puede abrir el puzle de desarrollo.\nARROWWORD_PUZZLE_INDEX debe estar entre 1 y {count}.\nARROWWORD_PUZZLE_DIFFICULTY: easy, medium o hard.",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "enero",
+  "month2": "febrero",
+  "month3": "marzo",
+  "month4": "abril",
+  "month5": "mayo",
+  "month6": "junio",
+  "month7": "julio",
+  "month8": "agosto",
+  "month9": "septiembre",
+  "month10": "octubre",
+  "month11": "noviembre",
+  "month12": "diciembre",
+  "versionFailed": "No se pudo cargar la información de versión.",
+  "puzzleGenerationFailed": "No se pudo generar el puzle. Inténtalo de nuevo.",
+  "replayGenerationFailed": "No se pudo reconstruir el puzle. Inténtalo de nuevo.",
+  "dailyGenerationFailed": "No se pudo generar el puzle diario. Inténtalo de nuevo.",
+  "legacyScoringMessage": "Este puzle se completó antes de introducir las puntuaciones.",
+  "restartGame": "Reiniciar",
+  "emptyProgress": "Aún no hay puzles completados",
+  "language": "Idioma",
+  "systemDefault": "Predeterminado del sistema",
+  "englishName": "English",
+  "turkishName": "Türkçe"
+}

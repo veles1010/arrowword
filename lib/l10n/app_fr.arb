@@ -1,0 +1,357 @@
+{
+  "@@locale": "fr",
+  "home": "Accueil",
+  "puzzles": "Grilles",
+  "daily": "Quotidien",
+  "statistics": "Statistiques",
+  "settings": "Réglages",
+  "about": "À propos",
+  "appearance": "Apparence",
+  "theme": "Thème",
+  "system": "Système",
+  "light": "Clair",
+  "dark": "Sombre",
+  "appInformation": "Informations sur l'application",
+  "easy": "Facile",
+  "medium": "Moyen",
+  "hard": "Difficile",
+  "puzzle": "Grille",
+  "clear": "Effacer",
+  "check": "Vérifier",
+  "continueGame": "Continuer",
+  "start": "Commencer",
+  "replay": "Rejouer",
+  "replayLower": "rejeu",
+  "play": "Jouer",
+  "resume": "Continuer",
+  "dailyTitle": "Grille du jour",
+  "dailyHistory": "Historique quotidien",
+  "seeResult": "Voir le résultat",
+  "share": "Partager",
+  "returnHome": "Retour à l'accueil",
+  "returnPuzzles": "Retour aux grilles",
+  "chooseDifficulty": "Choisir la difficulté",
+  "viewPuzzles": "Voir les grilles",
+  "nextPuzzle": "Grille suivante",
+  "close": "Fermer",
+  "back": "Retour",
+  "closeSession": "Fermer la partie",
+  "restart": "Recommencer",
+  "retry": "Réessayer",
+  "locked": "Verrouillé",
+  "completed": "Terminé",
+  "completedLower": "terminé",
+  "score": "Score",
+  "time": "Temps",
+  "hints": "Indices",
+  "wrongChecks": "Vérifications incorrectes",
+  "best": "Meilleur",
+  "thisAttempt": "Cette tentative",
+  "newRecord": "Nouveau record !",
+  "puzzleCompleted": "Grille terminée !",
+  "dailyCompleted": "Grille du jour terminée !",
+  "rewardHint": "Révéler avec pub",
+  "adLoading": "Chargement de la pub",
+  "adUnavailable": "Aucune publicité disponible. Réessayez plus tard.",
+  "puzzleLoading": "Préparation de la grille…",
+  "puzzlePreparing": "Préparation de la grille",
+  "dailyPreparing": "Préparation de la grille du jour",
+  "generationError": "Impossible de préparer la grille. Réessayez.",
+  "shareError": "Impossible de partager le résultat. Réessayez.",
+  "dailyUnavailable": "La grille du jour est indisponible dans cette session.",
+  "emptyHistory": "Aucune grille du jour terminée pour le moment.",
+  "noScore": "Pas encore",
+  "completedPuzzles": "Grilles terminées",
+  "scoredPuzzles": "Grilles avec score",
+  "totalScore": "Score total",
+  "averageScore": "Score moyen",
+  "bestScore": "Meilleur score",
+  "hintFree": "Terminées sans indice",
+  "errorFree": "Terminées sans erreur",
+  "dailyStatistics": "Grilles du jour",
+  "dailyCount": "Grilles du jour terminées",
+  "currentStreak": "Série actuelle",
+  "longestStreak": "Plus longue série",
+  "statisticsIntro": "Grilles terminées et meilleurs scores enregistrés.",
+  "statisticsExplanation": "Les statistiques utilisent le meilleur score enregistré de chaque grille. Les anciennes réussites sans score comptent seulement parmi les grilles terminées.",
+  "withinDifficulty": "Comparez les scores d'une même difficulté.",
+  "hintLocked": "Révélée par un indice, verrouillée",
+  "development": "Développement · Progression non enregistrée",
+  "allCorrect": "Toutes les lettres sont correctes.",
+  "legacyScore": "Cette grille a été terminée avant l'introduction des scores.",
+  "appDescription": "Découvrez des mots anglais grâce aux indices. Grilles de progression, rejeu et grille du jour.",
+  "workingName": "Arrowword est un nom provisoire ; le nom définitif n'est pas encore choisi.",
+  "versionLoading": "Chargement de la version…",
+  "versionUnavailable": "Les informations de version sont indisponibles.",
+  "puzzleNumber": "Grille {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty} · Grille {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "Grille {number} · Rejeu",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "Parcours {difficulty} terminé !",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "{completed} / {total} terminées",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score} points",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "Terminé aujourd'hui · {score} points",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "{count, plural, =1{Série de 1 jour} other{Série de {count} jours}}",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "{count, plural, =1{1 grille terminée} other{{count} grilles terminées}}",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "Version {version} · Build {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "Grille {number} · {seconds} s",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "Ancien résultat · {seconds} s",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration} · {hints, plural, =1{1 indice} other{{hints} indices}} · {checks, plural, =1{1 vérification incorrecte} other{{checks} vérifications incorrectes}}",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue} ({length})",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}, {length, plural, =1{1 lettre} other{{length} lettres}}, {direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "horizontalement",
+  "down": "verticalement",
+  "tileSemantics": "Grille {number}, {status}{completed, select, yes{, terminée} other{}}{scored, select, yes{, {score} points} other{}}{replayable, select, yes{, rejouable} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label} : {score}\n{hasBest, select, yes{Meilleur : {best}\n} other{}}Temps : {duration}\nIndices : {hints}\nVérifications incorrectes : {checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — Grille du jour\n{date}\n\nScore : {score}\nTemps : {duration}\nIndices : {hints}\nVérifications incorrectes : {checks}{hasStreak, select, yes{\nSérie : {streak, plural, =1{1 jour} other{{streak} jours}}} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{day} {month} {year}",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "Cet indice est actuellement indisponible.",
+  "uiPreview": "Développement · Aperçu de l'interface anglaise uniquement",
+  "invalidDevConfig": "Impossible d'ouvrir la grille de développement.\nARROWWORD_PUZZLE_INDEX doit être compris entre 1 et {count}.\nARROWWORD_PUZZLE_DIFFICULTY : easy, medium ou hard.",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "janvier",
+  "month2": "février",
+  "month3": "mars",
+  "month4": "avril",
+  "month5": "mai",
+  "month6": "juin",
+  "month7": "juillet",
+  "month8": "août",
+  "month9": "septembre",
+  "month10": "octobre",
+  "month11": "novembre",
+  "month12": "décembre",
+  "versionFailed": "Impossible de charger les informations de version.",
+  "puzzleGenerationFailed": "Impossible de générer la grille. Réessayez.",
+  "replayGenerationFailed": "Impossible de reconstruire la grille. Réessayez.",
+  "dailyGenerationFailed": "Impossible de générer la grille du jour. Réessayez.",
+  "legacyScoringMessage": "Cette grille a été terminée avant l'introduction des scores.",
+  "restartGame": "Recommencer",
+  "emptyProgress": "Aucune grille terminée pour le moment",
+  "language": "Langue",
+  "systemDefault": "Langue du système",
+  "englishName": "English",
+  "turkishName": "Türkçe"
+}

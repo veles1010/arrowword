@@ -1,6 +1,6 @@
 # Arrowword Flutter prototype
 
-“Arrowword” is a working name. English answers use Turkish or English clues. The responsive
+“Arrowword” is a working name. English answers use localized clues. The responsive
 Material 3 board supports crossings, native keyboard input, validation, reset and
 completion. The manual puzzle remains an unchanged regression fixture.
 
@@ -251,20 +251,24 @@ Sample AdMob IDs remain TEST-only; no backend/global leaderboard is configured.
 ## Localization
 
 Answers are always English; board geometry, seeds, IDs and progression are
-language-independent. UI strings use Flutter `gen_l10n` (`app_tr.arb` / `app_en.arb`).
-Clues are separate presentation packs: `assets/clues/tr.json` and
-`assets/clues/en.json` each cover all 900 entries, keyed by frozen catalogue positions
+language-independent. UI strings use Flutter `gen_l10n`. Six separate clue packs
+(tr, en, es, de, fr, pt-BR) each cover all 900 entries: 5,400 clues in total,
+keyed by frozen catalogue positions
 (`easy_v3_000001`, `medium_v1_000001`, `hard_v1_000001`, etc.). Legacy content IDs
 and Turkish catalogue fields remain intact; generation never loads locale assets.
 
-Turkish and English are production-complete. Settings offers System Default,
-English and Türkçe. Preferences are separate (`system` / `en` / `tr` under
-`arrowword.settings.language`); invalid/missing values resolve to System. Turkish
-devices use Turkish, English devices use English, and unsupported device languages
-fall back to English. Explicit selection wins. UI and clues use the same production
-locale, including Daily/share text; switching language never changes boards or saves.
-Both compact packs are cached once at first gameplay entry, not decoded by menus
-or cells. Future complete locale packs reuse these stable IDs and availability policy.
+Turkish, English, Spanish, German, French and Brazilian Portuguese are complete.
+Settings offers System Default and autonyms English, Türkçe, Español, Deutsch,
+Français, Português (Brasil). Stable preferences (`system`, `en`, `tr`, `es`, `de`,
+`fr`, `pt-BR`) use `arrowword.settings.language`; invalid/missing values use System.
+Supported device languages match their base language; pt-BR and bare pt use Brazil,
+but pt-PT and other regional Portuguese variants fall back to English. Unsupported
+languages also use English. Explicit selection wins. UI and clues stay paired,
+including Daily/share; switching preserves boards and attempt state.
+Menus load no clue packs. New packs are cached once on demand; the existing tr/en
+pair stays cached together. Flutter requires a Brazilian-text base `app_pt.arb` for
+gen_l10n, but it is not a separate production locale. Future packs reuse stable IDs;
+Asian languages are planned, not supported yet.
 
 Developer UI-only review (debug/profile, ignored in release, never saves language):
 `flutter run --profile --dart-define=ARROWWORD_UI_LOCALE=en`
@@ -275,3 +279,4 @@ Run `flutter gen-l10n` after UI edits and
 `dart run tool/validate_localization.dart` to verify coverage/exact Turkish sync.
 `--extract-tr` regenerates the pack from approved catalogue text; it does not translate.
 English editorial decisions/statistics are recorded in `docs/english_clue_review.md`.
+The four new packs have separate editorial review documents under `docs/`.

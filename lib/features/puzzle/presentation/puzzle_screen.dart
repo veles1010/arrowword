@@ -145,6 +145,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
   void _syncTimer() {
     if (_appActive &&
+        !ClueLoadingScope.of(context) &&
         _routeVisible &&
         !requestingHint &&
         !shown &&

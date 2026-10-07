@@ -69,14 +69,15 @@ class SettingsScreen extends StatelessWidget {
                       value: AppLanguagePreference.system,
                       child: Text(context.l10n.systemDefault),
                     ),
-                    DropdownMenuItem(
-                      value: AppLanguagePreference.english,
-                      child: Text(context.l10n.englishName),
-                    ),
-                    DropdownMenuItem(
-                      value: AppLanguagePreference.turkish,
-                      child: Text(context.l10n.turkishName),
-                    ),
+                    for (final preference in AppLanguagePreference.values)
+                      if (preference != AppLanguagePreference.system &&
+                          LanguagePolicy.production.enabled.contains(
+                            preference.id,
+                          ))
+                        DropdownMenuItem(
+                          value: preference,
+                          child: Text(preference.autonym),
+                        ),
                   ],
                   onChanged: (value) {
                     if (value != null) controller.setPreference(value);

@@ -72,9 +72,17 @@ void main() {
   final enSource = File('assets/clues/en.json').readAsStringSync();
   final trSource = File('assets/clues/tr.json').readAsStringSync();
   final en = decodeCluePack(enSource), tr = decodeCluePack(trSource);
+  final packs = {
+    'tr': tr,
+    'en': en,
+    for (final locale in ['es', 'de', 'fr', 'pt-BR'])
+      locale: decodeCluePack(
+        File('assets/clues/$locale.json').readAsStringSync(),
+      ),
+  };
   final resolver = LocalizedClueResolver(
-    {'tr': tr, 'en': en},
-    completeLocales: {'tr', 'en'},
+    packs,
+    completeLocales: packs.keys.toSet(),
   );
   final audit = EnglishClueAudit(words, en);
   late List<SequencePuzzleResult> fixtures;
@@ -216,15 +224,25 @@ void main() {
       expect(clue('STEM'), startsWith('Arise'));
     },
   );
-  test('production complete locale registry is tr/en only', () {
-    expect(LanguagePolicy.production.enabled, ['tr', 'en']);
-    expect(
-      LanguagePolicy.production.locales.every(
-        (l) => l.uiComplete && l.cluesComplete,
-      ),
-      isTrue,
-    );
-  });
+  test(
+    'production complete locale registry includes all six complete packs',
+    () {
+      expect(LanguagePolicy.production.enabled, [
+        'tr',
+        'en',
+        'es',
+        'de',
+        'fr',
+        'pt-BR',
+      ]);
+      expect(
+        LanguagePolicy.production.locales.every(
+          (l) => l.uiComplete && l.cluesComplete,
+        ),
+        isTrue,
+      );
+    },
+  );
   for (final tag in [
     'tr',
     'tr-TR',
@@ -238,12 +256,17 @@ void main() {
     'fi-FI',
     'ja-JP',
   ]) {
-    test('System $tag resolves to ${tag.startsWith('tr') ? 'tr' : 'en'}', () {
+    test('System $tag resolves to its complete locale or English fallback', () {
       final policy = LanguagePolicy.production;
-      expect(
-        policy.resolve(AppLanguagePreference.system, [tag]),
-        tag.startsWith('tr') ? 'tr' : 'en',
-      );
+      expect(policy.resolve(AppLanguagePreference.system, [tag]), switch (tag
+          .split('-')
+          .first) {
+        'tr' => 'tr',
+        'de' => 'de',
+        'fr' => 'fr',
+        'es' => 'es',
+        _ => 'en',
+      });
       expect(policy.resolve(AppLanguagePreference.english, [tag]), 'en');
       expect(policy.resolve(AppLanguagePreference.turkish, [tag]), 'tr');
     });
@@ -256,7 +279,7 @@ void main() {
       expect(store.writes, 0);
       expect(
         LanguagePolicy.production.resolve(language.preference, ['de-DE']),
-        'en',
+        'de',
       );
       language.dispose();
     }
@@ -362,20 +385,16 @@ void main() {
           device: device,
           directly: true,
         );
-        final locale = device == 'tr' ? 'tr' : 'en',
+        final locale = ['tr', 'en', 'de', 'fr', 'es'].contains(device)
+                ? device
+                : 'en',
             puzzle = session.current.puzzle!;
         final context = tester.element(find.byType(PuzzleScreen));
         expect(AppLocalizations.of(context)!.localeName, locale);
         for (final answer in puzzle.answers) {
-          expect(
-            find.text((locale == 'tr' ? tr : en)[answer.clueId]!),
-            findsOneWidget,
-          );
+          expect(find.text(packs[locale]![answer.clueId]!), findsOneWidget);
         }
-        expect(
-          find.text(locale == 'tr' ? 'Kontrol Et' : 'Check'),
-          findsOneWidget,
-        );
+        expect(find.text(AppLocalizations.of(context)!.check), findsOneWidget);
         expect(store.writes, 0);
         expect(tester.takeException(), isNull);
       },

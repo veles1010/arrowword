@@ -1,0 +1,357 @@
+{
+  "@@locale": "de",
+  "home": "Start",
+  "puzzles": "Rätsel",
+  "daily": "Täglich",
+  "statistics": "Statistik",
+  "settings": "Einstellungen",
+  "about": "Über die App",
+  "appearance": "Darstellung",
+  "theme": "Design",
+  "system": "System",
+  "light": "Hell",
+  "dark": "Dunkel",
+  "appInformation": "App-Informationen",
+  "easy": "Leicht",
+  "medium": "Mittel",
+  "hard": "Schwer",
+  "puzzle": "Rätsel",
+  "clear": "Leeren",
+  "check": "Prüfen",
+  "continueGame": "Fortsetzen",
+  "start": "Starten",
+  "replay": "Erneut spielen",
+  "replayLower": "Wiederholung",
+  "play": "Spielen",
+  "resume": "Fortsetzen",
+  "dailyTitle": "Tagesrätsel",
+  "dailyHistory": "Tagesverlauf",
+  "seeResult": "Ergebnis ansehen",
+  "share": "Teilen",
+  "returnHome": "Zur Startseite",
+  "returnPuzzles": "Zur Rätselübersicht",
+  "chooseDifficulty": "Schwierigkeit wählen",
+  "viewPuzzles": "Rätsel ansehen",
+  "nextPuzzle": "Nächstes Rätsel",
+  "close": "Schließen",
+  "back": "Zurück",
+  "closeSession": "Spielsitzung schließen",
+  "restart": "Neu beginnen",
+  "retry": "Erneut versuchen",
+  "locked": "Gesperrt",
+  "completed": "Abgeschlossen",
+  "completedLower": "abgeschlossen",
+  "score": "Punkte",
+  "time": "Zeit",
+  "hints": "Hinweise",
+  "wrongChecks": "Fehlprüfungen",
+  "best": "Bestwert",
+  "thisAttempt": "Dieser Versuch",
+  "newRecord": "Neuer Bestwert!",
+  "puzzleCompleted": "Rätsel abgeschlossen!",
+  "dailyCompleted": "Tagesrätsel abgeschlossen!",
+  "rewardHint": "Tipp per Werbung",
+  "adLoading": "Werbung wird geladen",
+  "adUnavailable": "Derzeit ist keine Werbung verfügbar. Bitte erneut versuchen.",
+  "puzzleLoading": "Rätsel wird vorbereitet…",
+  "puzzlePreparing": "Rätsel wird vorbereitet",
+  "dailyPreparing": "Tagesrätsel wird vorbereitet",
+  "generationError": "Das Rätsel konnte nicht vorbereitet werden. Bitte erneut versuchen.",
+  "shareError": "Das Ergebnis konnte nicht geteilt werden. Bitte erneut versuchen.",
+  "dailyUnavailable": "Das Tagesrätsel ist in dieser Sitzung nicht verfügbar.",
+  "emptyHistory": "Noch keine Tagesrätsel abgeschlossen.",
+  "noScore": "Noch keiner",
+  "completedPuzzles": "Abgeschlossene Rätsel",
+  "scoredPuzzles": "Gewertete Rätsel",
+  "totalScore": "Gesamtpunkte",
+  "averageScore": "Durchschnittspunkte",
+  "bestScore": "Höchste Punktzahl",
+  "hintFree": "Ohne Hinweise abgeschlossen",
+  "errorFree": "Ohne Fehler abgeschlossen",
+  "dailyStatistics": "Tagesrätsel",
+  "dailyCount": "Abgeschlossene Tagesrätsel",
+  "currentStreak": "Aktuelle Serie",
+  "longestStreak": "Längste Serie",
+  "statisticsIntro": "Abgeschlossene Rätsel und gespeicherte Bestwerte.",
+  "statisticsExplanation": "Die Statistik nutzt den gespeicherten Bestwert jedes Rätsels. Ältere Abschlüsse ohne Punkte zählen nur als abgeschlossene Rätsel.",
+  "withinDifficulty": "Punkte innerhalb derselben Schwierigkeit vergleichen.",
+  "hintLocked": "Mit Hinweis aufgedeckt, gesperrt",
+  "development": "Entwicklung · Fortschritt wird nicht gespeichert",
+  "allCorrect": "Alle Buchstaben sind richtig.",
+  "legacyScore": "Dieses Rätsel wurde vor Einführung der Wertung abgeschlossen.",
+  "appDescription": "Entdecke englische Wörter anhand von Hinweisen. Fortschrittsrätsel, Wiederholungen und ein Tagesrätsel.",
+  "workingName": "Arrowword ist ein Arbeitstitel; der endgültige Produktname steht noch nicht fest.",
+  "versionLoading": "Versionsinformationen werden geladen…",
+  "versionUnavailable": "Versionsinformationen sind derzeit nicht verfügbar.",
+  "puzzleNumber": "Rätsel {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty} · Rätsel {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "Rätsel {number} · Wiederholung",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "Schwierigkeit {difficulty} abgeschlossen!",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "{completed} / {total} abgeschlossen",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score} Punkte",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "Heute abgeschlossen · {score} Punkte",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "{count, plural, =1{1 Tag in Folge} other{{count} Tage in Folge}}",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "{count, plural, =1{1 Rätsel abgeschlossen} other{{count} Rätsel abgeschlossen}}",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "Version {version} · Build {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "Rätsel {number} · {seconds} s",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "Älterer Eintrag · {seconds} s",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration} · {hints, plural, =1{1 Hinweis} other{{hints} Hinweise}} · {checks, plural, =1{1 Fehlprüfung} other{{checks} Fehlprüfungen}}",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue} ({length})",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}, {length, plural, =1{1 Buchstabe} other{{length} Buchstaben}}, {direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "waagerecht",
+  "down": "senkrecht",
+  "tileSemantics": "Rätsel {number}, {status}{completed, select, yes{, abgeschlossen} other{}}{scored, select, yes{, {score} Punkte} other{}}{replayable, select, yes{, erneut spielbar} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label}: {score}\n{hasBest, select, yes{Bestwert: {best}\n} other{}}Zeit: {duration}\nHinweise: {hints}\nFehlprüfungen: {checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — Tagesrätsel\n{date}\n\nPunkte: {score}\nZeit: {duration}\nHinweise: {hints}\nFehlprüfungen: {checks}{hasStreak, select, yes{\nSerie: {streak, plural, =1{1 Tag} other{{streak} Tage}}} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{day}. {month} {year}",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "Dieser Hinweis ist derzeit nicht verfügbar.",
+  "uiPreview": "Entwicklung · Nur Vorschau der englischen Oberfläche",
+  "invalidDevConfig": "Das Entwicklungsrätsel kann nicht geöffnet werden.\nARROWWORD_PUZZLE_INDEX muss zwischen 1 und {count} liegen.\nARROWWORD_PUZZLE_DIFFICULTY: easy, medium oder hard.",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "Januar",
+  "month2": "Februar",
+  "month3": "März",
+  "month4": "April",
+  "month5": "Mai",
+  "month6": "Juni",
+  "month7": "Juli",
+  "month8": "August",
+  "month9": "September",
+  "month10": "Oktober",
+  "month11": "November",
+  "month12": "Dezember",
+  "versionFailed": "Versionsinformationen konnten nicht geladen werden.",
+  "puzzleGenerationFailed": "Das Rätsel konnte nicht erstellt werden. Bitte erneut versuchen.",
+  "replayGenerationFailed": "Das Rätsel konnte nicht rekonstruiert werden. Bitte erneut versuchen.",
+  "dailyGenerationFailed": "Das Tagesrätsel konnte nicht erstellt werden. Bitte erneut versuchen.",
+  "legacyScoringMessage": "Dieses Rätsel wurde vor Einführung der Wertung abgeschlossen.",
+  "restartGame": "Neustarten",
+  "emptyProgress": "Noch keine Rätsel abgeschlossen",
+  "language": "Sprache",
+  "systemDefault": "Systemstandard",
+  "englishName": "English",
+  "turkishName": "Türkçe"
+}

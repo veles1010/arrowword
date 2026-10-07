@@ -53,18 +53,13 @@ class CluePackGate extends StatelessWidget {
         .dependOnInheritedWidgetOfExactType<CluePresentation>();
     if (source?.cache == null || source?.resolver != null) return child;
     final cache = source!.cache!;
-    return FutureBuilder<LocalizedClueResolver>(
-      future: cache.load(),
-      initialData: cache.ready,
+    return FutureBuilder<LoadedCluePack>(
+      future: cache.loadFor(source.locale),
+      initialData: cache.readyFor(source.locale),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return CluePresentation(
-            resolver: snapshot.data!,
-            locale: source.locale,
-            child: child,
-          );
-        }
-        return Scaffold(
+        final loaded = snapshot.data;
+        final loading = loaded?.locale != source.locale;
+        final pending = Scaffold(
           appBar: AppBar(title: Text(context.l10n.puzzle)),
           body: Center(
             child: snapshot.hasError
@@ -74,7 +69,41 @@ class CluePackGate extends StatelessWidget {
                   ),
           ),
         );
+        // Keep the gameplay State while hiding old clues during a pack switch.
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            if (loaded != null)
+              Offstage(
+                offstage: loading,
+                child: ClueLoadingScope(
+                  loading: loading,
+                  child: CluePresentation(
+                    resolver: loaded.resolver,
+                    locale: loaded.locale,
+                    child: child,
+                  ),
+                ),
+              ),
+            if (loading) pending,
+          ],
+        );
       },
     );
   }
+}
+
+class ClueLoadingScope extends InheritedWidget {
+  const ClueLoadingScope({
+    required this.loading,
+    required super.child,
+    super.key,
+  });
+  final bool loading;
+  static bool of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ClueLoadingScope>()?.loading ??
+      false;
+  @override
+  bool updateShouldNotify(ClueLoadingScope oldWidget) =>
+      loading != oldWidget.loading;
 }

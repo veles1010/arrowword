@@ -65,6 +65,10 @@ flutter:
   assets:
     - assets/clues/tr.json
     - assets/clues/en.json
+    - assets/clues/es.json
+    - assets/clues/de.json
+    - assets/clues/fr.json
+    - assets/clues/pt-BR.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
