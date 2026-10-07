@@ -45,8 +45,13 @@ Debug ARROWWORD_PUZZLE_INDEX launches ignore and never overwrite player progress
 ## Local play modes
 
 Normal progression now offers **Kolay / Orta / Zor**, all available from the start
-through Bulmacalar's difficulty selector. Home resumes the last played track;
-browsing or replay does not change that preference. Track progress, history and
+through Bulmacalar's difficulty selector.
+Each difficulty has **36 puzzles**: **108 main puzzles** in total. All 36 tiles
+are visible in the journey; future puzzles remain locked until reached. Completing
+Puzzle 36 finishes that difficulty, keeps its solved save/replays, and offers no
+Puzzle 37. Daily is separate and not limited by this main-game count.
+Home resumes the last played track; browsing or replay does not change that
+preference. Track progress, history and
 best scores remain isolated; statistics are compared within each difficulty.
 The **Easy** track retains its legacy preference
 key, schema 5, generated-v3 IDs, seeds, content/history and scores are unchanged;
@@ -60,6 +65,14 @@ Last-played preference uses `arrowword.last_puzzle_difficulty` (`easy/medium/har
 missing/invalid values default to Easy. Existing progression schema 5 and Daily
 schema 1 are unchanged. Bounded generation stays synchronous after the loading
 frame; unusually high-index legacy saves may still have a one-time migration cost.
+Pre-contract saves beyond 36 are preserved, shown as 36/36 complete, and never
+generate their out-of-range current board. Verified compact history allows replay
+within 1..36; only an improved replay score writes that archive, preserving its
+original current index/letters/stats/history. Unverifiable archives fail safely
+without deletion. Historical score aggregates are retained; displayed completion
+is capped at 36. No new persistence schema or destructive normalization.
+Full validation: `dart run tool/inspect_tracks.dart --all-normal --repeat`;
+see [36-puzzle validation](docs/normal_36_puzzle_validation.md).
 
 Medium catalogue/sequence v1 uses base seed `0x4D454431` (MED1), with IDs
 `generated-medium-v1-000001`, etc. Hard v1 uses `0x48415231` (HAR1) and
@@ -83,6 +96,7 @@ dart run tool/inspect_tracks.dart hard 30
 
 Difficulty defaults to Easy and is ignored unless the index override is present.
 Release never enables it; debug and profile support direct, memory-only playtests.
+Developer app indexes are restricted to 1..36; lower-level tooling is not.
 The puzzle title identifies its track/index and development mode. Completion
 shows an unsaved attempt score, with no progression/Next action. Invalid supplied
 defines show a development error without opening player stores.

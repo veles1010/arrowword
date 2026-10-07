@@ -6,6 +6,7 @@ import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
 import 'package:arrowword/features/puzzle/domain/puzzle_score.dart';
 import 'package:arrowword/features/puzzle/sequence/puzzle_sequence.dart';
 import 'package:flutter/material.dart';
+import 'package:arrowword/features/puzzle/domain/normal_puzzle_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _Fixtures extends PuzzleSequenceGenerator {
@@ -211,7 +212,7 @@ void main() {
         ),
       ),
     );
-    expect(_value('completed', '4294967295'), findsOneWidget);
+    expect(_value('completed', '$normalPuzzleCount'), findsOneWidget);
     expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.scrollUntilVisible(

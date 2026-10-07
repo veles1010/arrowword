@@ -7,6 +7,7 @@ import 'puzzle_session.dart';
 import 'player_puzzle_tracks.dart';
 import 'puzzle_replay_screen.dart';
 import '../features/puzzle/domain/puzzle_difficulty.dart';
+import '../features/puzzle/domain/normal_puzzle_contract.dart';
 import 'app_shell.dart';
 import 'daily_session.dart';
 import 'app_settings.dart';
@@ -63,9 +64,10 @@ class ArrowwordApp extends StatelessWidget {
                 tracks: tracks,
                 trackPuzzleBuilder: tracks == null
                     ? null
-                    : (difficulty) => _TrackPuzzleFlow(
+                    : (difficulty, onFinished) => _TrackPuzzleFlow(
                         tracks: tracks!,
                         difficulty: difficulty,
+                        onTrackFinished: onFinished,
                         rewardedAdFactory: rewardedAdFactory,
                       ),
                 trackReplayBuilder: tracks == null
@@ -101,17 +103,19 @@ class _PuzzleFlow extends StatelessWidget {
     this.rewardedAdFactory,
     this.developmentOverride = false,
     this.identifyTrack = false,
+    this.onTrackFinished,
   });
   final PuzzleSession session;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final bool developmentOverride;
   final bool identifyTrack;
+  final VoidCallback? onTrackFinished;
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: session,
     builder: (context, _) {
       final generation = session.current;
-      return generation.isSuccess
+      return generation.isSuccess && isNormalPuzzleIndex(generation.puzzleIndex)
           ? PuzzleScreen(
               key: ValueKey(generation.puzzle!.id),
               puzzle: generation.puzzle!,
@@ -122,7 +126,11 @@ class _PuzzleFlow extends StatelessWidget {
               subtitle: developmentOverride
                   ? 'Geliştirme · İlerleme kaydedilmez'
                   : null,
-              onNextPuzzle: developmentOverride ? null : session.nextPuzzle,
+              onNextPuzzle:
+                  developmentOverride ||
+                      generation.puzzleIndex >= normalPuzzleCount
+                  ? null
+                  : session.nextPuzzle,
               initialLetters: session.letters,
               initialRevealedCells: session.revealedCells,
               initialElapsed: session.elapsed,
@@ -173,6 +181,31 @@ class _PuzzleFlow extends StatelessWidget {
                         SystemNavigator.pop();
                       },
                     )
+                  : generation.puzzleIndex == normalPuzzleCount
+                  ? PuzzleCompletionPresentation(
+                      title:
+                          '${session.difficulty.turkishLabel} seviye tamamlandı!',
+                      contentBuilder: (_) {
+                        final score = session.currentScore;
+                        return Text(
+                          score == null
+                              ? 'Bu bulmaca puanlama sistemi eklenmeden önce tamamlandı.'
+                              : puzzleResultDetails(
+                                  score: score.score,
+                                  elapsedSeconds: score.elapsedSeconds,
+                                  hintsUsed: score.hintsUsed,
+                                  wrongChecks: score.wrongChecks,
+                                ),
+                        );
+                      },
+                      actionLabel: onTrackFinished == null
+                          ? 'Geri Dön'
+                          : 'Bulmacalara Dön',
+                      onFinished: () {
+                        Navigator.of(context).maybePop();
+                        onTrackFinished?.call();
+                      },
+                    )
                   : null,
             )
           : Scaffold(
@@ -199,11 +232,13 @@ class _TrackPuzzleFlow extends StatefulWidget {
     required this.difficulty,
     this.replayIndex,
     this.rewardedAdFactory,
+    this.onTrackFinished,
   });
   final PlayerPuzzleTracks tracks;
   final PuzzleDifficulty difficulty;
   final int? replayIndex;
   final RewardedHintAdService Function()? rewardedAdFactory;
+  final VoidCallback? onTrackFinished;
   @override
   State<_TrackPuzzleFlow> createState() => _TrackPuzzleFlowState();
 }
@@ -223,7 +258,10 @@ class _TrackPuzzleFlowState extends State<_TrackPuzzleFlow> {
         if (!mounted) return;
         PuzzleSession? session;
         try {
-          session = await widget.tracks.open(widget.difficulty);
+          session = await widget.tracks.open(
+            widget.difficulty,
+            replay: widget.replayIndex != null,
+          );
         } catch (_) {
           /* Keep internals out of player errors. */
         }
@@ -271,6 +309,7 @@ class _TrackPuzzleFlowState extends State<_TrackPuzzleFlow> {
           : _PuzzleFlow(
               session: session,
               identifyTrack: true,
+              onTrackFinished: widget.onTrackFinished,
               rewardedAdFactory: widget.rewardedAdFactory,
             );
     }

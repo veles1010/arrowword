@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/puzzle/domain/puzzle_difficulty.dart';
 import '../features/puzzle/domain/puzzle_score.dart';
+import '../features/puzzle/domain/normal_puzzle_contract.dart';
 import '../features/puzzle/data/prototype_puzzle.dart'
     show prototypeCatalogueVersion;
 import '../features/puzzle/data/difficulty_puzzles.dart'
@@ -51,6 +52,9 @@ class PuzzleTrackSummary {
   final bool hasLetters;
   final Map<int, CompletedPuzzleScore> scores;
   bool get isFresh => index == 1 && completedThrough == 0 && !hasLetters;
+  int get completedCount => normalCompletedCount(completedThrough);
+  bool get isComplete => completedCount == normalPuzzleCount;
+  int get displayIndex => index.clamp(1, normalPuzzleCount);
   factory PuzzleTrackSummary.fromSession(PuzzleSession session) =>
       PuzzleTrackSummary(
         index: session.current.puzzleIndex,
@@ -138,7 +142,13 @@ class PlayerPuzzleTracks extends ChangeNotifier {
   Future<PuzzleSession> open(
     PuzzleDifficulty difficulty, {
     bool markPlayed = false,
+    bool replay = false,
   }) async {
+    if (!replay &&
+        (summary(difficulty).isComplete ||
+            !isNormalPuzzleIndex(summary(difficulty).index))) {
+      throw StateError('This difficulty track is complete.');
+    }
     var cached = _sessions[difficulty];
     if (cached != null && !cached.current.isSuccess) {
       _sessions.remove(difficulty);

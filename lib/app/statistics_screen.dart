@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../features/puzzle/domain/normal_puzzle_contract.dart';
+
 import '../theme/arrowword_visuals.dart';
 
 import 'player_statistics.dart';
@@ -48,7 +50,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               tracks?.summary(_difficulty) ??
               PuzzleTrackSummary.fromSession(session!);
           final statistics = PlayerStatistics.fromScores(
-            completedThrough: summary.completedThrough,
+            completedThrough: summary.completedCount,
             scores: summary.scores.values,
           );
           final best = statistics.bestScore;
@@ -130,7 +132,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                   'Henüz yok',
                               detail: best == null
                                   ? null
-                                  : 'Bulmaca ${best.puzzleIndex} · ${best.elapsedSeconds} sn',
+                                  : isNormalPuzzleIndex(best.puzzleIndex)
+                                  ? 'Bulmaca ${best.puzzleIndex} · ${best.elapsedSeconds} sn'
+                                  : 'Eski kayıt · ${best.elapsedSeconds} sn',
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-hint-free'),

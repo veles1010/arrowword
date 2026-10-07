@@ -5,6 +5,7 @@ import 'package:arrowword/features/puzzle/content/track_catalogue_audit.dart';
 import 'package:arrowword/features/puzzle/data/difficulty_puzzles.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
 import 'package:arrowword/features/puzzle/domain/puzzle.dart';
+import 'package:arrowword/features/puzzle/domain/normal_puzzle_contract.dart';
 import 'package:arrowword/features/puzzle/generation/puzzle_metrics.dart';
 import 'package:arrowword/features/puzzle/sequence/puzzle_sequence.dart';
 
@@ -26,14 +27,26 @@ Map<String, Object?> inspectTrack(
   int count = 30,
   bool progress = false,
   Set<int> inspectIndices = const {},
+  bool repeat = false,
 }) {
   final catalogue = generator.catalogue;
-  final other = name == 'medium' ? hardCatalogue : mediumCatalogue;
+  final forbidden = switch (name) {
+    'easy' => [...mediumCatalogue.entries, ...hardCatalogue.entries],
+    'medium' => [...prototypeCatalogue.entries, ...hardCatalogue.entries],
+    'hard' => [...prototypeCatalogue.entries, ...mediumCatalogue.entries],
+    _ => throw ArgumentError.value(name, 'track'),
+  };
   final audit = TrackCatalogueAudit(
     catalogue,
-    forbidden: [...prototypeCatalogue.entries, ...other.entries],
+    forbidden: forbidden,
+    minimumPartners: name == 'easy' ? 0 : 100,
   );
-  if (!audit.isValid) throw StateError(audit.issues.join('\n'));
+  // The legacy Easy bank intentionally includes Turkish/English cognates.
+  // Its established content policy is not the newer descriptive-clue gate.
+  // Board validation below remains identical and strict for all three tracks.
+  if (name != 'easy' && !audit.isValid) {
+    throw StateError(audit.issues.join('\n'));
+  }
   final previous = <SequencePuzzleResult>[];
   final rows = <Map<String, Object>>[];
   final uses = <String, List<int>>{
@@ -53,6 +66,29 @@ Map<String, Object?> inspectTrack(
       cooldown: generator.config.cooldownPuzzles,
     );
     final metrics = PuzzleMetrics(result.puzzle!);
+    if (repeat) {
+      final repeated = generator.generateNext(
+        puzzleIndex: index,
+        history: previous.map((p) => p.toHistory()).toList(),
+      );
+      verifyStressPuzzle(
+        repeated,
+        previous,
+        cooldown: generator.config.cooldownPuzzles,
+      );
+      if (repeated.puzzle!.id != result.puzzle!.id ||
+          repeated.seed != result.seed ||
+          puzzleStructuralSignature(repeated.puzzle!) !=
+              metrics.structuralSignature ||
+          jsonEncode(
+                repeated.puzzle!.answers.map((a) => a.turkishClue).toList(),
+              ) !=
+              jsonEncode(
+                result.puzzle!.answers.map((a) => a.turkishClue).toList(),
+              )) {
+        throw StateError('$name $index deterministic repeat mismatch');
+      }
+    }
     times.add(clock.elapsedMilliseconds);
     for (final answer in result.puzzle!.answers) {
       uses[answer.id]!.add(index);
@@ -70,7 +106,9 @@ Map<String, Object?> inspectTrack(
       'attempts': result.attempts.length,
       'checks': result.totalCandidateChecks,
       'milliseconds': clock.elapsedMilliseconds,
-      if (index <= 3) 'signature': metrics.structuralSignature,
+      if (index <= 3 ||
+          (index > normalPuzzleCount - 6 && index <= normalPuzzleCount))
+        'signature': metrics.structuralSignature,
       if (inspectIndices.contains(index))
         'answers': [
           for (final answer in result.puzzle!.answers)
@@ -110,6 +148,7 @@ Map<String, Object?> inspectTrack(
     'track': name,
     'count': count,
     'strictValid': true,
+    'deterministicRepeatVerified': repeat,
     'phantomAdjacencies': 0,
     'unexplainedRuns': 0,
     'cooldownViolations': 0,
@@ -206,19 +245,39 @@ void main(List<String> arguments) {
     );
     return;
   }
-  final names = arguments.where((a) => a == 'medium' || a == 'hard').toList();
-  if (names.isEmpty) names.addAll(['medium', 'hard']);
+  final names = arguments
+      .where((a) => a == 'easy' || a == 'medium' || a == 'hard')
+      .toList();
+  if (names.isEmpty) {
+    names.addAll(
+      arguments.contains('--all-normal')
+          ? ['easy', 'medium', 'hard']
+          : ['medium', 'hard'],
+    );
+  }
   final count = int.parse(
-    arguments.firstWhere((a) => int.tryParse(a) != null, orElse: () => '30'),
+    arguments.firstWhere(
+      (a) => int.tryParse(a) != null,
+      orElse: () =>
+          arguments.contains('--all-normal') ? '$normalPuzzleCount' : '30',
+    ),
   );
   for (final name in names) {
     stdout.writeln(
       jsonEncode(
         inspectTrack(
           name,
-          name == 'medium' ? createMediumGenerator() : createHardGenerator(),
+          switch (name) {
+            'easy' => PuzzleSequenceGenerator(
+              prototypeCatalogue,
+              prototypeSequenceConfig,
+            ),
+            'medium' => createMediumGenerator(),
+            _ => createHardGenerator(),
+          },
           count: count,
           progress: true,
+          repeat: arguments.contains('--repeat'),
           inspectIndices: {
             for (final a in arguments.where((a) => a.startsWith('--board=')))
               int.parse(a.substring('--board='.length)),

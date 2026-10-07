@@ -10,6 +10,7 @@ import 'app/player_puzzle_tracks.dart';
 import 'app/daily_session.dart';
 import 'app/daily_progress_store.dart';
 import 'features/puzzle/ads/google_rewarded_hint_ad_service.dart';
+import 'features/puzzle/domain/normal_puzzle_contract.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +40,7 @@ Future<void> main() async {
                 padding: EdgeInsets.all(24),
                 child: Text(
                   'Geliştirme bulmacası açılamadı.\n'
-                  'ARROWWORD_PUZZLE_INDEX pozitif bir sayı olmalı.\n'
+                  'ARROWWORD_PUZZLE_INDEX 1–$normalPuzzleCount arasında olmalı.\n'
                   'ARROWWORD_PUZZLE_DIFFICULTY: easy, medium veya hard.',
                 ),
               ),

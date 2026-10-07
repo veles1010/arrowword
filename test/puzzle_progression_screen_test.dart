@@ -6,6 +6,8 @@ import 'package:arrowword/app/puzzle_replay_screen.dart';
 import 'package:arrowword/app/puzzle_session.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
 import 'package:arrowword/features/puzzle/domain/puzzle.dart';
+import 'package:arrowword/features/puzzle/domain/normal_puzzle_contract.dart';
+import 'package:arrowword/features/puzzle/domain/puzzle_score.dart';
 import 'package:arrowword/features/puzzle/presentation/puzzle_screen.dart';
 import 'package:arrowword/features/puzzle/sequence/puzzle_sequence.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +86,7 @@ void main() {
   }
 
   testWidgets(
-    'fresh progression offers current puzzle and five locked previews',
+    'fresh progression offers current puzzle and the complete locked journey',
     (tester) async {
       await _openProgression(tester, sessionAt(1));
       expect(_status(1, 'Devam Et'), findsOneWidget);
@@ -101,7 +103,16 @@ void main() {
           findsOneWidget,
         );
       }
-      expect(_tile(7), findsNothing);
+      expect(
+        tester
+            .widget<GridView>(find.byType(GridView))
+            .childrenDelegate
+            .estimatedChildCount,
+        normalPuzzleCount,
+      );
+      await tester.drag(find.byType(GridView), const Offset(0, -3000));
+      await tester.pumpAndSettle();
+      expect(_status(normalPuzzleCount, 'Kilitli'), findsOneWidget);
     },
   );
 
@@ -199,7 +210,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.ensureVisible(_tile(7));
     expect(_status(7, 'Kilitli'), findsOneWidget);
-    expect(_tile(8), findsNothing);
+    expect(_status(8, 'Kilitli'), findsOneWidget);
+    expect(tester.widget<InkWell>(_tile(8)).onTap, isNull);
   });
 
   testWidgets('solved current remains accessible before advancing', (
@@ -302,30 +314,43 @@ void main() {
     expect(_score(1), findsOneWidget);
   });
 
-  testWidgets('high scored current index fits compact enlarged text', (
-    tester,
-  ) async {
-    await tester.binding.setSurfaceSize(const Size(320, 568));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    tester.platformDispatcher.textScaleFactorTestValue = 1.3;
-    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-    final session = sessionAt(1000);
-    _complete(session);
-    await _openProgression(tester, session);
-    expect(_tile(1000).hitTestable(), findsOneWidget);
-    expect(_status(1000, 'Devam Et'), findsOneWidget);
-    expect(_score(1000), findsOneWidget);
-    expect(
-      _status(1000, '${session.currentScore!.score} puan'),
-      findsOneWidget,
-    );
-    expect(tester.takeException(), isNull);
-    tester.platformDispatcher.clearTextScaleFactorTestValue();
-    await tester.pumpAndSettle();
-    await tester.tap(_tile(1000));
-    await tester.pumpAndSettle();
-    expect(find.byType(PuzzleScreen), findsOneWidget);
-    expect(find.text('Bulmaca 1000'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'pre-contract high current index is capped safely on compact enlarged text',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 568));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final session = sessionAt(1000);
+      session.recordReplayScore(
+        CompletedPuzzleScore.calculate(
+          puzzleIndex: normalPuzzleCount,
+          elapsedSeconds: 80,
+          hintsUsed: 0,
+          wrongChecks: 0,
+        ),
+      );
+      await _openProgression(tester, session);
+      expect(_tile(normalPuzzleCount).hitTestable(), findsOneWidget);
+      expect(_status(normalPuzzleCount, 'Tamamlandı'), findsOneWidget);
+      expect(_score(normalPuzzleCount), findsOneWidget);
+      expect(
+        _status(
+          normalPuzzleCount,
+          '${session.completedScores[normalPuzzleCount]!.score} puan',
+        ),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+      expect(_tile(1000), findsNothing);
+      expect(find.text('36 / 36 tamamlandı'), findsOneWidget);
+      tester.platformDispatcher.clearTextScaleFactorTestValue();
+      await tester.pumpAndSettle();
+      await tester.tap(_tile(normalPuzzleCount));
+      await tester.pumpAndSettle();
+      expect(find.byType(PuzzleScreen), findsOneWidget);
+      expect(find.text('Bulmaca 36 · Tekrar Oyna'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

@@ -1,16 +1,17 @@
 import '../features/puzzle/data/prototype_puzzle.dart';
 import '../features/puzzle/sequence/puzzle_sequence.dart';
 import '../features/puzzle/domain/puzzle_difficulty.dart';
+import '../features/puzzle/domain/normal_puzzle_contract.dart';
 import 'puzzle_track.dart';
 
 /// Debug/profile launch selector; release startup always uses player progression.
 int developmentPuzzleIndex([String value = '1']) {
   final index = int.tryParse(value);
-  if (index == null || index < 1 || index > 0xffffffff) {
+  if (index == null || !isNormalPuzzleIndex(index)) {
     throw ArgumentError.value(
       value,
       'ARROWWORD_PUZZLE_INDEX',
-      'Expected an index from 1 to 4294967295.',
+      'Expected an index from 1 to $normalPuzzleCount.',
     );
   }
   return index;

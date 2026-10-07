@@ -30,7 +30,7 @@ class AppShell extends StatefulWidget {
   });
   final PuzzleSession? session;
   final PlayerPuzzleTracks? tracks;
-  final Widget Function(PuzzleDifficulty)? trackPuzzleBuilder;
+  final Widget Function(PuzzleDifficulty, VoidCallback)? trackPuzzleBuilder;
   final Widget Function(PuzzleDifficulty, int)? trackReplayBuilder;
   final WidgetBuilder puzzleBuilder;
   final DailySession? dailySession;
@@ -44,7 +44,13 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell>
     with SingleTickerProviderStateMixin {
   int _index = 0;
+  final _progressionKey = GlobalKey<PuzzleProgressionScreenState>();
   double _direction = 1;
+  void _showTrack(PuzzleDifficulty difficulty) {
+    _progressionKey.currentState?.focusDifficulty(difficulty);
+    _select(1);
+  }
+
   late final AnimationController _transition = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 200),
@@ -94,17 +100,31 @@ class _AppShellState extends State<AppShell>
             HomeScreen(
               session: widget.session,
               tracks: widget.tracks,
-              onChooseDifficulty: () => _select(1),
+              onChooseDifficulty: () => widget.tracks == null
+                  ? _select(1)
+                  : _showTrack(widget.tracks!.lastPlayed),
               dailySession: widget.dailySession,
               settings: widget.settings,
-              puzzleBuilder: widget.puzzleBuilder,
+              puzzleBuilder:
+                  widget.tracks != null && widget.trackPuzzleBuilder != null
+                  ? (_) => widget.trackPuzzleBuilder!(
+                      widget.tracks!.lastPlayed,
+                      () => _showTrack(widget.tracks!.lastPlayed),
+                    )
+                  : widget.puzzleBuilder,
               rewardedAdFactory: widget.rewardedAdFactory,
               inShell: true,
             ),
             PuzzleProgressionScreen(
+              key: _progressionKey,
               session: widget.session,
               tracks: widget.tracks,
-              trackPuzzleBuilder: widget.trackPuzzleBuilder,
+              trackPuzzleBuilder: widget.trackPuzzleBuilder == null
+                  ? null
+                  : (difficulty) => widget.trackPuzzleBuilder!(
+                      difficulty,
+                      () => _showTrack(difficulty),
+                    ),
               trackReplayBuilder: widget.trackReplayBuilder,
               puzzleBuilder: widget.puzzleBuilder,
               rewardedAdFactory: widget.rewardedAdFactory,

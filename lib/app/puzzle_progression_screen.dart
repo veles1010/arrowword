@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+import '../features/puzzle/domain/normal_puzzle_contract.dart';
 
 import '../theme/arrowword_visuals.dart';
 
@@ -35,14 +35,23 @@ class PuzzleProgressionScreen extends StatefulWidget {
 
   @override
   State<PuzzleProgressionScreen> createState() =>
-      _PuzzleProgressionScreenState();
+      PuzzleProgressionScreenState();
 }
 
-class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
+class PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
   final _scroll = ScrollController();
   int? _focusedIndex;
   late PuzzleDifficulty _difficulty =
       widget.tracks?.lastPlayed ?? PuzzleDifficulty.easy;
+
+  /// Explicit completion/Home navigation focuses its owning track, not a
+  /// previously browsed difficulty. This changes only menu state, never progress.
+  void focusDifficulty(PuzzleDifficulty difficulty) {
+    setState(() {
+      _difficulty = difficulty;
+      _focusedIndex = null;
+    });
+  }
 
   @override
   void dispose() {
@@ -70,7 +79,7 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
       final summary =
           tracks?.summary(_difficulty) ??
           PuzzleTrackSummary.fromSession(session!);
-      final current = summary.index;
+      final current = summary.displayIndex;
       final scores = summary.scores;
       return Scaffold(
         appBar: AppBar(
@@ -94,6 +103,24 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                   ),
                   const SizedBox(height: 16),
                 ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${summary.completedCount} / $normalPuzzleCount tamamlandı',
+                    key: const ValueKey('track-progress-summary'),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                LinearProgressIndicator(
+                  value: summary.completedCount / normalPuzzleCount,
+                  color: ArrowwordVisuals.of(context).difficultyAccent(
+                    _difficulty,
+                    Theme.of(context).colorScheme,
+                  ),
+                  minHeight: 3,
+                ),
+                const SizedBox(height: 12),
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -118,14 +145,15 @@ class _PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 8,
                         ),
-                        itemCount: math.min(current + 5, 0xffffffff),
+                        itemCount: normalPuzzleCount,
                         itemBuilder: (context, offset) {
                           final index = offset + 1;
-                          final isCurrent = index == current;
-                          final completed = index <= summary.completedThrough;
-                          final replayable = completed && index < current;
+                          final isCurrent =
+                              !summary.isComplete && index == current;
+                          final completed = index <= summary.completedCount;
+                          final replayable = completed && !isCurrent;
                           final score = completed ? scores[index] : null;
-                          final locked = index > current;
+                          final locked = !summary.isComplete && index > current;
                           final colors = Theme.of(context).colorScheme;
                           final label = locked
                               ? 'Kilitli'

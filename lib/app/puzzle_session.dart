@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 import '../features/puzzle/data/prototype_puzzle.dart';
@@ -5,6 +7,7 @@ import '../features/puzzle/sequence/puzzle_sequence.dart';
 import '../features/puzzle/domain/puzzle.dart';
 import '../features/puzzle/domain/puzzle_score.dart';
 import '../features/puzzle/domain/puzzle_difficulty.dart';
+import '../features/puzzle/domain/normal_puzzle_contract.dart';
 import 'puzzle_progress_store.dart';
 
 /// Progression with optional current-board storage and in-memory full history.
@@ -37,6 +40,7 @@ class PuzzleSession extends ChangeNotifier {
     _generate(index);
   }
   final PuzzleProgressStore? store;
+  String? _archivedRecord;
 
   static PuzzleSequenceGenerator _generatorForTrack(
     PuzzleDifficulty difficulty,
@@ -69,6 +73,7 @@ class PuzzleSession extends ChangeNotifier {
       _completedScores[current.puzzleIndex];
   int _completedThrough = 0;
   int get completedThrough => _completedThrough;
+  bool get isTrackComplete => completedThrough >= normalPuzzleCount;
   Future<void> _writes = Future.value();
   Future<void> get flush => _writes;
 
@@ -82,18 +87,26 @@ class PuzzleSession extends ChangeNotifier {
     // Validate identity before recovery can clear a store. Never cross-track reset.
     generator = _generatorForTrack(difficulty, generator, store);
     if (developmentIndex != null) {
+      if (!isNormalPuzzleIndex(developmentIndex)) {
+        throw ArgumentError.value(developmentIndex, 'developmentIndex');
+      }
       return PuzzleSession(
         generator: generator,
         startIndex: developmentIndex,
         difficulty: difficulty,
       );
     }
+    var archived = false;
     try {
       final raw = await store.read();
       if (raw != null) {
         final saved = PuzzleProgress.decode(raw);
+        archived = saved.puzzleIndex > normalPuzzleCount;
         if (saved.catalogVersion != generator.catalogue.version) {
           throw const FormatException('Incompatible catalogue');
+        }
+        if (archived) {
+          return _restoreArchived(generator, store, difficulty, saved, raw);
         }
         final prefix = <PuzzleHistoryEntry>[];
         if (saved.schemaVersion >= 3) {
@@ -178,6 +191,9 @@ class PuzzleSession extends ChangeNotifier {
         return session;
       }
     } catch (error) {
+      // Pre-contract progress is retained even if its replay prefix cannot be
+      // verified. Do not reset it or generate its out-of-range current board.
+      if (archived) rethrow;
       debugPrint('Ignoring puzzle progress: $error');
       try {
         await store.clear();
@@ -190,6 +206,61 @@ class PuzzleSession extends ChangeNotifier {
       store: store,
       difficulty: difficulty,
     );
+  }
+
+  static PuzzleSession _restoreArchived(
+    PuzzleSequenceGenerator generator,
+    PuzzleProgressStore store,
+    PuzzleDifficulty difficulty,
+    PuzzleProgress saved,
+    String raw,
+  ) {
+    if (saved.schemaVersion < 3 || saved.completedThrough < normalPuzzleCount) {
+      throw const FormatException('Archived progress needs compact history.');
+    }
+    final byId = {
+      for (final w in generator.catalogue.entries) w.id: w.solution,
+    };
+    final prefix = <PuzzleHistoryEntry>[];
+    for (final entry in saved.history.where(
+      (e) => e.puzzleIndex <= normalPuzzleCount,
+    )) {
+      if (entry.wordIds.length !=
+              generator.config.generation.targetAnswerCount ||
+          entry.wordIds.toSet().length != entry.wordIds.length ||
+          entry.wordIds.any((id) => !byId.containsKey(id))) {
+        throw const FormatException('Invalid archived history.');
+      }
+      prefix.add(
+        PuzzleHistoryEntry(
+          puzzleIndex: entry.puzzleIndex,
+          catalogVersion: saved.catalogVersion,
+          words: {for (final id in entry.wordIds) id: byId[id]!},
+        ),
+      );
+    }
+    if (prefix.length != normalPuzzleCount) {
+      throw const FormatException('Missing archived history.');
+    }
+    final expected = prefix.removeLast();
+    final session = PuzzleSession._fromHistory(
+      generator,
+      store,
+      difficulty,
+      normalPuzzleCount,
+      prefix,
+    );
+    session._archivedRecord = raw;
+    if (!session.current.isSuccess) return session;
+    if (!mapEquals(session.current.toHistory().words, expected.words)) {
+      session.dispose();
+      throw const FormatException('Archived history mismatch.');
+    }
+    // Its out-of-range letters/stats remain in the original record, never applied
+    // to Puzzle 36. This session is used for completed-track replay only.
+    session._completedThrough = normalPuzzleCount;
+    session._completedScores.addAll(saved.completedScores);
+    return session;
   }
 
   void updateLetters(Map<GridPosition, String> letters) {
@@ -264,6 +335,22 @@ class PuzzleSession extends ChangeNotifier {
 
   void _save() {
     if (store == null || !current.isSuccess) return;
+    if (_archivedRecord != null) {
+      final data = Map<String, dynamic>.from(
+        jsonDecode(_archivedRecord!) as Map,
+      );
+      data['schemaVersion'] = 5;
+      data.putIfAbsent('revealedCells', () => <String>[]);
+      data.putIfAbsent('hintsUsed', () => 0);
+      data.putIfAbsent('elapsedMilliseconds', () => 0);
+      data.putIfAbsent('wrongChecks', () => 0);
+      data['completedScores'] = {
+        for (final entry in _completedScores.entries)
+          '${entry.key}': entry.value.toJson(),
+      };
+      _writeRecord(jsonEncode(data));
+      return;
+    }
     final record = PuzzleProgress(
       catalogVersion: current.catalogVersion,
       puzzleIndex: current.puzzleIndex,
@@ -292,6 +379,10 @@ class PuzzleSession extends ChangeNotifier {
       ],
     ).encode();
     // Serialize snapshots so a slow older write cannot overwrite newer progress.
+    _writeRecord(record);
+  }
+
+  void _writeRecord(String record) {
     _writes = _writes.then((_) => store!.write(record)).catchError((
       Object error,
     ) {
@@ -315,9 +406,10 @@ class PuzzleSession extends ChangeNotifier {
       failureReason: reason,
     );
     if (!current.isSuccess ||
-        index < 1 ||
+        !isNormalPuzzleIndex(index) ||
         index > completedThrough ||
-        index >= current.puzzleIndex) {
+        (index >= current.puzzleIndex &&
+            !(isTrackComplete && index == normalPuzzleCount))) {
       return failure('Bu bulmaca tekrar oynamak için uygun değil.');
     }
     try {
@@ -359,9 +451,10 @@ class PuzzleSession extends ChangeNotifier {
   bool recordReplayScore(CompletedPuzzleScore result) {
     final index = result.puzzleIndex;
     if (!current.isSuccess ||
-        index < 1 ||
+        !isNormalPuzzleIndex(index) ||
         index > completedThrough ||
-        index >= current.puzzleIndex ||
+        (index >= current.puzzleIndex &&
+            !(isTrackComplete && index == normalPuzzleCount)) ||
         result.scoringVersion != 1 ||
         !isBetterPuzzleScore(result, _completedScores[index])) {
       return false;
@@ -378,7 +471,11 @@ class PuzzleSession extends ChangeNotifier {
   }
 
   void nextPuzzle() {
-    if (!current.isSuccess) return;
+    if (!current.isSuccess ||
+        current.puzzleIndex >= normalPuzzleCount ||
+        isTrackComplete) {
+      return;
+    }
     final previousIndex = current.puzzleIndex;
     _generate(current.puzzleIndex + 1);
     if (current.isSuccess) {
@@ -395,7 +492,11 @@ class PuzzleSession extends ChangeNotifier {
 
   /// Called by gameplay's completion recognition, never by ordinary letter saves.
   void recognizeCompletion() {
-    if (!current.isSuccess || completedThrough >= current.puzzleIndex) return;
+    if (!current.isSuccess ||
+        !isNormalPuzzleIndex(current.puzzleIndex) ||
+        completedThrough >= current.puzzleIndex) {
+      return;
+    }
     for (final answer in current.puzzle!.answers) {
       for (var i = 0; i < answer.length; i++) {
         if (_letters[answer.positions[i]] != answer.solution[i]) return;

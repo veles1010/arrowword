@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
 
 import 'puzzle_session.dart';
+import '../features/puzzle/domain/normal_puzzle_contract.dart';
 import 'player_puzzle_tracks.dart';
 import 'puzzle_progression_screen.dart';
 import 'daily_session.dart';
@@ -158,22 +159,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${tracks == null ? '' : '${tracks.lastPlayed.turkishLabel} · '}Bulmaca ${summary.index}',
+                        summary.isComplete
+                            ? (tracks?.lastPlayed ?? widget.session!.difficulty)
+                                  .turkishLabel
+                            : '${tracks == null ? '' : '${tracks.lastPlayed.turkishLabel} · '}Bulmaca ${summary.displayIndex}',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        summary.completedThrough == 0
+                        summary.isComplete
+                            ? '${summary.completedCount} / $normalPuzzleCount tamamlandı'
+                            : summary.completedCount == 0
                             ? 'Henüz tamamlanan bulmaca yok'
-                            : '${summary.completedThrough} bulmaca tamamlandı',
+                            : '${summary.completedCount} bulmaca tamamlandı',
                       ),
                       const SizedBox(height: 16),
                       FilledButton(
                         onPressed:
                             tracks != null || widget.session!.current.isSuccess
-                            ? _openPuzzle
+                            ? summary.isComplete
+                                  ? (widget.onChooseDifficulty ??
+                                        _openProgression)
+                                  : _openPuzzle
                             : null,
-                        child: Text(fresh ? 'Başla' : 'Devam Et'),
+                        child: Text(
+                          summary.isComplete
+                              ? 'Bulmacaları Gör'
+                              : fresh
+                              ? 'Başla'
+                              : 'Devam Et',
+                        ),
                       ),
                       const SizedBox(height: 8),
                       if (widget.onChooseDifficulty != null)
