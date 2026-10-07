@@ -1,3 +1,5 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import 'daily_session.dart';
@@ -9,7 +11,7 @@ class DailyHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Günlük Geçmiş')),
+    appBar: AppBar(title: Text(context.l10n.dailyHistory)),
     body: SafeArea(
       child: ListenableBuilder(
         listenable: session,
@@ -17,10 +19,10 @@ class DailyHistoryScreen extends StatelessWidget {
           final results = session.results.values.toList()
             ..sort((a, b) => b.dateKey.compareTo(a.dateKey));
           if (results.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text('Henüz tamamlanan günlük bulmaca yok.'),
+                padding: const EdgeInsets.all(24),
+                child: Text(context.l10n.emptyHistory),
               ),
             );
           }
@@ -36,12 +38,16 @@ class DailyHistoryScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        formatDailyDate(result.dateKey),
+                        localizedDailyDate(result.dateKey, context.l10n),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      Text('${result.score} puan'),
+                      Text(context.l10n.scorePoints(result.score)),
                       Text(
-                        '${formatDailyDuration(result.elapsedSeconds)} · ${result.hintsUsed} ipucu · ${result.wrongChecks} hatalı kontrol',
+                        context.l10n.dailyDetails(
+                          formatDailyDuration(result.elapsedSeconds),
+                          result.hintsUsed,
+                          result.wrongChecks,
+                        ),
                       ),
                     ],
                   ),

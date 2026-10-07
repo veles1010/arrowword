@@ -1,3 +1,5 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
@@ -5,7 +7,6 @@ import '../features/puzzle/presentation/puzzle_completion.dart';
 import '../features/puzzle/presentation/puzzle_screen.dart';
 import 'daily_session.dart';
 import 'daily_history_screen.dart';
-import 'daily_statistics.dart';
 import 'daily_result_share_service.dart';
 
 /// Daily owns a separate resumable attempt, never a normal progression session.
@@ -30,7 +31,7 @@ class DailyPuzzleScreen extends StatefulWidget {
 class _DailyPuzzleScreenState extends State<DailyPuzzleScreen> {
   DailyPuzzleAttempt? _attempt;
   DailyPuzzleScore? _completed;
-  String? _error;
+  bool _error = false;
   bool _loading = true;
 
   @override
@@ -50,7 +51,7 @@ class _DailyPuzzleScreenState extends State<DailyPuzzleScreen> {
             _attempt = widget.session.openToday();
             _completed = widget.session.todayResult;
           } catch (_) {
-            _error = 'Günün bulmacası oluşturulamadı. Lütfen tekrar deneyin.';
+            _error = true;
           }
           if (mounted) setState(() => _loading = false);
         });
@@ -69,22 +70,20 @@ class _DailyPuzzleScreenState extends State<DailyPuzzleScreen> {
     }
     final attempt = _attempt;
     if (_loading ||
-        _error != null ||
+        _error ||
         attempt == null ||
         !attempt.generation.isSuccess) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Günün Bulmacası')),
+        appBar: AppBar(title: Text(context.l10n.dailyTitle)),
         body: SafeArea(
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: _loading
-                  ? const CircularProgressIndicator(
-                      semanticsLabel: 'Günün bulmacası hazırlanıyor',
+                  ? CircularProgressIndicator(
+                      semanticsLabel: context.l10n.dailyPreparing,
                     )
-                  : Text(
-                      _error ?? 'Günün bulmacası oluşturulamadı. Lütfen tekrar deneyin.',
-                    ),
+                  : Text(context.l10n.dailyGenerationFailed),
             ),
           ),
         ),
@@ -93,7 +92,7 @@ class _DailyPuzzleScreenState extends State<DailyPuzzleScreen> {
     return PuzzleScreen(
       key: ValueKey(attempt.generation.puzzle!.id),
       puzzle: attempt.generation.puzzle!,
-      title: 'Günün Bulmacası',
+      title: context.l10n.dailyTitle,
       subtitle: attempt.dateKey,
       initialLetters: attempt.letters,
       initialRevealedCells: attempt.revealedCells,
@@ -105,21 +104,24 @@ class _DailyPuzzleScreenState extends State<DailyPuzzleScreen> {
       onElapsedChanged: attempt.checkpointElapsed,
       onCompleted: attempt.complete,
       completion: PuzzleCompletionPresentation(
-        title: 'Günün bulmacası tamamlandı!',
-        contentBuilder: (_) => Text(_details(attempt.result!)),
-        actionLabel: 'Ana Sayfaya Dön',
+        title: context.l10n.dailyCompleted,
+        contentBuilder: (dialogContext) =>
+            Text(_details(dialogContext, attempt.result!)),
+        actionLabel: context.l10n.returnHome,
         onFinished: () => Navigator.of(context).pop(),
       ),
     );
   }
 }
 
-String _details(DailyPuzzleScore result) => puzzleResultDetails(
-  score: result.score,
-  elapsedSeconds: result.elapsedSeconds,
-  hintsUsed: result.hintsUsed,
-  wrongChecks: result.wrongChecks,
-);
+String _details(BuildContext context, DailyPuzzleScore result) =>
+    puzzleResultDetails(
+      strings: context.l10n,
+      score: result.score,
+      elapsedSeconds: result.elapsedSeconds,
+      hintsUsed: result.hintsUsed,
+      wrongChecks: result.wrongChecks,
+    );
 
 /// An immutable completed Daily is a result, not a second scored play attempt.
 class DailyResultScreen extends StatefulWidget {
@@ -147,16 +149,17 @@ class _DailyResultScreenState extends State<DailyResultScreen> {
     final box = buttonContext.findRenderObject() as RenderBox?;
     try {
       await (widget.shareService ?? NativeDailyResultShareService()).share(
-        dailyResultShareText(widget.result, streak: _streak),
+        dailyResultShareText(
+          widget.result,
+          streak: _streak,
+          strings: context.l10n,
+        ),
         origin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
       );
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sonuç paylaşılamadı. Lütfen tekrar deneyin.'),
-          ),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(context.l10n.shareError)));
       }
     } finally {
       if (mounted) setState(() => _sharing = false);
@@ -165,7 +168,7 @@ class _DailyResultScreenState extends State<DailyResultScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Günün Bulmacası')),
+    appBar: AppBar(title: Text(context.l10n.dailyTitle)),
     body: SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -173,19 +176,19 @@ class _DailyResultScreenState extends State<DailyResultScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Günün bulmacası tamamlandı!',
+              context.l10n.dailyCompleted,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
-            Text(formatDailyDate(widget.result.dateKey)),
+            Text(localizedDailyDate(widget.result.dateKey, context.l10n)),
             const SizedBox(height: 20),
-            Text(_details(widget.result)),
-            if (_streak > 0) Text('$_streak günlük seri'),
+            Text(_details(context, widget.result)),
+            if (_streak > 0) Text(context.l10n.streakDays(_streak)),
             Builder(
               builder: (buttonContext) => OutlinedButton.icon(
                 onPressed: _sharing ? null : () => _share(buttonContext),
                 icon: const Icon(Icons.share_outlined),
-                label: const Text('Paylaş'),
+                label: Text(context.l10n.share),
               ),
             ),
             if (widget.session != null)
@@ -196,12 +199,12 @@ class _DailyResultScreenState extends State<DailyResultScreen> {
                         DailyHistoryScreen(session: widget.session!),
                   ),
                 ),
-                child: const Text('Günlük Geçmiş'),
+                child: Text(context.l10n.dailyHistory),
               ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Ana Sayfaya Dön'),
+              child: Text(context.l10n.returnHome),
             ),
           ],
         ),

@@ -1,3 +1,5 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../features/puzzle/domain/puzzle_difficulty.dart';
@@ -20,7 +22,7 @@ class PuzzleDifficultySelector extends StatelessWidget {
           ButtonSegment(
             value: difficulty,
             label: Text(
-              difficulty.turkishLabel,
+              context.difficultyLabel(difficulty),
               style: difficulty == selected
                   ? TextStyle(
                       color: ArrowwordVisuals.of(context).difficultyAccent(

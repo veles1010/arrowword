@@ -1,3 +1,5 @@
+import 'support/localized_back.dart';
+
 import 'dart:async';
 
 import 'package:arrowword/app/app.dart';
@@ -222,7 +224,7 @@ void main() {
       );
       await tester.pump();
       expect(calls, 1);
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       await tester.tap(find.text('İstatistikler'));
       await tester.pumpAndSettle();
@@ -283,7 +285,7 @@ void main() {
       time += const Duration(hours: 2);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       time += const Duration(seconds: 5);
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       await d.flush;
       await n.flush;
@@ -363,7 +365,7 @@ void main() {
       expect(find.byType(DailyResultScreen), findsOneWidget);
       expect(find.byType(PuzzleScreen), findsNothing);
       expect(calls, 1);
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       await d.flush;
       final restored = await daily(store: store, now: () => date);
@@ -590,7 +592,7 @@ void main() {
         expect(find.text('Kontrol Et'), findsOneWidget);
         expect(tester.takeException(), isNull);
         tester.view.resetViewInsets();
-        await tester.pageBack();
+        await localizedPageBack(tester);
         await tester.pumpAndSettle();
       }
       await tester.binding.handlePopRoute();
@@ -603,7 +605,7 @@ void main() {
       await tester.pump();
       expect(tester.takeException(), isNull);
       tester.view.resetViewInsets();
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       final attempt = d.openToday()!;
       attempt.updateProgress(

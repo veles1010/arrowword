@@ -1,3 +1,5 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -14,7 +16,7 @@ class _AboutScreenState extends State<AboutScreen> {
   );
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Hakkında')),
+    appBar: AppBar(title: Text(context.l10n.about)),
     body: SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -26,13 +28,9 @@ class _AboutScreenState extends State<AboutScreen> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Türkçe ipuçlarıyla İngilizce kelimeleri keşfedin. Normal bulmacalar, tekrar oynama ve günün bulmacası.',
-            ),
+            Text(context.l10n.appDescription),
             const SizedBox(height: 12),
-            const Text(
-              'Arrowword çalışma adıdır; nihai ürün adı henüz belirlenmedi.',
-            ),
+            Text(context.l10n.workingName),
             const SizedBox(height: 24),
             FutureBuilder<PackageInfo>(
               future: _info,
@@ -40,10 +38,13 @@ class _AboutScreenState extends State<AboutScreen> {
                 final info = snapshot.data;
                 return Text(
                   info != null
-                      ? 'Sürüm ${info.version} · Yapı ${info.buildNumber}'
+                      ? context.l10n.versionBuild(
+                          info.version,
+                          info.buildNumber,
+                        )
                       : snapshot.hasError
-                      ? 'Sürüm bilgisi alınamadı.'
-                      : 'Sürüm bilgisi yükleniyor…',
+                      ? context.l10n.versionFailed
+                      : context.l10n.versionLoading,
                 );
               },
             ),

@@ -1,0 +1,353 @@
+{
+  "@@locale": "en",
+  "home": "Home",
+  "puzzles": "Puzzles",
+  "daily": "Daily",
+  "statistics": "Statistics",
+  "settings": "Settings",
+  "about": "About",
+  "appearance": "Appearance",
+  "theme": "Theme",
+  "system": "System",
+  "light": "Light",
+  "dark": "Dark",
+  "appInformation": "App information",
+  "easy": "Easy",
+  "medium": "Medium",
+  "hard": "Hard",
+  "puzzle": "Puzzle",
+  "clear": "Clear",
+  "check": "Check",
+  "continueGame": "Continue",
+  "start": "Start",
+  "replay": "Replay",
+  "replayLower": "replay",
+  "play": "Play",
+  "resume": "Continue",
+  "dailyTitle": "Daily Puzzle",
+  "dailyHistory": "Daily History",
+  "seeResult": "View result",
+  "share": "Share",
+  "returnHome": "Back to Home",
+  "returnPuzzles": "Back to Puzzles",
+  "chooseDifficulty": "Choose difficulty",
+  "viewPuzzles": "View puzzles",
+  "nextPuzzle": "Next Puzzle",
+  "close": "Close",
+  "back": "Go back",
+  "closeSession": "Close session",
+  "restart": "Start again",
+  "retry": "Try again",
+  "locked": "Locked",
+  "completed": "Completed",
+  "completedLower": "completed",
+  "score": "Score",
+  "time": "Time",
+  "hints": "Hints",
+  "wrongChecks": "Incorrect checks",
+  "best": "Best",
+  "thisAttempt": "This attempt",
+  "newRecord": "New best!",
+  "puzzleCompleted": "Puzzle complete!",
+  "dailyCompleted": "Daily puzzle complete!",
+  "rewardHint": "Reveal with Ad",
+  "adLoading": "Loading ad",
+  "adUnavailable": "An ad is unavailable right now. Please try again.",
+  "puzzleLoading": "Preparing puzzle…",
+  "puzzlePreparing": "Preparing puzzle",
+  "dailyPreparing": "Preparing the Daily Puzzle",
+  "generationError": "The puzzle could not be prepared. Please try again.",
+  "shareError": "The result could not be shared. Please try again.",
+  "dailyUnavailable": "The Daily Puzzle is unavailable in this session.",
+  "emptyHistory": "No Daily Puzzles completed yet.",
+  "noScore": "Not yet",
+  "completedPuzzles": "Completed puzzles",
+  "scoredPuzzles": "Scored puzzles",
+  "totalScore": "Total score",
+  "averageScore": "Average score",
+  "bestScore": "Best score",
+  "hintFree": "Hint-free completions",
+  "errorFree": "Error-free completions",
+  "dailyStatistics": "Daily puzzles",
+  "dailyCount": "Daily completions",
+  "currentStreak": "Current streak",
+  "longestStreak": "Longest streak",
+  "statisticsIntro": "Completed puzzles and saved best scores.",
+  "statisticsExplanation": "Score statistics use each puzzle’s saved best result. Older completions without scores count only toward completed puzzles.",
+  "withinDifficulty": "Compare scores within the same difficulty.",
+  "hintLocked": "Revealed with a hint, locked",
+  "development": "Development · Progress is not saved",
+  "allCorrect": "All letters are correct.",
+  "legacyScore": "This puzzle was completed before scoring was introduced.",
+  "appDescription": "Discover English words through clues. Progression puzzles, replay, and a Daily Puzzle.",
+  "workingName": "Arrowword is a working title; the final product name has not been decided.",
+  "versionLoading": "Loading version information…",
+  "versionUnavailable": "Version information is currently unavailable.",
+  "puzzleNumber": "Puzzle {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty} · Puzzle {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "Puzzle {number} · Replay",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "{difficulty} track complete!",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "{completed} / {total} completed",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score} points",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "Completed today · {score} points",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "{count, plural, =1{1 puzzle completed} other{{count} puzzles completed}}",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "Version {version} · Build {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "Puzzle {number} · {seconds} s",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "Older record · {seconds} s",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration} · {hints, plural, =1{1 hint} other{{hints} hints}} · {checks, plural, =1{1 incorrect check} other{{checks} incorrect checks}}",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue} ({length})",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}, {length, plural, =1{1 letter} other{{length} letters}}, {direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "across",
+  "down": "down",
+  "tileSemantics": "Puzzle {number}, {status}{completed, select, yes{, completed} other{}}{scored, select, yes{, {score} points} other{}}{replayable, select, yes{, replay} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label}: {score}\n{hasBest, select, yes{Best: {best}\n} other{}}Time: {duration}\nHints: {hints}\nIncorrect checks: {checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — Daily Puzzle\n{date}\n\nScore: {score}\nTime: {duration}\nHints: {hints}\nIncorrect checks: {checks}{hasStreak, select, yes{\nStreak: {streak, plural, =1{1 day} other{{streak} days}}} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{day} {month} {year}",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "This clue is currently unavailable.",
+  "uiPreview": "Development · English UI preview only",
+  "invalidDevConfig": "Cannot open the development puzzle.\nARROWWORD_PUZZLE_INDEX must be between 1 and {count}.\nARROWWORD_PUZZLE_DIFFICULTY: easy, medium, or hard.",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "January",
+  "month2": "February",
+  "month3": "March",
+  "month4": "April",
+  "month5": "May",
+  "month6": "June",
+  "month7": "July",
+  "month8": "August",
+  "month9": "September",
+  "month10": "October",
+  "month11": "November",
+  "month12": "December",
+  "versionFailed": "Version information could not be loaded.",
+  "puzzleGenerationFailed": "The puzzle could not be generated. Please try again.",
+  "replayGenerationFailed": "The puzzle could not be reconstructed. Please try again.",
+  "dailyGenerationFailed": "The Daily Puzzle could not be generated. Please try again.",
+  "legacyScoringMessage": "This puzzle was completed before scoring was introduced.",
+  "restartGame": "Restart",
+  "emptyProgress": "No puzzles completed yet"
+}

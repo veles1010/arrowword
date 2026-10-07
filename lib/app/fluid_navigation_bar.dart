@@ -1,9 +1,17 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/ui_strings.dart';
+import '../l10n/generated/app_localizations_tr.dart';
+
 import 'dart:math' as math;
 
-const shellLabels = ['Ana Sayfa', 'Bulmacalar', 'Günlük', 'İstatistikler'];
+// Default labels retained for standalone consumers; runtime labels use the delegate.
+List<String> get shellLabels {
+  final strings = AppLocalizationsTr();
+  return [strings.home, strings.puzzles, strings.daily, strings.statistics];
+}
+
 const _icons = [
   Icons.home_rounded,
   Icons.grid_view_rounded,
@@ -66,6 +74,13 @@ class _FluidNavigationBarState extends State<FluidNavigationBar>
 
   @override
   Widget build(BuildContext context) {
+    final strings = context.l10n;
+    final labels = [
+      strings.home,
+      strings.puzzles,
+      strings.daily,
+      strings.statistics,
+    ];
     final colors = Theme.of(context).colorScheme;
     final scaler = MediaQuery.textScalerOf(context);
     final dark = Theme.of(context).brightness == Brightness.dark;
@@ -99,10 +114,10 @@ class _FluidNavigationBarState extends State<FluidNavigationBar>
             padding: const EdgeInsets.all(6),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final width = constraints.maxWidth / shellLabels.length;
+                final width = constraints.maxWidth / labels.length;
                 // Measure labels once per layout, never on drag animation frames.
                 var labelHeight = 0.0;
-                for (final label in shellLabels) {
+                for (final label in labels) {
                   final painter = TextPainter(
                     text: TextSpan(
                       text: label,
@@ -180,7 +195,7 @@ class _FluidNavigationBarState extends State<FluidNavigationBar>
                                 )!;
                                 return Expanded(
                                   child: Semantics(
-                                    label: shellLabels[i],
+                                    label: labels[i],
                                     button: true,
                                     selected: widget.index == i,
                                     onTap: () => _select(i),
@@ -207,7 +222,7 @@ class _FluidNavigationBarState extends State<FluidNavigationBar>
                                               horizontal: 4,
                                             ),
                                             child: Text(
-                                              shellLabels[i],
+                                              labels[i],
                                               textAlign: TextAlign.center,
                                               softWrap: true,
                                               style: TextStyle(

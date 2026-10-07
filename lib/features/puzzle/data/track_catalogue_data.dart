@@ -18,6 +18,8 @@ List<WordEntry> _entries(
         parts[0],
         parts[1],
         id: '$track-${parts[0].toLowerCase()}',
+        clueId:
+            '${track}_v1_${(entries.length + 1).toString().padLeft(6, '0')}',
         difficulty: parts.length == 3
             ? WordDifficulty.values.byName(parts[2])
             : difficulty,

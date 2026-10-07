@@ -1,3 +1,5 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
@@ -10,7 +12,6 @@ import 'daily_session.dart';
 import 'daily_puzzle_screen.dart';
 import 'statistics_screen.dart';
 import 'daily_history_screen.dart';
-import 'daily_statistics.dart';
 import 'app_settings.dart';
 import 'settings_screen.dart';
 
@@ -129,11 +130,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: !widget.inShell,
-          title: const Text('Arrowword'),
+          title: Text('Arrowword'),
           actions: [
             if (widget.settings != null)
               IconButton(
-                tooltip: 'Ayarlar',
+                tooltip: context.l10n.settings,
                 icon: const Icon(Icons.settings_outlined),
                 onPressed: () async {
                   await Navigator.of(context).push<void>(
@@ -160,18 +161,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     children: [
                       Text(
                         summary.isComplete
-                            ? (tracks?.lastPlayed ?? widget.session!.difficulty)
-                                  .turkishLabel
-                            : '${tracks == null ? '' : '${tracks.lastPlayed.turkishLabel} · '}Bulmaca ${summary.displayIndex}',
+                            ? context.difficultyLabel(
+                                tracks?.lastPlayed ??
+                                    widget.session!.difficulty,
+                              )
+                            : tracks == null
+                            ? context.l10n.puzzleNumber(summary.displayIndex)
+                            : context.l10n.trackPuzzle(
+                                context.difficultyLabel(tracks.lastPlayed),
+                                summary.displayIndex,
+                              ),
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 24),
                       Text(
                         summary.isComplete
-                            ? '${summary.completedCount} / $normalPuzzleCount tamamlandı'
+                            ? context.l10n.progress(
+                                summary.completedCount,
+                                normalPuzzleCount,
+                              )
                             : summary.completedCount == 0
-                            ? 'Henüz tamamlanan bulmaca yok'
-                            : '${summary.completedCount} bulmaca tamamlandı',
+                            ? context.l10n.emptyProgress
+                            : context.l10n.completedCount(
+                                summary.completedCount,
+                              ),
                       ),
                       const SizedBox(height: 16),
                       FilledButton(
@@ -184,27 +197,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             : null,
                         child: Text(
                           summary.isComplete
-                              ? 'Bulmacaları Gör'
+                              ? context.l10n.viewPuzzles
                               : fresh
-                              ? 'Başla'
-                              : 'Devam Et',
+                              ? context.l10n.start
+                              : context.l10n.continueGame,
                         ),
                       ),
                       const SizedBox(height: 8),
                       if (widget.onChooseDifficulty != null)
                         TextButton(
                           onPressed: widget.onChooseDifficulty,
-                          child: const Text('Zorluk Seç'),
+                          child: Text(context.l10n.chooseDifficulty),
                         ),
                       if (!widget.inShell)
                         TextButton(
                           onPressed: _openProgression,
-                          child: const Text('Bulmacalar'),
+                          child: Text(context.l10n.puzzles),
                         ),
                       if (!widget.inShell)
                         TextButton(
                           onPressed: _openStatistics,
-                          child: const Text('İstatistikler'),
+                          child: Text(context.l10n.statistics),
                         ),
                       if (widget.dailySession != null) ...[
                         const SizedBox(height: 12),
@@ -232,17 +245,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Günün Bulmacası',
+                context.l10n.dailyTitle,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 4),
               Text(
                 result != null
-                    ? 'Bugün tamamlandı · ${result.score} puan'
-                    : formatDailyDate(daily.dateKey),
+                    ? context.l10n.todayCompleted(result.score)
+                    : localizedDailyDate(daily.dateKey, context.l10n),
               ),
               if (daily.statistics.currentStreak > 0)
-                Text('${daily.statistics.currentStreak} günlük seri'),
+                Text(context.l10n.streakDays(daily.statistics.currentStreak)),
               if (!widget.inShell)
                 TextButton(
                   onPressed: () async {
@@ -253,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     );
                     _returnedHome();
                   },
-                  child: const Text('Günlük Geçmiş'),
+                  child: Text(context.l10n.dailyHistory),
                 ),
               Align(
                 alignment: Alignment.centerRight,
@@ -262,10 +275,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   onPressed: _openDaily,
                   child: Text(
                     result != null
-                        ? 'Sonucu Gör'
+                        ? context.l10n.seeResult
                         : daily.hasCurrentProgress
-                        ? 'Devam Et'
-                        : 'Oyna',
+                        ? context.l10n.continueGame
+                        : context.l10n.play,
                   ),
                 ),
               ),

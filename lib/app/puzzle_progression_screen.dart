@@ -1,3 +1,4 @@
+import '../l10n/ui_strings.dart';
 import '../features/puzzle/domain/normal_puzzle_contract.dart';
 
 import '../theme/arrowword_visuals.dart';
@@ -83,7 +84,7 @@ class PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
       final scores = summary.scores;
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Bulmacalar'),
+          title: Text(context.l10n.puzzles),
           automaticallyImplyLeading: !widget.inShell,
         ),
         body: SafeArea(
@@ -106,7 +107,10 @@ class PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '${summary.completedCount} / $normalPuzzleCount tamamlandı',
+                    context.l10n.progress(
+                      summary.completedCount,
+                      normalPuzzleCount,
+                    ),
                     key: const ValueKey('track-progress-summary'),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
@@ -156,13 +160,19 @@ class PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                           final locked = !summary.isComplete && index > current;
                           final colors = Theme.of(context).colorScheme;
                           final label = locked
-                              ? 'Kilitli'
+                              ? context.l10n.locked
                               : isCurrent
-                              ? 'Devam Et'
-                              : 'Tamamlandı';
+                              ? context.l10n.continueGame
+                              : context.l10n.completed;
                           return Semantics(
-                            label:
-                                'Bulmaca $index, $label${isCurrent && completed ? ', tamamlandı' : ''}${score == null ? '' : ', ${score.score} puan'}${replayable ? ', tekrar oyna' : ''}',
+                            label: context.l10n.tileSemantics(
+                              index,
+                              label,
+                              isCurrent && completed ? 'yes' : 'no',
+                              score == null ? 'no' : 'yes',
+                              score?.score ?? 0,
+                              replayable ? 'yes' : 'no',
+                            ),
                             child: Material(
                               color: isCurrent
                                   ? colors.primaryContainer
@@ -237,7 +247,7 @@ class PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                                       FittedBox(
                                         fit: BoxFit.scaleDown,
                                         child: Text(
-                                          'Bulmaca $index',
+                                          context.l10n.puzzleNumber(index),
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: isCurrent
@@ -276,7 +286,9 @@ class PuzzleProgressionScreenState extends State<PuzzleProgressionScreen> {
                                           child: FittedBox(
                                             fit: BoxFit.scaleDown,
                                             child: Text(
-                                              '${score.score} puan',
+                                              context.l10n.scorePoints(
+                                                score.score,
+                                              ),
                                               key: ValueKey(
                                                 'puzzle-score-$index',
                                               ),

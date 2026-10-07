@@ -1,3 +1,5 @@
+import 'support/localized_back.dart';
+
 import 'package:arrowword/app/app.dart';
 import 'package:arrowword/app/home_screen.dart';
 import 'package:arrowword/app/puzzle_progress_store.dart';
@@ -51,7 +53,7 @@ void main() {
         find.byKey(ValueKey('cell-${answer.start.row}-${answer.start.column}')),
       );
       await tester.enterText(find.byType(TextField), 'A');
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       await session.flush;
       expect(find.byType(HomeScreen), findsOneWidget);
@@ -108,7 +110,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.text('Bulmaca 2'), findsOneWidget);

@@ -55,8 +55,10 @@ class PuzzleAnswer {
     required this.start,
     required this.direction,
     required this.cluePosition,
+    this.clueId,
   });
   final String id, solution, turkishClue;
+  final String? clueId;
   final GridPosition start, cluePosition;
   final AnswerDirection direction;
   int get length => solution.length;

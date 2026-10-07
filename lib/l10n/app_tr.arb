@@ -1,0 +1,353 @@
+{
+  "@@locale": "tr",
+  "home": "Ana Sayfa",
+  "puzzles": "Bulmacalar",
+  "daily": "Günlük",
+  "statistics": "İstatistikler",
+  "settings": "Ayarlar",
+  "about": "Hakkında",
+  "appearance": "Görünüm",
+  "theme": "Tema",
+  "system": "Sistem",
+  "light": "Açık",
+  "dark": "Koyu",
+  "appInformation": "Uygulama bilgileri",
+  "easy": "Kolay",
+  "medium": "Orta",
+  "hard": "Zor",
+  "puzzle": "Bulmaca",
+  "clear": "Temizle",
+  "check": "Kontrol Et",
+  "continueGame": "Devam Et",
+  "start": "Başla",
+  "replay": "Tekrar Oyna",
+  "replayLower": "tekrar oyna",
+  "play": "Oyna",
+  "resume": "Devam Et",
+  "dailyTitle": "Günün Bulmacası",
+  "dailyHistory": "Günlük Geçmiş",
+  "seeResult": "Sonucu Gör",
+  "share": "Paylaş",
+  "returnHome": "Ana Sayfaya Dön",
+  "returnPuzzles": "Bulmacalara Dön",
+  "chooseDifficulty": "Zorluk Seç",
+  "viewPuzzles": "Bulmacaları Gör",
+  "nextPuzzle": "Sonraki Bulmaca",
+  "close": "Kapat",
+  "back": "Geri Dön",
+  "closeSession": "Oturumu Kapat",
+  "restart": "Yeniden Başla",
+  "retry": "Tekrar Dene",
+  "locked": "Kilitli",
+  "completed": "Tamamlandı",
+  "completedLower": "tamamlandı",
+  "score": "Puan",
+  "time": "Süre",
+  "hints": "İpucu",
+  "wrongChecks": "Hatalı kontrol",
+  "best": "En iyi",
+  "thisAttempt": "Bu deneme",
+  "newRecord": "Yeni rekor!",
+  "puzzleCompleted": "Bulmaca tamamlandı!",
+  "dailyCompleted": "Günün bulmacası tamamlandı!",
+  "rewardHint": "Reklamla Harf Aç",
+  "adLoading": "Reklam hazırlanıyor",
+  "adUnavailable": "Reklam şu anda hazır değil. Lütfen tekrar deneyin.",
+  "puzzleLoading": "Bulmaca hazırlanıyor…",
+  "puzzlePreparing": "Bulmaca hazırlanıyor",
+  "dailyPreparing": "Günün bulmacası hazırlanıyor",
+  "generationError": "Bulmaca şu anda hazırlanamadı. Tekrar deneyin.",
+  "shareError": "Sonuç paylaşılamadı. Lütfen tekrar deneyin.",
+  "dailyUnavailable": "Günlük bulmaca bu oturumda kullanılamıyor.",
+  "emptyHistory": "Henüz tamamlanan günlük bulmaca yok.",
+  "noScore": "Henüz yok",
+  "completedPuzzles": "Tamamlanan bulmaca",
+  "scoredPuzzles": "Puanlanan bulmaca",
+  "totalScore": "Toplam puan",
+  "averageScore": "Ortalama puan",
+  "bestScore": "En iyi puan",
+  "hintFree": "İpuçsuz tamamlanan",
+  "errorFree": "Hatasız tamamlanan",
+  "dailyStatistics": "Günlük bulmacalar",
+  "dailyCount": "Günlük tamamlanan",
+  "currentStreak": "Güncel seri",
+  "longestStreak": "En uzun seri",
+  "statisticsIntro": "Tamamlanan bulmacalar ve kaydedilen en iyi puanlar.",
+  "statisticsExplanation": "Puan istatistikleri her bulmacanın kaydedilen en iyi sonucunu kullanır. Puanı olmayan eski tamamlamalar yalnızca tamamlanan bulmaca sayısına eklenir.",
+  "withinDifficulty": "Puanlar aynı zorluk içinde karşılaştırılır.",
+  "hintLocked": "İpucuyla açıldı, kilitli",
+  "development": "Geliştirme · İlerleme kaydedilmez",
+  "allCorrect": "Tüm harfler doğru.",
+  "legacyScore": "Bu bulmaca puanlama eklenmeden önce tamamlandı.",
+  "appDescription": "Türkçe ipuçlarıyla İngilizce kelimeleri keşfedin. Normal bulmacalar, tekrar oynama ve günün bulmacası.",
+  "workingName": "Arrowword çalışma adıdır; nihai ürün adı henüz belirlenmedi.",
+  "versionLoading": "Sürüm bilgisi yükleniyor…",
+  "versionUnavailable": "Sürüm bilgisi şu anda alınamıyor.",
+  "puzzleNumber": "Bulmaca {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty} · Bulmaca {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "Bulmaca {number} · Tekrar Oyna",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "{difficulty} seviye tamamlandı!",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "{completed} / {total} tamamlandı",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score} puan",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "Bugün tamamlandı · {score} puan",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "{count} günlük seri",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "{count} bulmaca tamamlandı",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "Sürüm {version} · Yapı {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "Bulmaca {number} · {seconds} sn",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "Eski kayıt · {seconds} sn",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration} · {hints} ipucu · {checks} hatalı kontrol",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue} ({length})",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}, {length} harf, {direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "sağa",
+  "down": "aşağı",
+  "tileSemantics": "Bulmaca {number}, {status}{completed, select, yes{, tamamlandı} other{}}{scored, select, yes{, {score} puan} other{}}{replayable, select, yes{, tekrar oyna} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label}: {score}\n{hasBest, select, yes{En iyi: {best}\n} other{}}Süre: {duration}\nİpucu: {hints}\nHatalı kontrol: {checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — Günün Bulmacası\n{date}\n\nPuan: {score}\nSüre: {duration}\nİpucu: {hints}\nHatalı kontrol: {checks}{hasStreak, select, yes{\nSeri: {streak} gün} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{day} {month} {year}",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "İpucu şu anda gösterilemiyor.",
+  "uiPreview": "Geliştirme · Yalnızca arayüz İngilizce",
+  "invalidDevConfig": "Geliştirme bulmacası açılamadı.\nARROWWORD_PUZZLE_INDEX 1–{count} arasında olmalı.\nARROWWORD_PUZZLE_DIFFICULTY: easy, medium veya hard.",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "Ocak",
+  "month2": "Şubat",
+  "month3": "Mart",
+  "month4": "Nisan",
+  "month5": "Mayıs",
+  "month6": "Haziran",
+  "month7": "Temmuz",
+  "month8": "Ağustos",
+  "month9": "Eylül",
+  "month10": "Ekim",
+  "month11": "Kasım",
+  "month12": "Aralık",
+  "versionFailed": "Sürüm bilgisi alınamadı.",
+  "puzzleGenerationFailed": "Bulmaca oluşturulamadı. Lütfen tekrar deneyin.",
+  "replayGenerationFailed": "Bulmaca tekrar oluşturulamadı. Lütfen tekrar deneyin.",
+  "dailyGenerationFailed": "Günün bulmacası oluşturulamadı. Lütfen tekrar deneyin.",
+  "legacyScoringMessage": "Bu bulmaca puanlama sistemi eklenmeden önce tamamlandı.",
+  "restartGame": "Yeniden Başlat",
+  "emptyProgress": "Henüz tamamlanan bulmaca yok"
+}

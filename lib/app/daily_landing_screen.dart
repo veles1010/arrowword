@@ -1,8 +1,9 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
 import 'daily_session.dart';
-import 'daily_statistics.dart';
 import 'daily_puzzle_screen.dart';
 import 'daily_history_screen.dart';
 
@@ -40,14 +41,12 @@ class _DailyLandingScreenState extends State<DailyLandingScreen> {
     final daily = widget.session;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Günlük'),
+        title: Text(context.l10n.daily),
         automaticallyImplyLeading: false,
       ),
       body: SafeArea(
         child: daily == null
-            ? const Center(
-                child: Text('Günlük bulmaca bu oturumda kullanılamıyor.'),
-              )
+            ? Center(child: Text(context.l10n.dailyUnavailable))
             : ListenableBuilder(
                 listenable: daily,
                 builder: (context, _) {
@@ -58,32 +57,36 @@ class _DailyLandingScreenState extends State<DailyLandingScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'Günün Bulmacası',
+                          context.l10n.dailyTitle,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 12),
-                        Text(formatDailyDate(daily.dateKey)),
+                        Text(localizedDailyDate(daily.dateKey, context.l10n)),
                         const SizedBox(height: 16),
                         if (result != null)
-                          Text('Bugün tamamlandı · ${result.score} puan'),
+                          Text(context.l10n.todayCompleted(result.score)),
                         if (daily.statistics.currentStreak > 0)
-                          Text('${daily.statistics.currentStreak} günlük seri'),
+                          Text(
+                            context.l10n.streakDays(
+                              daily.statistics.currentStreak,
+                            ),
+                          ),
                         const SizedBox(height: 24),
                         FilledButton(
                           key: const ValueKey('daily-landing-action'),
                           onPressed: () => _open(false),
                           child: Text(
                             result != null
-                                ? 'Sonucu Gör'
+                                ? context.l10n.seeResult
                                 : daily.hasCurrentProgress
-                                ? 'Devam Et'
-                                : 'Oyna',
+                                ? context.l10n.continueGame
+                                : context.l10n.play,
                           ),
                         ),
                         const SizedBox(height: 8),
                         TextButton(
                           onPressed: () => _open(true),
-                          child: const Text('Günlük Geçmiş'),
+                          child: Text(context.l10n.dailyHistory),
                         ),
                       ],
                     ),

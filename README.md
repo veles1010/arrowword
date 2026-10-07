@@ -247,3 +247,27 @@ Pixel/geometry checks: `python -m unittest discover -s tool -p test_branding.py`
 Android uses Flutter SDK defaults (currently min 24 / target 36), with INTERNET
 and dependency-required network/ad permissions. iOS deployment target is 15.0.
 Sample AdMob IDs remain TEST-only; no backend/global leaderboard is configured.
+
+## Localization foundation
+
+Answers are always English; board geometry, seeds, IDs and progression are
+language-independent. UI strings use Flutter `gen_l10n` (`app_tr.arb` / `app_en.arb`).
+Clues are separate presentation packs: `assets/clues/tr.json` covers all 900
+approved Turkish clues exactly, keyed by frozen catalogue positions
+(`easy_v3_000001`, `medium_v1_000001`, `hard_v1_000001`, etc.). Legacy content IDs
+and Turkish catalogue fields remain intact; generation never loads locale assets.
+
+Only Turkish is production-complete in Milestone 1. English UI is complete, but
+English gameplay and the Settings language row remain disabled until the English
+clue pack reaches 900/900. Language preferences are separate (`system` / `en` / `tr`
+under `arrowword.settings.language`); invalid values resolve to System. The policy
+supports explicit preference, exact/base system matching and future English fallback;
+until English clues are ready, unsupported devices safely use coherent Turkish.
+Daily clues use the same presentation resolver without changing Daily identity.
+
+Developer UI-only review (debug/profile, ignored in release, never saves language):
+`flutter run --profile --dart-define=ARROWWORD_UI_LOCALE=en`
+This intentionally previews English chrome with Turkish clues, not English gameplay.
+Run `flutter gen-l10n` after UI edits and
+`dart run tool/validate_localization.dart` to verify coverage/exact Turkish sync.
+`--extract-tr` regenerates the pack from approved catalogue text; it does not translate.

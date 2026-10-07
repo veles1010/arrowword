@@ -1,3 +1,5 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../features/puzzle/domain/normal_puzzle_contract.dart';
@@ -39,7 +41,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('İstatistikler'),
+      title: Text(context.l10n.statistics),
       automaticallyImplyLeading: !inShell,
     ),
     body: SafeArea(
@@ -79,7 +81,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           const SizedBox(height: 16),
                         ],
                         Text(
-                          'Tamamlanan bulmacalar ve kaydedilen en iyi puanlar.',
+                          context.l10n.statisticsIntro,
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         const SizedBox(height: 16),
@@ -92,7 +94,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               iconColor: accent,
                               width: cardWidth,
                               icon: Icons.task_alt,
-                              label: 'Tamamlanan bulmaca',
+                              label: context.l10n.completedPuzzles,
                               value: '${statistics.completedPuzzleCount}',
                             ),
                             _StatisticCard(
@@ -100,7 +102,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               iconColor: accent,
                               width: cardWidth,
                               icon: Icons.scoreboard_outlined,
-                              label: 'Puanlanan bulmaca',
+                              label: context.l10n.scoredPuzzles,
                               value: '${statistics.scoredPuzzleCount}',
                             ),
                             _StatisticCard(
@@ -108,7 +110,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               iconColor: accent,
                               width: cardWidth,
                               icon: Icons.stars_outlined,
-                              label: 'Toplam puan',
+                              label: context.l10n.totalScore,
                               value: '${statistics.totalScore}',
                             ),
                             _StatisticCard(
@@ -116,32 +118,37 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               iconColor: accent,
                               width: cardWidth,
                               icon: Icons.calculate_outlined,
-                              label: 'Ortalama puan',
+                              label: context.l10n.averageScore,
                               value:
                                   statistics.averageScore?.toStringAsFixed(1) ??
-                                  'Henüz yok',
+                                  context.l10n.noScore,
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-best'),
                               iconColor: accent,
                               width: cardWidth,
                               icon: Icons.emoji_events_outlined,
-                              label: 'En iyi puan',
+                              label: context.l10n.bestScore,
                               value:
                                   statistics.maxScore?.toString() ??
-                                  'Henüz yok',
+                                  context.l10n.noScore,
                               detail: best == null
                                   ? null
                                   : isNormalPuzzleIndex(best.puzzleIndex)
-                                  ? 'Bulmaca ${best.puzzleIndex} · ${best.elapsedSeconds} sn'
-                                  : 'Eski kayıt · ${best.elapsedSeconds} sn',
+                                  ? context.l10n.bestDetail(
+                                      best.puzzleIndex,
+                                      best.elapsedSeconds,
+                                    )
+                                  : context.l10n.legacyDetail(
+                                      best.elapsedSeconds,
+                                    ),
                             ),
                             _StatisticCard(
                               key: const ValueKey('statistics-hint-free'),
                               iconColor: accent,
                               width: cardWidth,
                               icon: Icons.lightbulb_outline,
-                              label: 'İpuçsuz tamamlanan',
+                              label: context.l10n.hintFree,
                               value: '${statistics.hintFreeBestScoreCount}',
                             ),
                             _StatisticCard(
@@ -149,26 +156,25 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               iconColor: accent,
                               width: cardWidth,
                               icon: Icons.check_circle_outline,
-                              label: 'Hatasız tamamlanan',
+                              label: context.l10n.errorFree,
                               value: '${statistics.errorFreeBestScoreCount}',
                             ),
                           ],
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Puan istatistikleri her bulmacanın kaydedilen en iyi sonucunu kullanır. '
-                          'Puanı olmayan eski tamamlamalar yalnızca tamamlanan bulmaca sayısına eklenir.',
+                          context.l10n.statisticsExplanation,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         if (tracks != null)
                           Text(
-                            'Puanlar aynı zorluk içinde karşılaştırılır.',
+                            context.l10n.withinDifficulty,
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         if (dailySession != null) ...[
                           const SizedBox(height: 24),
                           Text(
-                            'Günlük bulmacalar',
+                            context.l10n.dailyStatistics,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 12),
@@ -179,21 +185,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               _StatisticCard(
                                 width: cardWidth,
                                 icon: Icons.today,
-                                label: 'Günlük tamamlanan',
+                                label: context.l10n.dailyCount,
                                 value:
                                     '${dailySession!.statistics.totalCompletedDaily}',
                               ),
                               _StatisticCard(
                                 width: cardWidth,
                                 icon: Icons.local_fire_department_outlined,
-                                label: 'Güncel seri',
+                                label: context.l10n.currentStreak,
                                 value:
                                     '${dailySession!.statistics.currentStreak}',
                               ),
                               _StatisticCard(
                                 width: cardWidth,
                                 icon: Icons.calendar_month,
-                                label: 'En uzun seri',
+                                label: context.l10n.longestStreak,
                                 value:
                                     '${dailySession!.statistics.longestStreak}',
                               ),

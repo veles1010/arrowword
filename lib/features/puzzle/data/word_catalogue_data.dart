@@ -2,7 +2,20 @@ import '../generation/word_entry.dart';
 
 // Stable IDs default to lowercase English solutions, independent of list order.
 // Original v1 pairs and metadata are preserved in the first 60 entries.
-const catalogueWords = <WordEntry>[
+// Positions are frozen with catalogue v3. Legacy content IDs remain unchanged.
+final catalogueWords = List<WordEntry>.unmodifiable([
+  for (final (index, word) in _legacyCatalogueWords.indexed)
+    WordEntry(
+      word.solution,
+      word.turkishClue,
+      id: word.id,
+      clueId: 'easy_v3_${(index + 1).toString().padLeft(6, '0')}',
+      difficulty: word.difficulty,
+      tags: word.tags,
+    ),
+]);
+
+const _legacyCatalogueWords = <WordEntry>[
   WordEntry('APPLE', 'Elma', id: 'apple', tags: ['food']),
   WordEntry('HOUSE', 'Ev', id: 'house', tags: ['home']),
   WordEntry('WATER', 'Su', id: 'water', tags: ['nature']),

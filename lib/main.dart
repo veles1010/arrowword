@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
+import 'l10n/app_language.dart';
+import 'l10n/generated/app_localizations.dart';
+import 'l10n/generated/app_localizations_tr.dart';
+import 'features/puzzle/localization/clue_pack.dart';
 
 import 'app/app.dart';
 import 'app/app_settings.dart';
@@ -31,17 +37,18 @@ Future<void> main() async {
   } on ArgumentError {
     // Invalid inspection defines must never fall through to player persistence.
     runApp(
-      const MaterialApp(
+      MaterialApp(
         title: 'Arrowword',
+        locale: const Locale('tr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SafeArea(
             child: Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: Text(
-                  'Geliştirme bulmacası açılamadı.\n'
-                  'ARROWWORD_PUZZLE_INDEX 1–$normalPuzzleCount arasında olmalı.\n'
-                  'ARROWWORD_PUZZLE_DIFFICULTY: easy, medium veya hard.',
+                  AppLocalizationsTr().invalidDevConfig(normalPuzzleCount),
                 ),
               ),
             ),
@@ -71,11 +78,27 @@ Future<void> main() async {
       ? await DailySession.restore(store: SharedPreferencesDailyProgressStore())
       : null;
   final settings = await AppSettings.restore(SharedPreferencesSettingsStore());
+  final language = await AppLanguage.restore(SharedPreferencesLanguageStore());
+  Map<String, String> turkishClues;
+  try {
+    turkishClues = decodeCluePack(
+      await rootBundle.loadString('assets/clues/tr.json'),
+    );
+  } catch (error) {
+    // A damaged bundle cannot crash startup. Missing clues are integrity errors
+    // in debug and safe localized placeholders in release, never another language.
+    debugPrint('Clue asset integrity failure: $error');
+    turkishClues = const {};
+  }
+  final clues = LocalizedClueResolver({'tr': turkishClues});
   runApp(
     ArrowwordApp(
       session: session,
       tracks: tracks,
       settings: settings,
+      language: language,
+      clueResolver: clues,
+      uiLocalePreview: const String.fromEnvironment('ARROWWORD_UI_LOCALE'),
       dailySession: daily,
       openPuzzleDirectly: startIndex != null,
       developmentOverride: launch != null,

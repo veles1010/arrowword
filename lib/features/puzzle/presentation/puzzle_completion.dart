@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/generated/app_localizations_tr.dart';
+
 /// A play context owns its result and destination; the board only presents them.
 /// Normal progression uses PuzzleScreen's existing completion/Next behavior.
 class PuzzleCompletionPresentation {
@@ -21,12 +24,20 @@ String puzzleResultDetails({
   required int elapsedSeconds,
   required int hintsUsed,
   required int wrongChecks,
-  String scoreLabel = 'Puan',
+  String? scoreLabel,
+  AppLocalizations? strings,
   int? bestScore,
 }) {
   final minutes = (elapsedSeconds ~/ 60).toString().padLeft(2, '0');
   final seconds = (elapsedSeconds % 60).toString().padLeft(2, '0');
-  return '$scoreLabel: $score\n'
-      '${bestScore == null ? '' : 'En iyi: $bestScore\n'}'
-      'Süre: $minutes:$seconds\nİpucu: $hintsUsed\nHatalı kontrol: $wrongChecks';
+  final copy = strings ?? AppLocalizationsTr();
+  return copy.resultDetails(
+    scoreLabel ?? copy.score,
+    score,
+    bestScore == null ? 'no' : 'yes',
+    bestScore ?? 0,
+    '$minutes:$seconds',
+    hintsUsed,
+    wrongChecks,
+  );
 }

@@ -1,3 +1,6 @@
+import '../../../l10n/clue_presentation.dart';
+import '../../../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
@@ -17,7 +20,7 @@ final puzzleRouteObserver = RouteObserver<ModalRoute<dynamic>>();
 class PuzzleScreen extends StatefulWidget {
   const PuzzleScreen({
     required this.puzzle,
-    this.title = 'Bulmaca',
+    this.title,
     this.subtitle,
     this.onNextPuzzle,
     this.initialLetters = const {},
@@ -52,7 +55,7 @@ class PuzzleScreen extends StatefulWidget {
   final CompletedPuzzleScore? Function()? scoreResult;
   final PuzzleCompletionPresentation? completion;
   final RewardedHintAdService Function()? rewardedAdFactory;
-  final String title;
+  final String? title;
   final String? subtitle;
   final VoidCallback? onNextPuzzle;
   final Map<GridPosition, String> initialLetters;
@@ -217,11 +220,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   }
 
   void _adUnavailable() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Reklam şu anda hazır değil. Lütfen tekrar deneyin.'),
-      ),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(context.l10n.adUnavailable)));
   }
 
   void _changed() {
@@ -261,10 +261,10 @@ class _PuzzleScreenState extends State<PuzzleScreen>
               },
               child: AlertDialog(
                 scrollable: true,
-                title: Text(widget.completion?.title ?? 'Bulmaca tamamlandı!'),
+                title: Text(widget.completion?.title ?? c.l10n.puzzleCompleted),
                 content:
                     widget.completion?.contentBuilder(c) ??
-                    _completionContent(),
+                    _completionContent(c),
                 actions: widget.completion != null
                     ? [
                         FilledButton(
@@ -275,7 +275,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                     : [
                         TextButton(
                           onPressed: () => Navigator.pop(c),
-                          child: const Text('Kapat'),
+                          child: Text(c.l10n.close),
                         ),
                         FilledButton(
                           onPressed: () {
@@ -290,8 +290,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                           },
                           child: Text(
                             widget.onNextPuzzle == null
-                                ? 'Yeniden Başlat'
-                                : 'Sonraki Bulmaca',
+                                ? c.l10n.restartGame
+                                : c.l10n.nextPuzzle,
                           ),
                         ),
                       ],
@@ -310,17 +310,18 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     widget.completion!.onFinished();
   }
 
-  Widget _completionContent() {
+  Widget _completionContent(BuildContext context) {
     final score = widget.scoreResult?.call();
     if (score == null) {
       return Text(
         widget.scoreResult == null
-            ? 'Tüm harfler doğru.'
-            : 'Bu bulmaca puanlama sistemi eklenmeden önce tamamlandı.',
+            ? context.l10n.allCorrect
+            : context.l10n.legacyScoringMessage,
       );
     }
     return Text(
       puzzleResultDetails(
+        strings: context.l10n,
         score: score.score,
         elapsedSeconds: score.elapsedSeconds,
         hintsUsed: score.hintsUsed,
@@ -357,7 +358,11 @@ class _PuzzleScreenState extends State<PuzzleScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(
+              widget.title ?? context.l10n.puzzle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             if (widget.subtitle != null)
               Text(
                 widget.subtitle!,
@@ -398,7 +403,10 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              '${a.turkishClue} (${a.length})',
+                              context.l10n.clueLength(
+                                CluePresentation.text(context, a),
+                                a.length,
+                              ),
                               key: const ValueKey('active-clue'),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -476,7 +484,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                           ),
                           onPressed: game.reset,
-                          child: const Text('Temizle'),
+                          child: Text(context.l10n.clear),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -493,8 +501,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                               : null,
                           child: Text(
                             ads.isLoading
-                                ? 'Reklam hazırlanıyor'
-                                : 'Reklamla Harf Aç',
+                                ? context.l10n.adLoading
+                                : context.l10n.rewardHint,
                             textAlign: TextAlign.center,
                             maxLines: 2,
                           ),
@@ -507,7 +515,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                           ),
                           onPressed: game.check,
-                          child: const Text('Kontrol Et'),
+                          child: Text(context.l10n.check),
                         ),
                       ),
                     ],
@@ -523,7 +531,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                     textCapitalization: TextCapitalization.characters,
                     autocorrect: false,
                     enableSuggestions: false,
-                    decoration: const InputDecoration(border: InputBorder.none),
+                    decoration: InputDecoration(border: InputBorder.none),
                   ),
                 ),
               ],
@@ -565,8 +573,11 @@ class _Cell extends StatelessWidget {
             border: Border.all(color: visuals.gridBorder),
           ),
           child: Semantics(
-            label:
-                '${a.turkishClue}, ${a.length} harf, ${a.direction == AnswerDirection.right ? 'sağa' : 'aşağı'}',
+            label: c.l10n.clueSemantics(
+              CluePresentation.text(c, a),
+              a.length,
+              a.direction == AnswerDirection.right ? c.l10n.right : c.l10n.down,
+            ),
             child: Stack(
               children: [
                 Positioned(
@@ -574,7 +585,7 @@ class _Cell extends StatelessWidget {
                   top: 0,
                   right: 0,
                   bottom: 10,
-                  child: ClueText(a.turkishClue),
+                  child: ClueText(CluePresentation.text(c, a)),
                 ),
                 Positioned(
                   right: 0,
@@ -643,7 +654,7 @@ class _Cell extends StatelessWidget {
           ),
         ),
         child: Semantics(
-          label: hinted ? 'İpucuyla açıldı, kilitli' : null,
+          label: hinted ? c.l10n.hintLocked : null,
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(

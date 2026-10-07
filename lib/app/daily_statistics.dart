@@ -1,4 +1,6 @@
 import '../features/puzzle/daily/daily_puzzle.dart';
+import '../l10n/generated/app_localizations_tr.dart';
+import '../l10n/ui_strings.dart';
 
 /// Calendar-only arithmetic uses UTC date components, avoiding DST durations.
 class DailyStatistics {
@@ -41,22 +43,9 @@ class DailyStatistics {
 }
 
 String formatDailyDate(String key) {
-  const months = [
-    'Ocak',
-    'Şubat',
-    'Mart',
-    'Nisan',
-    'Mayıs',
-    'Haziran',
-    'Temmuz',
-    'Ağustos',
-    'Eylül',
-    'Ekim',
-    'Kasım',
-    'Aralık',
-  ];
-  final date = DateTime.parse(key);
-  return '${date.day} ${months[date.month - 1]} ${date.year}';
+  // Compatibility helper for callers without a UI locale. UI/share pass their
+  // delegate to localizedDailyDate; date identity/arithmetic remain unrelated.
+  return localizedDailyDate(key, AppLocalizationsTr());
 }
 
 String formatDailyDuration(int seconds) =>

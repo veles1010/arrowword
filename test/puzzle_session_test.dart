@@ -1,3 +1,5 @@
+import 'support/localized_back.dart';
+
 import 'package:arrowword/app/app.dart';
 import 'package:arrowword/app/puzzle_session.dart';
 import 'package:arrowword/features/puzzle/data/prototype_puzzle.dart';
@@ -136,7 +138,7 @@ void main() {
       );
     }
     expect(find.text('Bulmaca tamamlandı!'), findsNothing);
-    await tester.pageBack();
+    await localizedPageBack(tester);
     await tester.pumpAndSettle();
     expect(find.text('Bulmaca 2'), findsOneWidget);
     expect(find.text('Devam Et'), findsOneWidget);

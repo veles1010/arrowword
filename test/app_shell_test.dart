@@ -1,3 +1,5 @@
+import 'support/localized_back.dart';
+
 import 'package:arrowword/app/app.dart';
 import 'package:arrowword/app/app_settings.dart';
 import 'package:arrowword/app/app_shell.dart';
@@ -188,7 +190,7 @@ void main() {
     await tester.tap(find.text('Başla'));
     await tester.pumpAndSettle();
     expect(find.byType(PuzzleScreen), findsOneWidget);
-    await tester.pageBack();
+    await localizedPageBack(tester);
     await tester.pumpAndSettle();
     expect(find.byType(HomeScreen), findsOneWidget);
     await tab(tester, 3);
@@ -217,13 +219,13 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('daily-landing-action')));
       await tester.pumpAndSettle();
       expect(find.byType(PuzzleScreen), findsOneWidget);
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       expect(find.byType(DailyLandingScreen), findsOneWidget);
       await tester.tap(find.text('Günlük Geçmiş'));
       await tester.pumpAndSettle();
       expect(find.byType(DailyHistoryScreen), findsOneWidget);
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       expect(find.byType(DailyLandingScreen), findsOneWidget);
     },

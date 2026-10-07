@@ -1,3 +1,5 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
@@ -55,7 +57,12 @@ class _PuzzleReplayScreenState extends State<PuzzleReplayScreen> {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            '${widget.identifyTrack ? '${widget.session.difficulty.turkishLabel} · ' : ''}Bulmaca ${widget.puzzleIndex}',
+            widget.identifyTrack
+                ? context.l10n.trackPuzzle(
+                    context.difficultyLabel(widget.session.difficulty),
+                    widget.puzzleIndex,
+                  )
+                : context.l10n.puzzleNumber(widget.puzzleIndex),
           ),
         ),
         body: SafeArea(
@@ -63,12 +70,10 @@ class _PuzzleReplayScreenState extends State<PuzzleReplayScreen> {
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: _loading
-                  ? const CircularProgressIndicator(
-                      semanticsLabel: 'Bulmaca hazırlanıyor',
+                  ? CircularProgressIndicator(
+                      semanticsLabel: context.l10n.puzzlePreparing,
                     )
-                  : const Text(
-                      'Bulmaca tekrar oluşturulamadı. Lütfen tekrar deneyin.',
-                    ),
+                  : Text(context.l10n.replayGenerationFailed),
             ),
           ),
         ),
@@ -78,21 +83,25 @@ class _PuzzleReplayScreenState extends State<PuzzleReplayScreen> {
     return PuzzleScreen(
       puzzle: generation.puzzle!,
       title: widget.identifyTrack
-          ? '${widget.session.difficulty.turkishLabel} · Bulmaca ${widget.puzzleIndex}'
-          : 'Bulmaca ${widget.puzzleIndex} · Tekrar Oyna',
-      subtitle: widget.identifyTrack ? 'Tekrar Oyna' : null,
+          ? context.l10n.trackPuzzle(
+              context.difficultyLabel(widget.session.difficulty),
+              widget.puzzleIndex,
+            )
+          : context.l10n.replayPuzzle(widget.puzzleIndex),
+      subtitle: widget.identifyTrack ? context.l10n.replay : null,
       rewardedAdFactory: widget.rewardedAdFactory,
       monotonicNow: widget.monotonicNow,
       onAttemptProgress: attempt.updateProgress,
       onElapsedChanged: attempt.checkpointElapsed,
       onCompleted: attempt.complete,
       completion: PuzzleCompletionPresentation(
-        title: 'Bulmaca tamamlandı!',
-        contentBuilder: (_) {
+        title: context.l10n.puzzleCompleted,
+        contentBuilder: (dialogContext) {
           final result = attempt.result!;
           final details = puzzleResultDetails(
+            strings: dialogContext.l10n,
             score: result.score,
-            scoreLabel: 'Bu deneme',
+            scoreLabel: dialogContext.l10n.thisAttempt,
             bestScore: attempt.bestScore?.score ?? result.score,
             elapsedSeconds: result.elapsedSeconds,
             hintsUsed: result.hintsUsed,
@@ -104,14 +113,14 @@ class _PuzzleReplayScreenState extends State<PuzzleReplayScreen> {
             children: [
               Text(details),
               if (attempt.isNewBest)
-                const Text(
-                  'Yeni rekor!',
+                Text(
+                  dialogContext.l10n.newRecord,
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
             ],
           );
         },
-        actionLabel: 'Bulmacalara Dön',
+        actionLabel: context.l10n.returnPuzzles,
         onFinished: () => Navigator.of(context).pop(),
       ),
     );

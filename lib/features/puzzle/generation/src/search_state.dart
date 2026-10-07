@@ -62,6 +62,7 @@ class SearchCatalog {
     id: words[p.word].id,
     solution: words[p.word].solution,
     turkishClue: words[p.word].turkishClue,
+    clueId: words[p.word].clueId,
     start: GridPosition(p.row, p.column),
     direction: p.direction == 1 ? AnswerDirection.right : AnswerDirection.down,
     cluePosition: GridPosition(p.clue ~/ columns, p.clue % columns),

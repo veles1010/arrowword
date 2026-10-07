@@ -1,5 +1,14 @@
+import '../l10n/ui_strings.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+
+import '../l10n/generated/app_localizations.dart';
+import '../l10n/language_policy.dart';
+import '../l10n/app_language.dart';
+import '../l10n/clue_presentation.dart';
+import '../features/puzzle/localization/clue_pack.dart';
 
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
 
@@ -25,12 +34,18 @@ class ArrowwordApp extends StatelessWidget {
     this.rewardedAdFactory,
     this.dailySession,
     this.settings,
+    this.language,
+    this.uiLocalePreview,
+    this.clueResolver,
     super.key,
   }) : assert(session != null || tracks != null);
   final PuzzleSession? session;
   final PlayerPuzzleTracks? tracks;
   final DailySession? dailySession;
   final AppSettings? settings;
+  final AppLanguage? language;
+  final String? uiLocalePreview;
+  final LocalizedClueResolver? clueResolver;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final bool openPuzzleDirectly;
   final bool developmentOverride;
@@ -42,9 +57,36 @@ class ArrowwordApp extends StatelessWidget {
       );
     }
     return ListenableBuilder(
-      listenable: settings ?? tracks ?? session!,
+      listenable: Listenable.merge([settings ?? tracks ?? session!, ?language]),
       builder: (context, _) => MaterialApp(
         title: 'Arrowword',
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: Locale(
+          developmentUiLocale(
+                uiLocalePreview ?? '',
+                releaseMode: kReleaseMode,
+              ) ??
+              LanguagePolicy.production.resolve(
+                language?.preference ?? AppLanguagePreference.system,
+                WidgetsBinding.instance.platformDispatcher.locales.map(
+                  (l) => l.toLanguageTag(),
+                ),
+              ),
+        ),
+        builder: (context, child) => clueResolver == null
+            ? child!
+            : CluePresentation(
+                resolver: clueResolver!,
+                // UI-only development previews do not claim English clues exist.
+                locale: LanguagePolicy.production.resolve(
+                  language?.preference ?? AppLanguagePreference.system,
+                  WidgetsBinding.instance.platformDispatcher.locales.map(
+                    (l) => l.toLanguageTag(),
+                  ),
+                ),
+                child: child!,
+              ),
         debugShowCheckedModeBanner: false,
         navigatorObservers: [puzzleRouteObserver],
         theme: ArrowwordTheme.light(),
@@ -121,11 +163,12 @@ class _PuzzleFlow extends StatelessWidget {
               puzzle: generation.puzzle!,
               rewardedAdFactory: rewardedAdFactory,
               title: developmentOverride || identifyTrack
-                  ? '${session.difficulty.turkishLabel} · Bulmaca ${generation.puzzleIndex}'
-                  : 'Bulmaca ${generation.puzzleIndex}',
-              subtitle: developmentOverride
-                  ? 'Geliştirme · İlerleme kaydedilmez'
-                  : null,
+                  ? context.l10n.trackPuzzle(
+                      context.difficultyLabel(session.difficulty),
+                      generation.puzzleIndex,
+                    )
+                  : context.l10n.puzzleNumber(generation.puzzleIndex),
+              subtitle: developmentOverride ? context.l10n.development : null,
               onNextPuzzle:
                   developmentOverride ||
                       generation.puzzleIndex >= normalPuzzleCount
@@ -159,8 +202,8 @@ class _PuzzleFlow extends StatelessWidget {
                   : session.recognizeCompletion,
               completion: developmentOverride
                   ? PuzzleCompletionPresentation(
-                      title: 'Bulmaca tamamlandı!',
-                      contentBuilder: (_) {
+                      title: context.l10n.puzzleCompleted,
+                      contentBuilder: (dialogContext) {
                         final score = CompletedPuzzleScore.calculate(
                           puzzleIndex: generation.puzzleIndex,
                           elapsedSeconds: session.elapsed.inSeconds,
@@ -169,6 +212,7 @@ class _PuzzleFlow extends StatelessWidget {
                         );
                         return Text(
                           puzzleResultDetails(
+                            strings: dialogContext.l10n,
                             score: score.score,
                             elapsedSeconds: score.elapsedSeconds,
                             hintsUsed: score.hintsUsed,
@@ -176,21 +220,23 @@ class _PuzzleFlow extends StatelessWidget {
                           ),
                         );
                       },
-                      actionLabel: 'Oturumu Kapat',
+                      actionLabel: context.l10n.closeSession,
                       onFinished: () {
                         SystemNavigator.pop();
                       },
                     )
                   : generation.puzzleIndex == normalPuzzleCount
                   ? PuzzleCompletionPresentation(
-                      title:
-                          '${session.difficulty.turkishLabel} seviye tamamlandı!',
-                      contentBuilder: (_) {
+                      title: context.l10n.trackFinished(
+                        context.difficultyLabel(session.difficulty),
+                      ),
+                      contentBuilder: (dialogContext) {
                         final score = session.currentScore;
                         return Text(
                           score == null
-                              ? 'Bu bulmaca puanlama sistemi eklenmeden önce tamamlandı.'
+                              ? dialogContext.l10n.legacyScoringMessage
                               : puzzleResultDetails(
+                                  strings: dialogContext.l10n,
                                   score: score.score,
                                   elapsedSeconds: score.elapsedSeconds,
                                   hintsUsed: score.hintsUsed,
@@ -199,8 +245,8 @@ class _PuzzleFlow extends StatelessWidget {
                         );
                       },
                       actionLabel: onTrackFinished == null
-                          ? 'Geri Dön'
-                          : 'Bulmacalara Dön',
+                          ? context.l10n.back
+                          : context.l10n.returnPuzzles,
                       onFinished: () {
                         Navigator.of(context).maybePop();
                         onTrackFinished?.call();
@@ -209,14 +255,12 @@ class _PuzzleFlow extends StatelessWidget {
                   : null,
             )
           : Scaffold(
-              appBar: AppBar(title: const Text('Bulmaca')),
+              appBar: AppBar(title: Text(context.l10n.puzzle)),
               body: SafeArea(
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text(
-                      'Bulmaca oluşturulamadı. Lütfen tekrar deneyin.',
-                    ),
+                    child: Text(context.l10n.puzzleGenerationFailed),
                   ),
                 ),
               ),
@@ -314,7 +358,7 @@ class _TrackPuzzleFlowState extends State<_TrackPuzzleFlow> {
             );
     }
     return Scaffold(
-      appBar: AppBar(title: Text(widget.difficulty.turkishLabel)),
+      appBar: AppBar(title: Text(context.difficultyLabel(widget.difficulty))),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -323,11 +367,11 @@ class _TrackPuzzleFlowState extends State<_TrackPuzzleFlow> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (_loading) ...[
-                  const CircularProgressIndicator(),
+                  CircularProgressIndicator(),
                   const SizedBox(height: 16),
-                  const Text('Bulmaca hazırlanıyor…'),
+                  Text(context.l10n.puzzleLoading),
                 ] else ...[
-                  const Text('Bulmaca şu anda hazırlanamadı. Tekrar deneyin.'),
+                  Text(context.l10n.generationError),
                   TextButton(
                     onPressed: () {
                       if (_session != null &&
@@ -338,7 +382,7 @@ class _TrackPuzzleFlowState extends State<_TrackPuzzleFlow> {
                       setState(() => _loading = true);
                       _open();
                     },
-                    child: const Text('Tekrar Dene'),
+                    child: Text(context.l10n.retry),
                   ),
                 ],
               ],

@@ -1,3 +1,5 @@
+import 'support/localized_back.dart';
+
 import 'dart:async';
 
 import 'package:arrowword/app/app.dart';
@@ -361,7 +363,7 @@ void main() {
     await session.flush;
     await open(tester, session);
     await _enter(tester, position, 'B');
-    await tester.pageBack();
+    await localizedPageBack(tester);
     await tester.pumpAndSettle();
     await session.flush;
     final restored = await PuzzleSession.restore(

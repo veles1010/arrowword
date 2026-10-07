@@ -1,3 +1,5 @@
+import 'support/localized_back.dart';
+
 import 'package:arrowword/app/app.dart';
 import 'package:arrowword/app/home_screen.dart';
 import 'package:arrowword/app/puzzle_progress_store.dart';
@@ -131,7 +133,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(PuzzleReplayScreen), findsOneWidget);
       expect(find.text('Bulmaca $index · Tekrar Oyna'), findsOneWidget);
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
     }
     await tester.ensureVisible(_tile(7));
@@ -155,7 +157,7 @@ void main() {
       expect(find.byType(PuzzleReplayScreen), findsNothing);
       expect(screen.puzzle, same(session.current.puzzle));
       expect(screen.title, 'Bulmaca 6');
-      await tester.pageBack();
+      await localizedPageBack(tester);
       await tester.pumpAndSettle();
       expect(find.byType(PuzzleProgressionScreen), findsOneWidget);
       await tester.binding.handlePopRoute();
@@ -184,7 +186,7 @@ void main() {
     final score = session.completedScores[1]!.score;
     await tester.tap(find.text('Kapat'));
     await tester.pumpAndSettle();
-    await tester.pageBack();
+    await localizedPageBack(tester);
     await tester.pumpAndSettle();
     expect(_status(1, 'Devam Et'), findsOneWidget);
     expect(_status(1, '$score puan'), findsOneWidget);
@@ -195,7 +197,7 @@ void main() {
     await tester.tap(find.text('Sonraki Bulmaca'));
     await tester.pumpAndSettle();
     expect(session.current.puzzleIndex, 2);
-    await tester.pageBack();
+    await localizedPageBack(tester);
     await tester.pumpAndSettle();
     expect(_status(1, 'Tamamlandı'), findsOneWidget);
     expect(_status(1, '$score puan'), findsOneWidget);
@@ -206,7 +208,7 @@ void main() {
     await tester.tap(_tile(1));
     await tester.pumpAndSettle();
     expect(find.byType(PuzzleReplayScreen), findsOneWidget);
-    await tester.pageBack();
+    await localizedPageBack(tester);
     await tester.pumpAndSettle();
     await tester.ensureVisible(_tile(7));
     expect(_status(7, 'Kilitli'), findsOneWidget);
@@ -287,7 +289,7 @@ void main() {
     expect(find.byType(PuzzleScreen), findsOneWidget);
     await tester.tap(find.text('Sonraki Bulmaca'));
     await tester.pumpAndSettle();
-    await tester.pageBack();
+    await localizedPageBack(tester);
     await tester.pumpAndSettle();
     expect(_status(1, 'Tamamlandı'), findsOneWidget);
     expect(_status(1, '$score puan'), findsOneWidget);
