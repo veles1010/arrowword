@@ -38,7 +38,7 @@ void main() {
         ? const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans')
         : Locale(tag);
     test(
-      '$tag UI foundation has all 130 messages and correct script',
+      '$tag UI foundation has all 131 messages and correct script',
       () async {
         final arb = jsonDecode(
           File('lib/l10n/app_${tag.replaceAll('-', '_')}.arb')
@@ -47,7 +47,7 @@ void main() {
         expect(arb.keys.toSet(), reference.keys.toSet());
         expect(
           arb.keys.where((key) => !(key as String).startsWith('@')),
-          hasLength(130),
+          hasLength(131),
         );
         final copy = await AppLocalizations.delegate.load(locale);
         expect(copy.home, home);
@@ -56,10 +56,7 @@ void main() {
         expect(copy.completedCount(2), contains('2'));
         expect(copy.dateDisplay(4, copy.month10, 2026), contains('2026'));
         expect(copy.hintLocked, isNot('Revealed with a hint, locked'));
-        expect(
-          LanguagePolicy.production.enabled.contains(tag),
-          ['ja', 'ko', 'zh-Hans'].contains(tag),
-        );
+        expect(LanguagePolicy.production.enabled.contains(tag), true);
       },
     );
     test(
@@ -119,7 +116,7 @@ void main() {
           tester.element(find.byType(SettingsScreen)),
         )!;
         expect(find.text(strings.language), findsOneWidget);
-        // Complete CJK preferences are selectable; unfinished ru/id remain safe.
+        // All completed preferences are selectable.
         expect(
           find.text(
             LanguagePolicy.production.enabled.contains(tag)

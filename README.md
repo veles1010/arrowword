@@ -250,19 +250,20 @@ Sample AdMob IDs remain TEST-only; no backend/global leaderboard is configured.
 
 ## Localization
 
-Answers are always English; board geometry, seeds, IDs and progression are
-language-independent. UI strings use Flutter `gen_l10n`. Nine separate clue packs
-(tr, en, es, de, fr, pt-BR, ja, ko, zh-Hans) each cover all 900 entries:
-8,100 clues in total,
+Answers are always English ASCII A–Z; board geometry, seeds, IDs and progression are
+language-independent. UI strings use Flutter `gen_l10n`. Eleven separate clue packs
+(tr, en, es, de, fr, pt-BR, ja, ko, zh-Hans, id, ru) each cover all 900 entries:
+9,900 clues in total,
 keyed by frozen catalogue positions
 (`easy_v3_000001`, `medium_v1_000001`, `hard_v1_000001`, etc.). Legacy content IDs
 and Turkish catalogue fields remain intact; generation never loads locale assets.
 
-Turkish, English, Spanish, German, French, Brazilian Portuguese, Japanese, Korean
-and Simplified Chinese are production-complete.
+Turkish, English, Spanish, German, French, Brazilian Portuguese, Japanese, Korean,
+Simplified Chinese, Indonesian and Russian are production-complete.
 Settings offers System Default and autonyms English, Türkçe, Español, Deutsch,
-Français, Português (Brasil), 日本語, 한국어, 简体中文. Stable preferences (`system`,
-`en`, `tr`, `es`, `de`, `fr`, `pt-BR`, `ja`, `ko`, `zh-Hans`) use
+Français, Português (Brasil), 日本語, 한국어, 简体中文,
+Bahasa Indonesia, Русский. Stable preferences (`system`,
+`en`, `tr`, `es`, `de`, `fr`, `pt-BR`, `ja`, `ko`, `zh-Hans`, `id`, `ru`) use
 `arrowword.settings.language`; invalid/missing values use System.
 Supported device languages match their base language; pt-BR and bare pt use Brazil,
 but pt-PT and other regional Portuguese variants fall back to English. Unsupported
@@ -286,12 +287,12 @@ Run `flutter gen-l10n` after UI edits and
 English editorial decisions/statistics are recorded in `docs/english_clue_review.md`.
 Editorial decisions for every added locale are documented under `docs/`.
 
-Milestone 3B.1 completes Japanese/Korean/Simplified Chinese gameplay. Indonesian
-and Russian remain UI-only foundations (`id`, `ru`), absent from Settings and
-falling back to English on those devices until their 900-clue packs are complete
-in Milestone 3B.2. CJK packs are loaded lazily, never at Home startup. The validator
-reports all borrowing/script-usage warnings for editorial review, rather than
-treating every katakana word as English leakage.
+Milestone 3B.2 completes all eleven locales. id/id-* and ru/ru-* devices use
+Indonesian/Russian; explicit preference wins. The validator reports script,
+transliteration and borrowing notices for editorial review. About explains that
+answers are always English. Non-Latin clue languages are fully supported;
+players may switch their native keyboard to English/Latin. No custom keyboard
+is required or added.
 
 The non-Latin input audit added composition safety: unfinished IME text is not
 consumed, non-Latin commits cannot erase letters, and only single ASCII A-Z letters

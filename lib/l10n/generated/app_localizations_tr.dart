@@ -10,6 +10,9 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get answersAlwaysEnglish => 'Cevaplar her zaman İngilizcedir.';
+
+  @override
   String get home => 'Ana Sayfa';
 
   @override

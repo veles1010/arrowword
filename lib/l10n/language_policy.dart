@@ -56,13 +56,12 @@ class LanguagePolicy {
     LocaleAvailability('ja', uiComplete: true, cluesComplete: true),
     LocaleAvailability('ko', uiComplete: true, cluesComplete: true),
     LocaleAvailability('zh-Hans', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('id', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('ru', uiComplete: true, cluesComplete: true),
   ]);
   final List<LocaleAvailability> locales;
   // UI foundations alone must never enable mixed-language gameplay.
-  static const prepared = [
-    LocaleAvailability('id', uiComplete: true, cluesComplete: false),
-    LocaleAvailability('ru', uiComplete: true, cluesComplete: false),
-  ];
+  static const List<LocaleAvailability> prepared = [];
   Iterable<String> get enabled =>
       locales.where((l) => l.productionComplete).map((l) => l.tag);
   String resolve(

@@ -261,6 +261,8 @@ void main() {
         'ja',
         'ko',
         'zh-Hans',
+        'id',
+        'ru',
       ]);
       expect(
         policy.locales.singleWhere((l) => l.tag == 'en').uiComplete,

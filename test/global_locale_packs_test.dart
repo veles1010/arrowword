@@ -55,7 +55,19 @@ class _Generator extends PuzzleSequenceGenerator {
 }
 
 void main() {
-  const tags = ['tr', 'en', 'es', 'de', 'fr', 'pt-BR', 'ja', 'ko', 'zh-Hans'];
+  const tags = [
+    'tr',
+    'en',
+    'es',
+    'de',
+    'fr',
+    'pt-BR',
+    'ja',
+    'ko',
+    'zh-Hans',
+    'id',
+    'ru',
+  ];
   final sources = {
     for (final tag in tags)
       tag: File('assets/clues/$tag.json').readAsStringSync(),
@@ -72,9 +84,9 @@ void main() {
       prototypeSequenceConfig,
     ).generateNext(puzzleIndex: 1),
   );
-  test('nine complete production locales and 8100 clue strings', () {
+  test('eleven complete production locales and 9900 clue strings', () {
     expect(LanguagePolicy.production.enabled, tags);
-    expect(packs.values.fold<int>(0, (n, p) => n + p.length), 8100);
+    expect(packs.values.fold<int>(0, (n, p) => n + p.length), 9900);
   });
   for (final tag in tags.skip(2)) {
     final audit = LocalizedClueAudit(words, packs[tag]!, packs['en']!);
@@ -319,6 +331,7 @@ void main() {
           tester.element(find.byType(PuzzleScreen)),
         )!;
         expect(find.text(strings.rewardHint), findsOneWidget);
+        expect(find.text(strings.answersAlwaysEnglish), findsNothing);
         if (tag == 'de') expect(strings.rewardHint, 'Tipp per Werbung');
         for (final answer in fixture.puzzle!.answers) {
           expect(find.text(packs[tag]![answer.clueId]!), findsOneWidget);

@@ -25,6 +25,8 @@ void main() {
       'ja',
       'ko',
       'zh-Hans',
+      'id',
+      'ru',
     ])
       locale: decodeCluePack(
         File('assets/clues/$locale.json').readAsStringSync(),
@@ -136,7 +138,7 @@ void main() {
     expect(packs['en'], hasLength(900));
     expect(used.keys.toSet(), {'easy', 'medium', 'hard'});
     stdout.writeln(
-      'Clue IDs resolved in all nine locales across 108 boards: $total/900; per track ${used.map((track, ids) => MapEntry(track, ids.length))}',
+      'Clue IDs resolved in all eleven locales across 108 boards: $total/900; per track ${used.map((track, ids) => MapEntry(track, ids.length))}',
     );
   });
 }

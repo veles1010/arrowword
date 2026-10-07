@@ -10,6 +10,9 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get answersAlwaysEnglish => 'Die Antworten sind immer auf Englisch.';
+
+  @override
   String get home => 'Start';
 
   @override

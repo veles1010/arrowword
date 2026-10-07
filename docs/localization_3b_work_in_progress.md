@@ -1,50 +1,33 @@
-# Localization 3B — work in progress
+# Localization 3B — completion status
 
-Foundation baseline: ae75386; Milestone 3B.1 baseline: 43e3660.
-Japanese, Korean and Simplified Chinese are now complete (900 clues each), with
-editorial reports and production activation. This is a nine-locale release, not
-the eventual eleven-locale release. Russian and Indonesian remain gated.
+Foundation: ae75386; CJK gameplay: e3fa3de. Milestone 3B.2 completes Russian
+and Indonesian: eleven production locales and 9,900 clues.
 
-## Implemented foundation
+## Implemented
 
-- Complete 130-message UI resources for ja, ko, zh-Hans, id and ru. Russian count
-  messages include one/few/many forms; localized dates/share/semantics are included.
-- Flutter-required base zh UI resource mirrors Simplified Chinese. Production
-  resolution never selects ambiguous zh or Traditional Chinese.
-- Stable preference IDs/autonyms; CJK choices are available. Prepared availability
-  records remain incomplete only for ru/id, which Settings never exposes.
-- Script-aware Chinese policy tested in the production registry:
-  explicit Hans or CN/SG selects Simplified; Hant/TW/HK/MO/bare zh uses English.
-- Root Locale construction preserves scriptCode rather than treating Hans as a
-  country code. Restored incomplete preferences do not crash the Settings dropdown.
-- Narrow input bug fix: non-Latin commits were incorrectly treated as backspace.
-  Composition is now left intact until commit; unsupported commits are ignored.
-  ASCII filtering happens before uppercasing, preventing Unicode expansions from
-  entering A-Z cells. Lowercase Latin and last-Latin-character paste remain supported.
-- Domain and simulated IME tests for Japanese/Korean/Chinese/Russian, plus compact
-  UI-only foundation tests at 360x640, scales 1.3/1.5. These do not prove real font
-  fallback or native IME ergonomics. CJK gameplay/rendered-clue tests are now added.
-
-## Required remaining work
-
-1. Author/review the ru/id 900-entry packs directly from frozen English content.
-2. Extend existing audits for Cyrillic transliteration and Indonesian borrowing.
-3. Create Russian/Indonesian editorial reports with actual revision/warning counts.
-4. Activate ru/id only after validation; then expose eleven autonyms.
-5. Extend the existing nine-locale cache/Daily/108-board tests to eleven locales.
-6. Perform real-device font/IME checks; no custom keyboard in this milestone.
-7. Claim eleven locales / 9,900 clues only after those two packs are complete.
+- Complete 131-message UI resources, including restrained About explanation that
+  answers are always English. Russian plurals and localized dates/share remain.
+- Eleven complete 900-entry clue packs; Russian/Indonesian editorial reports
+  document revision counts and every retained borrowing category.
+- Stable preferences/autonyms; Settings exposes all complete choices.
+- Hans/CN/SG selects Simplified Chinese; Hant/TW/HK/MO/bare zh falls back to English.
+  Flutter-required base zh/pt UI resources are not additional gameplay locales.
+- id-* and ru-* resolve to Indonesian/Russian; unsupported languages use English.
+- Lazy cached packs, atomic UI/clue switching, unchanged attempt state.
+- Extended 108-board/eleven-locale coverage and compact Daily/share/input regressions.
 
 ## Frozen boundary
 
-All six existing clue packs and ARB translations, catalogue data, generator,
-sequence/seed/ID contracts, scores, schemas, Daily identity, branding, visual tokens,
-and bottom-navigation geometry are unchanged. Existing gameplay locales remain
-tr/en/es/de/fr/pt-BR/ja/ko/zh-Hans. ru/id UI availability is not gameplay completeness.
+All nine previously approved clue packs, answers, clue IDs, catalogue order,
+generation, sequence/seed/ID contracts, scores, persistence, Daily identity,
+branding, visual tokens and bottom-navigation geometry remain unchanged.
+Input safeguards are unchanged: composition is preserved until commit;
+unsupported commits are ignored, not mistaken for deletion; ASCII filtering occurs
+before uppercasing. Only English A–Z enters answer cells.
 
-## Manual input follow-up
+## Remaining manual checks
 
-Use actual Japanese IME, Korean, Pinyin and Cyrillic keyboards. Verify composition,
-commit/cancel, backspace, pasted mixed text and switching to Latin. Current OS
-keyboard choice is not forced to Latin; a dedicated A-Z input milestone is
-recommended for product ergonomics, not implemented here.
+Use Russian, Japanese, Korean and Pinyin keyboards: composition/commit/cancel,
+backspace, pasted mixed text and switching to English/Latin. Verify real font
+fallback and compact clue readability. No custom keyboard is required or added;
+widget tests cannot certify native keyboard ergonomics or glyph shapes.

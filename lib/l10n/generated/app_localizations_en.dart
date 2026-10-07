@@ -10,6 +10,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get answersAlwaysEnglish => 'Answers are always in English.';
+
+  @override
   String get home => 'Home';
 
   @override

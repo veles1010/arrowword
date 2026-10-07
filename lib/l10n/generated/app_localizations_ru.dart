@@ -10,6 +10,9 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get answersAlwaysEnglish => 'Ответы всегда на английском языке.';
+
+  @override
   String get home => 'Главная';
 
   @override

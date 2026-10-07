@@ -75,7 +75,17 @@ void main() {
   final packs = {
     'tr': tr,
     'en': en,
-    for (final locale in ['es', 'de', 'fr', 'pt-BR', 'ja', 'ko', 'zh-Hans'])
+    for (final locale in [
+      'es',
+      'de',
+      'fr',
+      'pt-BR',
+      'ja',
+      'ko',
+      'zh-Hans',
+      'id',
+      'ru',
+    ])
       locale: decodeCluePack(
         File('assets/clues/$locale.json').readAsStringSync(),
       ),
@@ -225,7 +235,7 @@ void main() {
     },
   );
   test(
-    'production complete locale registry includes all nine complete packs',
+    'production complete locale registry includes all eleven complete packs',
     () {
       expect(LanguagePolicy.production.enabled, [
         'tr',
@@ -237,6 +247,8 @@ void main() {
         'ja',
         'ko',
         'zh-Hans',
+        'id',
+        'ru',
       ]);
       expect(
         LanguagePolicy.production.locales.every(

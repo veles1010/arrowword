@@ -118,6 +118,12 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
   ];
 
+  /// No description provided for @answersAlwaysEnglish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cevaplar her zaman İngilizcedir.'**
+  String get answersAlwaysEnglish;
+
   /// No description provided for @home.
   ///
   /// In tr, this message translates to:

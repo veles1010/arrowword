@@ -8,6 +8,7 @@ import 'package:arrowword/features/puzzle/localization/english_clue_audit.dart';
 import 'package:arrowword/l10n/language_policy.dart';
 import 'package:arrowword/features/puzzle/localization/localized_clue_audit.dart';
 import 'package:arrowword/features/puzzle/localization/cjk_clue_audit.dart';
+import 'package:arrowword/features/puzzle/localization/ru_id_clue_audit.dart';
 
 void main(List<String> arguments) {
   final words = [...catalogueWords, ...mediumWords, ...hardWords];
@@ -83,6 +84,39 @@ void main(List<String> arguments) {
     }
   }
 
+  void validateRuId(String locale, Map<String, String> clues) {
+    if (clues.keys.join('|') != english.keys.join('|')) {
+      throw StateError('Clue coverage/order: $locale');
+    }
+    final audit = RuIdClueAudit(locale, words, clues, english);
+    for (final track in ['easy', 'medium', 'hard']) {
+      stdout.writeln('$locale/$track: ${jsonEncode(audit.statistics(track))}');
+    }
+    stdout.writeln(
+      '$locale: ${clues.length}/900; errors=${audit.errors.length}; loan review=${audit.loanWarnings.length}; untranslated=${audit.untranslatedWarnings.length}; length=${audit.lengthWarnings.length}; roots=${audit.basic.rootWarnings.length}',
+    );
+    for (final warning in [
+      ...audit.errors,
+      ...audit.loanWarnings,
+      ...audit.untranslatedWarnings,
+      ...audit.lengthWarnings,
+      ...audit.basic.rootWarnings,
+    ]) {
+      stdout.writeln(warning);
+    }
+    if (audit.errors.isNotEmpty || audit.untranslatedWarnings.isNotEmpty) {
+      throw StateError('Editorial validation failed: $locale');
+    }
+  }
+
+  if (arguments.contains('--ru-id-drafts')) {
+    for (final locale in ['ru', 'id']) {
+      validateRuId(
+        locale,
+        decodeCluePack(File('assets/clues/$locale.json').readAsStringSync()),
+      );
+    }
+  }
   if (arguments.contains('--cjk-drafts')) {
     for (final locale in ['ja', 'ko', 'zh-Hans']) {
       validateCjk(
@@ -118,6 +152,8 @@ void main(List<String> arguments) {
       }
       if (['ja', 'ko', 'zh-Hans'].contains(locale.tag)) {
         validateCjk(locale.tag, clues);
+      } else if (['ru', 'id'].contains(locale.tag)) {
+        validateRuId(locale.tag, clues);
       } else if (locale.tag != 'tr' && locale.tag != 'en') {
         final localized = LocalizedClueAudit(words, clues, english);
         for (final track in ['easy', 'medium', 'hard']) {

@@ -2,11 +2,7 @@ import 'package:arrowword/l10n/language_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final complete = LanguagePolicy([
-    ...LanguagePolicy.production.locales,
-    for (final tag in ['id', 'ru'])
-      LocaleAvailability(tag, uiComplete: true, cluesComplete: true),
-  ]);
+  final complete = LanguagePolicy.production;
   for (final entry in {
     'ja-JP': 'ja',
     'ko-KR': 'ko',
@@ -37,27 +33,20 @@ void main() {
       );
     });
   }
-  test(
-    'new model IDs/autonyms are stable; incomplete packs stay unavailable',
-    () {
-      final choices = {
-        'ja': '日本語',
-        'ko': '한국어',
-        'zh-Hans': '简体中文',
-        'id': 'Bahasa Indonesia',
-        'ru': 'Русский',
-      };
-      for (final entry in choices.entries) {
-        final preference = AppLanguagePreference.parse(entry.key);
-        expect(preference.id, entry.key);
-        expect(preference.autonym, entry.value);
-        final enabled = ['ja', 'ko', 'zh-Hans'].contains(entry.key);
-        expect(LanguagePolicy.production.enabled.contains(entry.key), enabled);
-        expect(
-          LanguagePolicy.production.resolve(preference, ['en']),
-          enabled ? entry.key : 'en',
-        );
-      }
-    },
-  );
+  test('model IDs/autonyms are stable and complete', () {
+    final choices = {
+      'ja': '日本語',
+      'ko': '한국어',
+      'zh-Hans': '简体中文',
+      'id': 'Bahasa Indonesia',
+      'ru': 'Русский',
+    };
+    for (final entry in choices.entries) {
+      final preference = AppLanguagePreference.parse(entry.key);
+      expect(preference.id, entry.key);
+      expect(preference.autonym, entry.value);
+      expect(LanguagePolicy.production.enabled.contains(entry.key), true);
+      expect(LanguagePolicy.production.resolve(preference, ['en']), entry.key);
+    }
+  });
 }

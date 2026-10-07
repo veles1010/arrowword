@@ -10,6 +10,9 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get answersAlwaysEnglish => '答案始终为英语。';
+
+  @override
   String get home => '首页';
 
   @override
@@ -486,6 +489,9 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, using the Han script (`zh_Hans`).
 class AppLocalizationsZhHans extends AppLocalizationsZh {
   AppLocalizationsZhHans() : super('zh_Hans');
+
+  @override
+  String get answersAlwaysEnglish => '答案始终为英语。';
 
   @override
   String get home => '首页';

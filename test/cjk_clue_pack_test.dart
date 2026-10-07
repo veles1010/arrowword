@@ -216,7 +216,7 @@ void main() {
       }
     },
   );
-  test('only nine complete production locales; ru/id stay gated', () {
+  test('all eleven complete production locales', () {
     expect(tags, [
       'tr',
       'en',
@@ -227,10 +227,12 @@ void main() {
       'ja',
       'ko',
       'zh-Hans',
+      'id',
+      'ru',
     ]);
-    expect(tags, isNot(contains('ru')));
-    expect(tags, isNot(contains('id')));
-    expect(packs.values.fold<int>(0, (n, p) => n + p.length), 8100);
+    expect(tags, contains('ru'));
+    expect(tags, contains('id'));
+    expect(packs.values.fold<int>(0, (n, p) => n + p.length), 9900);
   });
   for (final entry in {
     'ja': 'ja',
@@ -245,8 +247,8 @@ void main() {
     'zh-HK': 'en',
     'zh-MO': 'en',
     'zh': 'en',
-    'ru-RU': 'en',
-    'id-ID': 'en',
+    'ru-RU': 'ru',
+    'id-ID': 'id',
   }.entries) {
     test('production system mapping ${entry.key} -> ${entry.value}', () {
       expect(
@@ -270,39 +272,43 @@ void main() {
     expect(reads, ['ja', 'ko', 'zh-Hans']);
   });
   for (final track in ['easy', 'medium', 'hard']) {
-    test('$track puzzle identity is unaffected by all nine presentations', () {
-      final result = switch (track) {
-        'easy' => easy,
-        'medium' => medium,
-        _ => hard,
-      };
-      final puzzle = result.puzzle!,
-          signature = puzzleStructuralSignature(result.puzzle!);
-      final before = puzzle.answers
-          .map((a) => (a.solution, a.start, a.direction, a.cluePosition))
-          .toList();
-      for (final tag in tags) {
-        for (final answer in puzzle.answers) {
-          expect(
-            resolver.resolve(answer.clueId!, tag),
-            packs[tag]![answer.clueId],
-          );
-        }
-      }
-      expect(puzzleStructuralSignature(puzzle), signature);
-      expect(
-        puzzle.answers
+    test(
+      '$track puzzle identity is unaffected by all eleven presentations',
+      () {
+        final result = switch (track) {
+          'easy' => easy,
+          'medium' => medium,
+          _ => hard,
+        };
+        final puzzle = result.puzzle!,
+            signature = puzzleStructuralSignature(result.puzzle!);
+        final before = puzzle.answers
             .map((a) => (a.solution, a.start, a.direction, a.cluePosition))
-            .toList(),
-        before,
-      );
-    });
+            .toList();
+        for (final tag in tags) {
+          for (final answer in puzzle.answers) {
+            expect(
+              resolver.resolve(answer.clueId!, tag),
+              packs[tag]![answer.clueId],
+            );
+          }
+        }
+        expect(puzzleStructuralSignature(puzzle), signature);
+        expect(
+          puzzle.answers
+              .map((a) => (a.solution, a.start, a.direction, a.cluePosition))
+              .toList(),
+          before,
+        );
+      },
+    );
   }
   testWidgets(
-    'en -> ja -> ko -> zh-Hans is atomic, lazy and keeps attempt state',
+    'en -> ru -> id -> ja -> ko -> zh-Hans is atomic, lazy and keeps attempt state',
     (tester) async {
       final pending = <String, Completer<void>>{
-        for (final tag in ['ja', 'ko', 'zh-Hans']) tag: Completer<void>(),
+        for (final tag in ['ja', 'ko', 'zh-Hans', 'id', 'ru'])
+          tag: Completer<void>(),
       };
       final reads = <String>[];
       final cache = CluePackCache((tag) async {
@@ -336,6 +342,8 @@ void main() {
       final history = session.history.map((h) => h.words).toList();
       final answer = game.puzzle.answers.first;
       for (final preference in [
+        AppLanguagePreference.russian,
+        AppLanguagePreference.indonesian,
         AppLanguagePreference.japanese,
         AppLanguagePreference.korean,
         AppLanguagePreference.simplifiedChinese,
@@ -369,11 +377,11 @@ void main() {
         expect(session.completedScores, isEmpty);
         expect(generator.calls, 1);
       }
-      expect(reads, ['tr', 'en', 'ja', 'ko', 'zh-Hans']);
+      expect(reads, ['tr', 'en', 'ru', 'id', 'ja', 'ko', 'zh-Hans']);
     },
   );
   testWidgets(
-    'Settings exposes CJK autonyms, never unfinished Russian/Indonesian',
+    'Settings exposes all completed non-Latin and Indonesian autonyms',
     (tester) async {
       final language = AppLanguage(_Store(), AppLanguagePreference.english),
           session = PuzzleSession(generator: _Generator(easy));
@@ -394,12 +402,25 @@ void main() {
       expect(find.text('日本語'), findsOneWidget);
       expect(find.text('한국어'), findsOneWidget);
       expect(find.text('简体中文'), findsOneWidget);
-      expect(find.text('Русский'), findsNothing);
-      expect(find.text('Bahasa Indonesia'), findsNothing);
+      await tester.scrollUntilVisible(
+        find.text('Русский'),
+        120,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(find.text('Русский'), findsOneWidget);
+      expect(find.text('Bahasa Indonesia'), findsOneWidget);
+      await tester.tap(find.text('Русский'));
+      await tester.pumpAndSettle();
+      expect(language.preference, AppLanguagePreference.russian);
+      expect(
+        AppLocalizations.of(tester.element(find.byType(SettingsScreen)))!
+            .localeName,
+        'ru',
+      );
       expect(find.byType(SettingsScreen), findsOneWidget);
     },
   );
-  for (final tag in ['ja', 'ko', 'zh-Hans']) {
+  for (final tag in ['ja', 'ko', 'zh-Hans', 'id', 'ru']) {
     for (final scale in [1.3, 1.5]) {
       testWidgets(
         '$tag Daily gameplay/completion/result/share compact at $scale',
