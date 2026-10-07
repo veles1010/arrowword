@@ -349,5 +349,9 @@
   "dailyGenerationFailed": "The Daily Puzzle could not be generated. Please try again.",
   "legacyScoringMessage": "This puzzle was completed before scoring was introduced.",
   "restartGame": "Restart",
-  "emptyProgress": "No puzzles completed yet"
+  "emptyProgress": "No puzzles completed yet",
+  "language": "Language",
+  "systemDefault": "System Default",
+  "englishName": "English",
+  "turkishName": "Türkçe"
 }

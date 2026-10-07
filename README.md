@@ -1,6 +1,6 @@
 # Arrowword Flutter prototype
 
-“Arrowword” is a working name. English answers use Turkish clues. The responsive
+“Arrowword” is a working name. English answers use Turkish or English clues. The responsive
 Material 3 board supports crossings, native keyboard input, validation, reset and
 completion. The manual puzzle remains an unchanged regression fixture.
 
@@ -248,26 +248,30 @@ Android uses Flutter SDK defaults (currently min 24 / target 36), with INTERNET
 and dependency-required network/ad permissions. iOS deployment target is 15.0.
 Sample AdMob IDs remain TEST-only; no backend/global leaderboard is configured.
 
-## Localization foundation
+## Localization
 
 Answers are always English; board geometry, seeds, IDs and progression are
 language-independent. UI strings use Flutter `gen_l10n` (`app_tr.arb` / `app_en.arb`).
-Clues are separate presentation packs: `assets/clues/tr.json` covers all 900
-approved Turkish clues exactly, keyed by frozen catalogue positions
+Clues are separate presentation packs: `assets/clues/tr.json` and
+`assets/clues/en.json` each cover all 900 entries, keyed by frozen catalogue positions
 (`easy_v3_000001`, `medium_v1_000001`, `hard_v1_000001`, etc.). Legacy content IDs
 and Turkish catalogue fields remain intact; generation never loads locale assets.
 
-Only Turkish is production-complete in Milestone 1. English UI is complete, but
-English gameplay and the Settings language row remain disabled until the English
-clue pack reaches 900/900. Language preferences are separate (`system` / `en` / `tr`
-under `arrowword.settings.language`); invalid values resolve to System. The policy
-supports explicit preference, exact/base system matching and future English fallback;
-until English clues are ready, unsupported devices safely use coherent Turkish.
-Daily clues use the same presentation resolver without changing Daily identity.
+Turkish and English are production-complete. Settings offers System Default,
+English and Türkçe. Preferences are separate (`system` / `en` / `tr` under
+`arrowword.settings.language`); invalid/missing values resolve to System. Turkish
+devices use Turkish, English devices use English, and unsupported device languages
+fall back to English. Explicit selection wins. UI and clues use the same production
+locale, including Daily/share text; switching language never changes boards or saves.
+Both compact packs are cached once at first gameplay entry, not decoded by menus
+or cells. Future complete locale packs reuse these stable IDs and availability policy.
 
 Developer UI-only review (debug/profile, ignored in release, never saves language):
 `flutter run --profile --dart-define=ARROWWORD_UI_LOCALE=en`
-This intentionally previews English chrome with Turkish clues, not English gameplay.
+This remains UI-only: it does not change preferences or the resolved clue locale.
+On a Turkish device/preference it intentionally shows English chrome with Turkish
+clues. Test complete English gameplay normally using Settings or device language.
 Run `flutter gen-l10n` after UI edits and
 `dart run tool/validate_localization.dart` to verify coverage/exact Turkish sync.
 `--extract-tr` regenerates the pack from approved catalogue text; it does not translate.
+English editorial decisions/statistics are recorded in `docs/english_clue_review.md`.

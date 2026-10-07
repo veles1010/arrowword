@@ -166,6 +166,7 @@ void main() {
     final s = AppSettings(MemorySettingsStore());
     addTearDown(s.dispose);
     await tester.pumpWidget(ArrowwordApp(session: session, settings: s));
+    await tester.pumpAndSettle();
     expect(find.byTooltip('Ayarlar'), findsOneWidget);
     final identity = session.current.puzzle!.id;
     s.setTheme(ThemeMode.dark);

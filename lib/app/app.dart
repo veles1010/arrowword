@@ -8,6 +8,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../l10n/language_policy.dart';
 import '../l10n/app_language.dart';
 import '../l10n/clue_presentation.dart';
+import '../l10n/clue_pack_cache.dart';
 import '../features/puzzle/localization/clue_pack.dart';
 
 import '../features/puzzle/ads/rewarded_hint_ad_service.dart';
@@ -37,6 +38,7 @@ class ArrowwordApp extends StatelessWidget {
     this.language,
     this.uiLocalePreview,
     this.clueResolver,
+    this.clueCache,
     super.key,
   }) : assert(session != null || tracks != null);
   final PuzzleSession? session;
@@ -46,6 +48,7 @@ class ArrowwordApp extends StatelessWidget {
   final AppLanguage? language;
   final String? uiLocalePreview;
   final LocalizedClueResolver? clueResolver;
+  final CluePackCache? clueCache;
   final RewardedHintAdService Function()? rewardedAdFactory;
   final bool openPuzzleDirectly;
   final bool developmentOverride;
@@ -56,84 +59,97 @@ class ArrowwordApp extends StatelessWidget {
         'Development override requires a memory-only session.',
       );
     }
-    return ListenableBuilder(
-      listenable: Listenable.merge([settings ?? tracks ?? session!, ?language]),
-      builder: (context, _) => MaterialApp(
-        title: 'Arrowword',
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: Locale(
-          developmentUiLocale(
-                uiLocalePreview ?? '',
-                releaseMode: kReleaseMode,
-              ) ??
-              LanguagePolicy.production.resolve(
-                language?.preference ?? AppLanguagePreference.system,
-                WidgetsBinding.instance.platformDispatcher.locales.map(
-                  (l) => l.toLanguageTag(),
-                ),
-              ),
-        ),
-        builder: (context, child) => clueResolver == null
-            ? child!
-            : CluePresentation(
-                resolver: clueResolver!,
-                // UI-only development previews do not claim English clues exist.
-                locale: LanguagePolicy.production.resolve(
-                  language?.preference ?? AppLanguagePreference.system,
-                  WidgetsBinding.instance.platformDispatcher.locales.map(
-                    (l) => l.toLanguageTag(),
+    return SystemLocaleListener(
+      builder: (context) => ListenableBuilder(
+        listenable: Listenable.merge([
+          settings ?? tracks ?? session!,
+          ?language,
+        ]),
+        builder: (context, _) {
+          final productionLocale = LanguagePolicy.production.resolve(
+            language?.preference ?? AppLanguagePreference.system,
+            WidgetsBinding.instance.platformDispatcher.locales.map(
+              (l) => l.toLanguageTag(),
+            ),
+          );
+          final preview = developmentUiLocale(
+            uiLocalePreview ?? '',
+            releaseMode: kReleaseMode,
+          );
+          return MaterialApp(
+            title: 'Arrowword',
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: Locale(preview ?? productionLocale),
+            builder: (context, child) {
+              Widget result = child!;
+              if (clueResolver != null || clueCache != null) {
+                result = CluePresentation(
+                  resolver: clueResolver,
+                  cache: clueCache,
+                  // Delegates may load asynchronously. Keep clues paired with
+                  // the currently loaded UI until the new locale is ready.
+                  // Only the explicit development UI-only preview may differ.
+                  locale: preview == null
+                      ? Localizations.localeOf(context).languageCode
+                      : productionLocale,
+                  child: result,
+                );
+              }
+              if (language != null) {
+                result = AppLanguageScope(language: language!, child: result);
+              }
+              return result;
+            },
+            debugShowCheckedModeBanner: false,
+            navigatorObservers: [puzzleRouteObserver],
+            theme: ArrowwordTheme.light(),
+            darkTheme: ArrowwordTheme.dark(),
+            themeMode: settings?.themeMode ?? ThemeMode.system,
+            home:
+                developmentOverride ||
+                    openPuzzleDirectly ||
+                    (session != null && !session!.current.isSuccess)
+                ? _PuzzleFlow(
+                    session: session!,
+                    rewardedAdFactory: rewardedAdFactory,
+                    developmentOverride: developmentOverride,
+                  )
+                : AppShell(
+                    session: session,
+                    tracks: tracks,
+                    trackPuzzleBuilder: tracks == null
+                        ? null
+                        : (difficulty, onFinished) => _TrackPuzzleFlow(
+                            tracks: tracks!,
+                            difficulty: difficulty,
+                            onTrackFinished: onFinished,
+                            rewardedAdFactory: rewardedAdFactory,
+                          ),
+                    trackReplayBuilder: tracks == null
+                        ? null
+                        : (difficulty, index) => _TrackPuzzleFlow(
+                            tracks: tracks!,
+                            difficulty: difficulty,
+                            replayIndex: index,
+                            rewardedAdFactory: rewardedAdFactory,
+                          ),
+                    settings: settings,
+                    dailySession: dailySession,
+                    rewardedAdFactory: rewardedAdFactory,
+                    puzzleBuilder: (_) => tracks != null
+                        ? _TrackPuzzleFlow(
+                            tracks: tracks!,
+                            difficulty: tracks!.lastPlayed,
+                            rewardedAdFactory: rewardedAdFactory,
+                          )
+                        : _PuzzleFlow(
+                            session: session!,
+                            rewardedAdFactory: rewardedAdFactory,
+                          ),
                   ),
-                ),
-                child: child!,
-              ),
-        debugShowCheckedModeBanner: false,
-        navigatorObservers: [puzzleRouteObserver],
-        theme: ArrowwordTheme.light(),
-        darkTheme: ArrowwordTheme.dark(),
-        themeMode: settings?.themeMode ?? ThemeMode.system,
-        home:
-            developmentOverride ||
-                openPuzzleDirectly ||
-                (session != null && !session!.current.isSuccess)
-            ? _PuzzleFlow(
-                session: session!,
-                rewardedAdFactory: rewardedAdFactory,
-                developmentOverride: developmentOverride,
-              )
-            : AppShell(
-                session: session,
-                tracks: tracks,
-                trackPuzzleBuilder: tracks == null
-                    ? null
-                    : (difficulty, onFinished) => _TrackPuzzleFlow(
-                        tracks: tracks!,
-                        difficulty: difficulty,
-                        onTrackFinished: onFinished,
-                        rewardedAdFactory: rewardedAdFactory,
-                      ),
-                trackReplayBuilder: tracks == null
-                    ? null
-                    : (difficulty, index) => _TrackPuzzleFlow(
-                        tracks: tracks!,
-                        difficulty: difficulty,
-                        replayIndex: index,
-                        rewardedAdFactory: rewardedAdFactory,
-                      ),
-                settings: settings,
-                dailySession: dailySession,
-                rewardedAdFactory: rewardedAdFactory,
-                puzzleBuilder: (_) => tracks != null
-                    ? _TrackPuzzleFlow(
-                        tracks: tracks!,
-                        difficulty: tracks!.lastPlayed,
-                        rewardedAdFactory: rewardedAdFactory,
-                      )
-                    : _PuzzleFlow(
-                        session: session!,
-                        rewardedAdFactory: rewardedAdFactory,
-                      ),
-              ),
+          );
+        },
       ),
     );
   }
@@ -158,101 +174,103 @@ class _PuzzleFlow extends StatelessWidget {
     builder: (context, _) {
       final generation = session.current;
       return generation.isSuccess && isNormalPuzzleIndex(generation.puzzleIndex)
-          ? PuzzleScreen(
-              key: ValueKey(generation.puzzle!.id),
-              puzzle: generation.puzzle!,
-              rewardedAdFactory: rewardedAdFactory,
-              title: developmentOverride || identifyTrack
-                  ? context.l10n.trackPuzzle(
-                      context.difficultyLabel(session.difficulty),
-                      generation.puzzleIndex,
-                    )
-                  : context.l10n.puzzleNumber(generation.puzzleIndex),
-              subtitle: developmentOverride ? context.l10n.development : null,
-              onNextPuzzle:
-                  developmentOverride ||
-                      generation.puzzleIndex >= normalPuzzleCount
-                  ? null
-                  : session.nextPuzzle,
-              initialLetters: session.letters,
-              initialRevealedCells: session.revealedCells,
-              initialElapsed: session.elapsed,
-              initialWrongChecks: session.wrongChecks,
-              attemptFinalized:
-                  session.completedThrough >= generation.puzzleIndex,
-              onAttemptProgress: (letters, revealed, elapsed, checks) {
-                if (session.current.puzzleIndex == generation.puzzleIndex) {
-                  session.updateAttemptProgress(
-                    letters,
-                    revealed,
-                    elapsed,
-                    checks,
-                  );
-                }
-              },
-              onElapsedChanged: (elapsed) {
-                // Disposal of N happens after the session has already moved to N+1.
-                if (session.current.puzzleIndex == generation.puzzleIndex) {
-                  session.checkpointElapsed(elapsed);
-                }
-              },
-              scoreResult: () => session.currentScore,
-              onCompleted: developmentOverride
-                  ? null
-                  : session.recognizeCompletion,
-              completion: developmentOverride
-                  ? PuzzleCompletionPresentation(
-                      title: context.l10n.puzzleCompleted,
-                      contentBuilder: (dialogContext) {
-                        final score = CompletedPuzzleScore.calculate(
-                          puzzleIndex: generation.puzzleIndex,
-                          elapsedSeconds: session.elapsed.inSeconds,
-                          hintsUsed: session.hintsUsed,
-                          wrongChecks: session.wrongChecks,
-                        );
-                        return Text(
-                          puzzleResultDetails(
-                            strings: dialogContext.l10n,
-                            score: score.score,
-                            elapsedSeconds: score.elapsedSeconds,
-                            hintsUsed: score.hintsUsed,
-                            wrongChecks: score.wrongChecks,
-                          ),
-                        );
-                      },
-                      actionLabel: context.l10n.closeSession,
-                      onFinished: () {
-                        SystemNavigator.pop();
-                      },
-                    )
-                  : generation.puzzleIndex == normalPuzzleCount
-                  ? PuzzleCompletionPresentation(
-                      title: context.l10n.trackFinished(
+          ? CluePackGate(
+              child: PuzzleScreen(
+                key: ValueKey(generation.puzzle!.id),
+                puzzle: generation.puzzle!,
+                rewardedAdFactory: rewardedAdFactory,
+                title: developmentOverride || identifyTrack
+                    ? context.l10n.trackPuzzle(
                         context.difficultyLabel(session.difficulty),
-                      ),
-                      contentBuilder: (dialogContext) {
-                        final score = session.currentScore;
-                        return Text(
-                          score == null
-                              ? dialogContext.l10n.legacyScoringMessage
-                              : puzzleResultDetails(
-                                  strings: dialogContext.l10n,
-                                  score: score.score,
-                                  elapsedSeconds: score.elapsedSeconds,
-                                  hintsUsed: score.hintsUsed,
-                                  wrongChecks: score.wrongChecks,
-                                ),
-                        );
-                      },
-                      actionLabel: onTrackFinished == null
-                          ? context.l10n.back
-                          : context.l10n.returnPuzzles,
-                      onFinished: () {
-                        Navigator.of(context).maybePop();
-                        onTrackFinished?.call();
-                      },
-                    )
-                  : null,
+                        generation.puzzleIndex,
+                      )
+                    : context.l10n.puzzleNumber(generation.puzzleIndex),
+                subtitle: developmentOverride ? context.l10n.development : null,
+                onNextPuzzle:
+                    developmentOverride ||
+                        generation.puzzleIndex >= normalPuzzleCount
+                    ? null
+                    : session.nextPuzzle,
+                initialLetters: session.letters,
+                initialRevealedCells: session.revealedCells,
+                initialElapsed: session.elapsed,
+                initialWrongChecks: session.wrongChecks,
+                attemptFinalized:
+                    session.completedThrough >= generation.puzzleIndex,
+                onAttemptProgress: (letters, revealed, elapsed, checks) {
+                  if (session.current.puzzleIndex == generation.puzzleIndex) {
+                    session.updateAttemptProgress(
+                      letters,
+                      revealed,
+                      elapsed,
+                      checks,
+                    );
+                  }
+                },
+                onElapsedChanged: (elapsed) {
+                  // Disposal of N happens after the session has already moved to N+1.
+                  if (session.current.puzzleIndex == generation.puzzleIndex) {
+                    session.checkpointElapsed(elapsed);
+                  }
+                },
+                scoreResult: () => session.currentScore,
+                onCompleted: developmentOverride
+                    ? null
+                    : session.recognizeCompletion,
+                completion: developmentOverride
+                    ? PuzzleCompletionPresentation(
+                        title: context.l10n.puzzleCompleted,
+                        contentBuilder: (dialogContext) {
+                          final score = CompletedPuzzleScore.calculate(
+                            puzzleIndex: generation.puzzleIndex,
+                            elapsedSeconds: session.elapsed.inSeconds,
+                            hintsUsed: session.hintsUsed,
+                            wrongChecks: session.wrongChecks,
+                          );
+                          return Text(
+                            puzzleResultDetails(
+                              strings: dialogContext.l10n,
+                              score: score.score,
+                              elapsedSeconds: score.elapsedSeconds,
+                              hintsUsed: score.hintsUsed,
+                              wrongChecks: score.wrongChecks,
+                            ),
+                          );
+                        },
+                        actionLabel: context.l10n.closeSession,
+                        onFinished: () {
+                          SystemNavigator.pop();
+                        },
+                      )
+                    : generation.puzzleIndex == normalPuzzleCount
+                    ? PuzzleCompletionPresentation(
+                        title: context.l10n.trackFinished(
+                          context.difficultyLabel(session.difficulty),
+                        ),
+                        contentBuilder: (dialogContext) {
+                          final score = session.currentScore;
+                          return Text(
+                            score == null
+                                ? dialogContext.l10n.legacyScoringMessage
+                                : puzzleResultDetails(
+                                    strings: dialogContext.l10n,
+                                    score: score.score,
+                                    elapsedSeconds: score.elapsedSeconds,
+                                    hintsUsed: score.hintsUsed,
+                                    wrongChecks: score.wrongChecks,
+                                  ),
+                          );
+                        },
+                        actionLabel: onTrackFinished == null
+                            ? context.l10n.back
+                            : context.l10n.returnPuzzles,
+                        onFinished: () {
+                          Navigator.of(context).maybePop();
+                          onTrackFinished?.call();
+                        },
+                      )
+                    : null,
+              ),
             )
           : Scaffold(
               appBar: AppBar(title: Text(context.l10n.puzzle)),

@@ -28,6 +28,7 @@ Map<String, Object?> inspectTrack(
   bool progress = false,
   Set<int> inspectIndices = const {},
   bool repeat = false,
+  void Function(SequencePuzzleResult result)? onPuzzle,
 }) {
   final catalogue = generator.catalogue;
   final forbidden = switch (name) {
@@ -66,6 +67,7 @@ Map<String, Object?> inspectTrack(
       cooldown: generator.config.cooldownPuzzles,
     );
     final metrics = PuzzleMetrics(result.puzzle!);
+    onPuzzle?.call(result);
     if (repeat) {
       final repeated = generator.generateNext(
         puzzleIndex: index,

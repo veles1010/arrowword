@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 import 'l10n/app_language.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'l10n/generated/app_localizations_tr.dart';
-import 'features/puzzle/localization/clue_pack.dart';
+import 'l10n/clue_pack_cache.dart';
+import 'l10n/language_policy.dart';
 
 import 'app/app.dart';
 import 'app/app_settings.dart';
@@ -79,25 +80,17 @@ Future<void> main() async {
       : null;
   final settings = await AppSettings.restore(SharedPreferencesSettingsStore());
   final language = await AppLanguage.restore(SharedPreferencesLanguageStore());
-  Map<String, String> turkishClues;
-  try {
-    turkishClues = decodeCluePack(
-      await rootBundle.loadString('assets/clues/tr.json'),
-    );
-  } catch (error) {
-    // A damaged bundle cannot crash startup. Missing clues are integrity errors
-    // in debug and safe localized placeholders in release, never another language.
-    debugPrint('Clue asset integrity failure: $error');
-    turkishClues = const {};
-  }
-  final clues = LocalizedClueResolver({'tr': turkishClues});
+  final clues = CluePackCache(
+    (locale) => rootBundle.loadString('assets/clues/$locale.json'),
+    locales: LanguagePolicy.production.enabled,
+  );
   runApp(
     ArrowwordApp(
       session: session,
       tracks: tracks,
       settings: settings,
       language: language,
-      clueResolver: clues,
+      clueCache: clues,
       uiLocalePreview: const String.fromEnvironment('ARROWWORD_UI_LOCALE'),
       dailySession: daily,
       openPuzzleDirectly: startIndex != null,

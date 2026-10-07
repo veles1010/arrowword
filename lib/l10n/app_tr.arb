@@ -349,5 +349,9 @@
   "dailyGenerationFailed": "Günün bulmacası oluşturulamadı. Lütfen tekrar deneyin.",
   "legacyScoringMessage": "Bu bulmaca puanlama sistemi eklenmeden önce tamamlandı.",
   "restartGame": "Yeniden Başlat",
-  "emptyProgress": "Henüz tamamlanan bulmaca yok"
+  "emptyProgress": "Henüz tamamlanan bulmaca yok",
+  "language": "Dil",
+  "systemDefault": "Sistem Varsayılanı",
+  "englishName": "English",
+  "turkishName": "Türkçe"
 }

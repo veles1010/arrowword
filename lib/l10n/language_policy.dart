@@ -25,7 +25,7 @@ class LanguagePolicy {
   const LanguagePolicy(this.locales);
   static const production = LanguagePolicy([
     LocaleAvailability('tr', uiComplete: true, cluesComplete: true),
-    LocaleAvailability('en', uiComplete: true, cluesComplete: false),
+    LocaleAvailability('en', uiComplete: true, cluesComplete: true),
   ]);
   final List<LocaleAvailability> locales;
   Iterable<String> get enabled =>

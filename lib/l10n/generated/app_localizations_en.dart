@@ -517,4 +517,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emptyProgress => 'No puzzles completed yet';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get systemDefault => 'System Default';
+
+  @override
+  String get englishName => 'English';
+
+  @override
+  String get turkishName => 'Türkçe';
 }

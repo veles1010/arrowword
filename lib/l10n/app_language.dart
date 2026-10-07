@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'language_policy.dart';
@@ -46,4 +46,46 @@ class AppLanguage extends ChangeNotifier {
       } catch (_) {}
     });
   }
+}
+
+/// The Settings route reads the same controller that drives the application.
+class AppLanguageScope extends InheritedNotifier<AppLanguage> {
+  const AppLanguageScope({
+    required AppLanguage language,
+    required super.child,
+    super.key,
+  }) : super(notifier: language);
+  static AppLanguage? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<AppLanguageScope>()?.notifier;
+}
+
+/// System locale changes are presentation updates, never progression mutations.
+class SystemLocaleListener extends StatefulWidget {
+  const SystemLocaleListener({required this.builder, super.key});
+  final WidgetBuilder builder;
+  @override
+  State<SystemLocaleListener> createState() => _SystemLocaleListenerState();
+}
+
+class _SystemLocaleListenerState extends State<SystemLocaleListener>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeLocales(List<Locale>? locales) {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context);
 }

@@ -248,14 +248,29 @@ void main() {
       isNot(contains('Streak:')),
     );
   });
-  test('only Turkish is production complete; English UI alone cannot enable gameplay', () {
-    expect(policy.enabled, ['tr']);
-    expect(policy.locales.singleWhere((l) => l.tag == 'en').uiComplete, isTrue);
-    expect(
-      policy.locales.singleWhere((l) => l.tag == 'en').cluesComplete,
-      isFalse,
-    );
-  });
+  test(
+    'complete tr/en packs enable gameplay; UI-only locale remains gated',
+    () {
+      expect(policy.enabled, ['tr', 'en']);
+      expect(
+        policy.locales.singleWhere((l) => l.tag == 'en').uiComplete,
+        isTrue,
+      );
+      expect(
+        policy.locales.singleWhere((l) => l.tag == 'en').cluesComplete,
+        isTrue,
+      );
+      const incomplete = LanguagePolicy([
+        LocaleAvailability('tr', uiComplete: true, cluesComplete: true),
+        LocaleAvailability('en', uiComplete: true, cluesComplete: false),
+      ]);
+      expect(incomplete.enabled, ['tr']);
+      expect(
+        incomplete.resolve(AppLanguagePreference.english, ['en-US']),
+        'tr',
+      );
+    },
+  );
   for (final tag in [
     'tr-TR',
     'tr',
@@ -265,9 +280,13 @@ void main() {
     'es-MX',
     'fi-FI',
   ]) {
-    test('production locale $tag resolves coherently to Turkish', () {
-      expect(policy.resolve(AppLanguagePreference.system, [tag]), 'tr');
-      expect(policy.resolve(AppLanguagePreference.english, [tag]), 'tr');
+    test('production locale $tag resolves coherently with global fallback', () {
+      expect(
+        policy.resolve(AppLanguagePreference.system, [tag]),
+        tag.startsWith('tr') ? 'tr' : 'en',
+      );
+      expect(policy.resolve(AppLanguagePreference.english, [tag]), 'en');
+      expect(policy.resolve(AppLanguagePreference.turkish, [tag]), 'tr');
     });
   }
   test(
@@ -298,22 +317,25 @@ void main() {
       expect(store.writes, 0);
     });
   }
-  test('language preference updates once, restores internally, remains production gated', () async {
-    final store = _LanguageStore();
-    final controller = AppLanguage(store);
-    addTearDown(controller.dispose);
-    var notifications = 0;
-    controller.addListener(() => notifications++);
-    await controller.setPreference(AppLanguagePreference.english);
-    await controller.setPreference(AppLanguagePreference.english);
-    expect(store.value, 'en');
-    expect(store.writes, 1);
-    expect(notifications, 1);
-    final restored = await AppLanguage.restore(store);
-    addTearDown(restored.dispose);
-    expect(restored.preference, AppLanguagePreference.english);
-    expect(policy.resolve(restored.preference, ['en-US']), 'tr');
-  });
+  test(
+    'language preference updates once and restores enabled English',
+    () async {
+      final store = _LanguageStore();
+      final controller = AppLanguage(store);
+      addTearDown(controller.dispose);
+      var notifications = 0;
+      controller.addListener(() => notifications++);
+      await controller.setPreference(AppLanguagePreference.english);
+      await controller.setPreference(AppLanguagePreference.english);
+      expect(store.value, 'en');
+      expect(store.writes, 1);
+      expect(notifications, 1);
+      final restored = await AppLanguage.restore(store);
+      addTearDown(restored.dispose);
+      expect(restored.preference, AppLanguagePreference.english);
+      expect(policy.resolve(restored.preference, ['en-US']), 'en');
+    },
+  );
   test(
     'settings language key never changes puzzle or Daily payloads',
     () async {
@@ -480,7 +502,7 @@ void main() {
       expect(
         find.text('English'),
         findsNothing,
-      ); // Incomplete gameplay is not a choice.
+      ); // Standalone screen without a language controller has no selector.
       await tester.tap(find.text(copy.appInformation));
       await tester.pumpAndSettle();
       expect(find.text(copy.about), findsOneWidget);
@@ -489,7 +511,7 @@ void main() {
     });
   }
   testWidgets(
-    'production gates persisted English and English device, without writing preference',
+    'production enables persisted English on English device without rewriting preference',
     (tester) async {
       tester.binding.platformDispatcher.localeTestValue = const Locale(
         'en',
@@ -509,8 +531,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Ana Sayfa'), findsOneWidget);
-      expect(find.text('Home'), findsNothing);
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Ana Sayfa'), findsNothing);
       expect(store.writes, 0);
       expect(language.preference, AppLanguagePreference.english);
     },

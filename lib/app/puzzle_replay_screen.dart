@@ -1,4 +1,5 @@
 import '../l10n/ui_strings.dart';
+import '../l10n/clue_presentation.dart';
 
 import 'package:flutter/material.dart';
 
@@ -80,48 +81,50 @@ class _PuzzleReplayScreenState extends State<PuzzleReplayScreen> {
       );
     }
     final generation = attempt.generation;
-    return PuzzleScreen(
-      puzzle: generation.puzzle!,
-      title: widget.identifyTrack
-          ? context.l10n.trackPuzzle(
-              context.difficultyLabel(widget.session.difficulty),
-              widget.puzzleIndex,
-            )
-          : context.l10n.replayPuzzle(widget.puzzleIndex),
-      subtitle: widget.identifyTrack ? context.l10n.replay : null,
-      rewardedAdFactory: widget.rewardedAdFactory,
-      monotonicNow: widget.monotonicNow,
-      onAttemptProgress: attempt.updateProgress,
-      onElapsedChanged: attempt.checkpointElapsed,
-      onCompleted: attempt.complete,
-      completion: PuzzleCompletionPresentation(
-        title: context.l10n.puzzleCompleted,
-        contentBuilder: (dialogContext) {
-          final result = attempt.result!;
-          final details = puzzleResultDetails(
-            strings: dialogContext.l10n,
-            score: result.score,
-            scoreLabel: dialogContext.l10n.thisAttempt,
-            bestScore: attempt.bestScore?.score ?? result.score,
-            elapsedSeconds: result.elapsedSeconds,
-            hintsUsed: result.hintsUsed,
-            wrongChecks: result.wrongChecks,
-          );
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(details),
-              if (attempt.isNewBest)
-                Text(
-                  dialogContext.l10n.newRecord,
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-            ],
-          );
-        },
-        actionLabel: context.l10n.returnPuzzles,
-        onFinished: () => Navigator.of(context).pop(),
+    return CluePackGate(
+      child: PuzzleScreen(
+        puzzle: generation.puzzle!,
+        title: widget.identifyTrack
+            ? context.l10n.trackPuzzle(
+                context.difficultyLabel(widget.session.difficulty),
+                widget.puzzleIndex,
+              )
+            : context.l10n.replayPuzzle(widget.puzzleIndex),
+        subtitle: widget.identifyTrack ? context.l10n.replay : null,
+        rewardedAdFactory: widget.rewardedAdFactory,
+        monotonicNow: widget.monotonicNow,
+        onAttemptProgress: attempt.updateProgress,
+        onElapsedChanged: attempt.checkpointElapsed,
+        onCompleted: attempt.complete,
+        completion: PuzzleCompletionPresentation(
+          title: context.l10n.puzzleCompleted,
+          contentBuilder: (dialogContext) {
+            final result = attempt.result!;
+            final details = puzzleResultDetails(
+              strings: dialogContext.l10n,
+              score: result.score,
+              scoreLabel: dialogContext.l10n.thisAttempt,
+              bestScore: attempt.bestScore?.score ?? result.score,
+              elapsedSeconds: result.elapsedSeconds,
+              hintsUsed: result.hintsUsed,
+              wrongChecks: result.wrongChecks,
+            );
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(details),
+                if (attempt.isNewBest)
+                  Text(
+                    dialogContext.l10n.newRecord,
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+              ],
+            );
+          },
+          actionLabel: context.l10n.returnPuzzles,
+          onFinished: () => Navigator.of(context).pop(),
+        ),
       ),
     );
   }

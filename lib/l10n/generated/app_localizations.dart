@@ -876,6 +876,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Henüz tamamlanan bulmaca yok'**
   String get emptyProgress;
+
+  /// No description provided for @language.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dil'**
+  String get language;
+
+  /// No description provided for @systemDefault.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sistem Varsayılanı'**
+  String get systemDefault;
+
+  /// No description provided for @englishName.
+  ///
+  /// In tr, this message translates to:
+  /// **'English'**
+  String get englishName;
+
+  /// No description provided for @turkishName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Türkçe'**
+  String get turkishName;
 }
 
 class _AppLocalizationsDelegate

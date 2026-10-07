@@ -479,4 +479,16 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get emptyProgress => 'Henüz tamamlanan bulmaca yok';
+
+  @override
+  String get language => 'Dil';
+
+  @override
+  String get systemDefault => 'Sistem Varsayılanı';
+
+  @override
+  String get englishName => 'English';
+
+  @override
+  String get turkishName => 'Türkçe';
 }

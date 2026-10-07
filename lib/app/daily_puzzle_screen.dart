@@ -1,4 +1,5 @@
 import '../l10n/ui_strings.dart';
+import '../l10n/clue_presentation.dart';
 
 import 'package:flutter/material.dart';
 
@@ -89,26 +90,28 @@ class _DailyPuzzleScreenState extends State<DailyPuzzleScreen> {
         ),
       );
     }
-    return PuzzleScreen(
-      key: ValueKey(attempt.generation.puzzle!.id),
-      puzzle: attempt.generation.puzzle!,
-      title: context.l10n.dailyTitle,
-      subtitle: attempt.dateKey,
-      initialLetters: attempt.letters,
-      initialRevealedCells: attempt.revealedCells,
-      initialElapsed: attempt.elapsed,
-      initialWrongChecks: attempt.wrongChecks,
-      rewardedAdFactory: widget.rewardedAdFactory,
-      monotonicNow: widget.monotonicNow,
-      onAttemptProgress: attempt.updateProgress,
-      onElapsedChanged: attempt.checkpointElapsed,
-      onCompleted: attempt.complete,
-      completion: PuzzleCompletionPresentation(
-        title: context.l10n.dailyCompleted,
-        contentBuilder: (dialogContext) =>
-            Text(_details(dialogContext, attempt.result!)),
-        actionLabel: context.l10n.returnHome,
-        onFinished: () => Navigator.of(context).pop(),
+    return CluePackGate(
+      child: PuzzleScreen(
+        key: ValueKey(attempt.generation.puzzle!.id),
+        puzzle: attempt.generation.puzzle!,
+        title: context.l10n.dailyTitle,
+        subtitle: attempt.dateKey,
+        initialLetters: attempt.letters,
+        initialRevealedCells: attempt.revealedCells,
+        initialElapsed: attempt.elapsed,
+        initialWrongChecks: attempt.wrongChecks,
+        rewardedAdFactory: widget.rewardedAdFactory,
+        monotonicNow: widget.monotonicNow,
+        onAttemptProgress: attempt.updateProgress,
+        onElapsedChanged: attempt.checkpointElapsed,
+        onCompleted: attempt.complete,
+        completion: PuzzleCompletionPresentation(
+          title: context.l10n.dailyCompleted,
+          contentBuilder: (dialogContext) =>
+              Text(_details(dialogContext, attempt.result!)),
+          actionLabel: context.l10n.returnHome,
+          onFinished: () => Navigator.of(context).pop(),
+        ),
       ),
     );
   }
