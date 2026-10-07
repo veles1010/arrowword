@@ -84,6 +84,7 @@ class PuzzleGame extends ChangeNotifier {
 
   void enterLetter(String s) {
     if (isHint(_selectedPosition)) return;
+    if (!RegExp(r'^[a-zA-Z]$').hasMatch(s)) return;
     final l = s.toUpperCase();
     if (!RegExp(r'^[A-Z]$').hasMatch(l)) return;
     _letters[_selectedPosition] = l;

@@ -138,7 +138,12 @@ void main() {
           ]),
           entry.value,
         );
-        for (final preference in AppLanguagePreference.values.skip(1)) {
+        for (final preference
+            in AppLanguagePreference.values
+                .skip(1)
+                .where(
+                  (p) => LanguagePolicy.production.enabled.contains(p.id),
+                )) {
           expect(
             LanguagePolicy.production.resolve(preference, [entry.key]),
             preference.id,

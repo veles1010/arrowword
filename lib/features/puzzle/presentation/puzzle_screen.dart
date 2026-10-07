@@ -84,6 +84,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   late int _lastChecks;
   bool _appActive = true;
   bool _routeVisible = true;
+  bool _inputWasComposing = false;
   ModalRoute<dynamic>? _route;
   @override
   void initState() {
@@ -332,8 +333,20 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   }
 
   void _input(String t) {
-    final x = t.toUpperCase().replaceAll(RegExp(r'[^A-Z]'), '');
-    x.isEmpty ? game.backspace() : game.enterLetter(x.substring(x.length - 1));
+    // Do not consume/reset an IME's unfinished composition. Non-Latin commits
+    // are ignored, not mistaken for deletion of the invisible input sentinel.
+    if (input.value.composing.isValid && !input.value.composing.isCollapsed) {
+      _inputWasComposing = true;
+      return;
+    }
+    final compositionEnded = _inputWasComposing;
+    _inputWasComposing = false;
+    final x = t.replaceAll(RegExp(r'[^a-zA-Z]'), '').toUpperCase();
+    if (t.isEmpty && !compositionEnded) {
+      game.backspace();
+    } else if (x.isNotEmpty) {
+      game.enterLetter(x.substring(x.length - 1));
+    }
     input.value = const TextEditingValue(
       text: s,
       selection: TextSelection.collapsed(offset: 1),

@@ -1,0 +1,357 @@
+{
+  "@@locale": "ru",
+  "home": "Главная",
+  "puzzles": "Головоломки",
+  "daily": "Ежедневная",
+  "statistics": "Статистика",
+  "settings": "Настройки",
+  "about": "О приложении",
+  "appearance": "Оформление",
+  "theme": "Тема",
+  "system": "Системная",
+  "light": "Светлая",
+  "dark": "Тёмная",
+  "appInformation": "Информация о приложении",
+  "easy": "Лёгкая",
+  "medium": "Средняя",
+  "hard": "Сложная",
+  "puzzle": "Головоломка",
+  "clear": "Очистить",
+  "check": "Проверить",
+  "continueGame": "Продолжить",
+  "start": "Начать",
+  "replay": "Переиграть",
+  "replayLower": "повтор",
+  "play": "Играть",
+  "resume": "Продолжить",
+  "dailyTitle": "Головоломка дня",
+  "dailyHistory": "История ежедневных",
+  "seeResult": "Посмотреть результат",
+  "share": "Поделиться",
+  "returnHome": "На главную",
+  "returnPuzzles": "К головоломкам",
+  "chooseDifficulty": "Выбрать сложность",
+  "viewPuzzles": "Посмотреть головоломки",
+  "nextPuzzle": "Следующая головоломка",
+  "close": "Закрыть",
+  "back": "Назад",
+  "closeSession": "Закрыть игру",
+  "restart": "Начать заново",
+  "retry": "Повторить",
+  "locked": "Заблокировано",
+  "completed": "Пройдено",
+  "completedLower": "пройдено",
+  "score": "Очки",
+  "time": "Время",
+  "hints": "Подсказки",
+  "wrongChecks": "Ошибочные проверки",
+  "best": "Лучший результат",
+  "thisAttempt": "Эта попытка",
+  "newRecord": "Новый рекорд!",
+  "puzzleCompleted": "Головоломка пройдена!",
+  "dailyCompleted": "Головоломка дня пройдена!",
+  "rewardHint": "Буква за рекламу",
+  "adLoading": "Загрузка рекламы",
+  "adUnavailable": "Реклама сейчас недоступна. Попробуйте ещё раз.",
+  "puzzleLoading": "Подготовка головоломки…",
+  "puzzlePreparing": "Подготовка головоломки",
+  "dailyPreparing": "Подготовка головоломки дня",
+  "generationError": "Не удалось подготовить головоломку. Попробуйте ещё раз.",
+  "shareError": "Не удалось поделиться результатом. Попробуйте ещё раз.",
+  "dailyUnavailable": "Головоломка дня недоступна в этой сессии.",
+  "emptyHistory": "Ежедневные головоломки пока не пройдены.",
+  "noScore": "Пока нет",
+  "completedPuzzles": "Пройденные головоломки",
+  "scoredPuzzles": "Головоломки с очками",
+  "totalScore": "Всего очков",
+  "averageScore": "Средний результат",
+  "bestScore": "Лучший результат",
+  "hintFree": "Пройдено без подсказок",
+  "errorFree": "Пройдено без ошибок",
+  "dailyStatistics": "Ежедневные головоломки",
+  "dailyCount": "Ежедневных пройдено",
+  "currentStreak": "Текущая серия",
+  "longestStreak": "Самая длинная серия",
+  "statisticsIntro": "Пройденные головоломки и сохранённые рекорды.",
+  "statisticsExplanation": "Статистика использует лучший сохранённый результат каждой головоломки. Старые прохождения без очков учитываются только в числе пройденных.",
+  "withinDifficulty": "Сравнивайте результаты в пределах одной сложности.",
+  "hintLocked": "Открыто подсказкой, заблокировано",
+  "development": "Разработка · Прогресс не сохраняется",
+  "allCorrect": "Все буквы верны.",
+  "legacyScore": "Эта головоломка пройдена до появления системы очков.",
+  "appDescription": "Находите английские слова по подсказкам. Головоломки с прогрессом, повторное прохождение и головоломка дня.",
+  "workingName": "Arrowword — рабочее название; окончательное название ещё не выбрано.",
+  "versionLoading": "Загрузка сведений о версии…",
+  "versionUnavailable": "Сведения о версии сейчас недоступны.",
+  "puzzleNumber": "Головоломка {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty} · Головоломка {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "Головоломка {number} · Повтор",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "Уровень «{difficulty}» пройден!",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "Пройдено {completed} / {total}",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score, plural, one{{score} очко} few{{score} очка} many{{score} очков} other{{score} очка}}",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "Сегодня пройдено · {score, plural, one{{score} очко} few{{score} очка} many{{score} очков} other{{score} очка}}",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "{count, plural, one{{count} день подряд} few{{count} дня подряд} many{{count} дней подряд} other{{count} дня подряд}}",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "{count, plural, one{Пройдена {count} головоломка} few{Пройдено {count} головоломки} many{Пройдено {count} головоломок} other{Пройдено {count} головоломки}}",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "Версия {version} · Сборка {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "Головоломка {number} · {seconds} с",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "Старая запись · {seconds} с",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration} · {hints, plural, one{{hints} подсказка} few{{hints} подсказки} many{{hints} подсказок} other{{hints} подсказки}} · {checks, plural, one{{checks} ошибочная проверка} few{{checks} ошибочные проверки} many{{checks} ошибочных проверок} other{{checks} ошибочной проверки}}",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue} ({length})",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}, {length, plural, one{{length} буква} few{{length} буквы} many{{length} букв} other{{length} буквы}}, {direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "по горизонтали",
+  "down": "по вертикали",
+  "tileSemantics": "Головоломка {number}, {status}{completed, select, yes{, пройдено} other{}}{scored, select, yes{, очки: {score}} other{}}{replayable, select, yes{, можно переиграть} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label}: {score}\n{hasBest, select, yes{Лучший результат: {best}\n} other{}}Время: {duration}\nПодсказки: {hints}\nОшибочные проверки: {checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — Головоломка дня\n{date}\n\nОчки: {score}\nВремя: {duration}\nПодсказки: {hints}\nОшибочные проверки: {checks}{hasStreak, select, yes{\nСерия: {streak, plural, one{{streak} день} few{{streak} дня} many{{streak} дней} other{{streak} дня}}} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{day} {month} {year}",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "Эта подсказка сейчас недоступна.",
+  "uiPreview": "Разработка · Предпросмотр только английского интерфейса",
+  "invalidDevConfig": "Не удалось открыть тестовую головоломку.\nARROWWORD_PUZZLE_INDEX должен быть от 1 до {count}.\nARROWWORD_PUZZLE_DIFFICULTY: easy, medium или hard.",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "января",
+  "month2": "февраля",
+  "month3": "марта",
+  "month4": "апреля",
+  "month5": "мая",
+  "month6": "июня",
+  "month7": "июля",
+  "month8": "августа",
+  "month9": "сентября",
+  "month10": "октября",
+  "month11": "ноября",
+  "month12": "декабря",
+  "versionFailed": "Не удалось загрузить сведения о версии.",
+  "puzzleGenerationFailed": "Не удалось создать головоломку. Попробуйте ещё раз.",
+  "replayGenerationFailed": "Не удалось восстановить головоломку. Попробуйте ещё раз.",
+  "dailyGenerationFailed": "Не удалось создать головоломку дня. Попробуйте ещё раз.",
+  "legacyScoringMessage": "Эта головоломка пройдена до появления системы очков.",
+  "restartGame": "Заново",
+  "emptyProgress": "Пока нет пройденных головоломок",
+  "language": "Язык",
+  "systemDefault": "Как в системе",
+  "englishName": "English",
+  "turkishName": "Türkçe"
+}

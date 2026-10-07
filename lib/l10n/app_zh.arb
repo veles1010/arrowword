@@ -1,0 +1,357 @@
+{
+  "@@locale": "zh",
+  "home": "首页",
+  "puzzles": "谜题",
+  "daily": "每日",
+  "statistics": "统计",
+  "settings": "设置",
+  "about": "关于",
+  "appearance": "外观",
+  "theme": "主题",
+  "system": "系统",
+  "light": "浅色",
+  "dark": "深色",
+  "appInformation": "应用信息",
+  "easy": "简单",
+  "medium": "中等",
+  "hard": "困难",
+  "puzzle": "谜题",
+  "clear": "清空",
+  "check": "检查",
+  "continueGame": "继续",
+  "start": "开始",
+  "replay": "重玩",
+  "replayLower": "重玩",
+  "play": "开始玩",
+  "resume": "继续",
+  "dailyTitle": "每日谜题",
+  "dailyHistory": "每日记录",
+  "seeResult": "查看结果",
+  "share": "分享",
+  "returnHome": "返回首页",
+  "returnPuzzles": "返回谜题列表",
+  "chooseDifficulty": "选择难度",
+  "viewPuzzles": "查看谜题",
+  "nextPuzzle": "下一题",
+  "close": "关闭",
+  "back": "返回",
+  "closeSession": "结束本次游戏",
+  "restart": "重新开始",
+  "retry": "重试",
+  "locked": "未解锁",
+  "completed": "已完成",
+  "completedLower": "已完成",
+  "score": "得分",
+  "time": "用时",
+  "hints": "提示",
+  "wrongChecks": "错误检查",
+  "best": "最佳",
+  "thisAttempt": "本次结果",
+  "newRecord": "新纪录！",
+  "puzzleCompleted": "谜题完成！",
+  "dailyCompleted": "每日谜题完成！",
+  "rewardHint": "广告提示",
+  "adLoading": "广告加载中",
+  "adUnavailable": "暂时无法播放广告，请重试。",
+  "puzzleLoading": "正在准备谜题…",
+  "puzzlePreparing": "正在准备谜题",
+  "dailyPreparing": "正在准备每日谜题",
+  "generationError": "无法准备谜题，请重试。",
+  "shareError": "无法分享结果，请重试。",
+  "dailyUnavailable": "本次游戏无法使用每日谜题。",
+  "emptyHistory": "尚未完成任何每日谜题。",
+  "noScore": "暂无",
+  "completedPuzzles": "已完成谜题",
+  "scoredPuzzles": "有得分的谜题",
+  "totalScore": "总得分",
+  "averageScore": "平均得分",
+  "bestScore": "最高得分",
+  "hintFree": "无提示完成",
+  "errorFree": "无错误完成",
+  "dailyStatistics": "每日谜题",
+  "dailyCount": "每日完成数",
+  "currentStreak": "当前连续天数",
+  "longestStreak": "最长连续天数",
+  "statisticsIntro": "已完成的谜题及保存的最佳得分。",
+  "statisticsExplanation": "得分统计使用每个谜题保存的最佳成绩。评分功能推出前的记录仅计入完成数。",
+  "withinDifficulty": "请比较同一难度的得分。",
+  "hintLocked": "提示揭示，已锁定",
+  "development": "开发模式 · 进度不会保存",
+  "allCorrect": "所有字母均正确。",
+  "legacyScore": "此谜题在评分功能推出前已完成。",
+  "appDescription": "根据线索发现英语单词。体验关卡谜题、重玩和每日谜题。",
+  "workingName": "Arrowword 为暂定名称，最终产品名称尚未确定。",
+  "versionLoading": "正在加载版本信息…",
+  "versionUnavailable": "暂时无法获取版本信息。",
+  "puzzleNumber": "谜题 {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty} · 谜题 {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "谜题 {number} · 重玩",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "{difficulty}难度全部完成！",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "已完成 {completed} / {total}",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score} 分",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "今日已完成 · {score} 分",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "连续 {count} 天",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "已完成 {count} 个谜题",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "版本 {version} · 构建 {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "谜题 {number} · {seconds} 秒",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "旧记录 · {seconds} 秒",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration} · 提示 {hints} 次 · 错误检查 {checks} 次",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue}（{length}）",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}，{length} 个字母，{direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "横向",
+  "down": "向下",
+  "tileSemantics": "谜题 {number}，{status}{completed, select, yes{，已完成} other{}}{scored, select, yes{，{score} 分} other{}}{replayable, select, yes{，可重玩} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label}：{score}\n{hasBest, select, yes{最佳：{best}\n} other{}}用时：{duration}\n提示：{hints}\n错误检查：{checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — 每日谜题\n{date}\n\n得分：{score}\n用时：{duration}\n提示：{hints}\n错误检查：{checks}{hasStreak, select, yes{\n连续记录：{streak} 天} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{year}年{month}{day}日",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "此线索暂不可用。",
+  "uiPreview": "开发模式 · 仅预览英语界面",
+  "invalidDevConfig": "无法打开开发谜题。\nARROWWORD_PUZZLE_INDEX 必须为 1 到 {count}。\nARROWWORD_PUZZLE_DIFFICULTY：easy、medium 或 hard。",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "1月",
+  "month2": "2月",
+  "month3": "3月",
+  "month4": "4月",
+  "month5": "5月",
+  "month6": "6月",
+  "month7": "7月",
+  "month8": "8月",
+  "month9": "9月",
+  "month10": "10月",
+  "month11": "11月",
+  "month12": "12月",
+  "versionFailed": "无法加载版本信息。",
+  "puzzleGenerationFailed": "无法生成谜题，请重试。",
+  "replayGenerationFailed": "无法还原谜题，请重试。",
+  "dailyGenerationFailed": "无法生成每日谜题，请重试。",
+  "legacyScoringMessage": "此谜题在评分功能推出前已完成。",
+  "restartGame": "重新开始",
+  "emptyProgress": "尚未完成任何谜题",
+  "language": "语言",
+  "systemDefault": "系统默认",
+  "englishName": "English",
+  "turkishName": "Türkçe"
+}

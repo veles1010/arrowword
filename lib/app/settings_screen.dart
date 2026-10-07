@@ -58,7 +58,13 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 DropdownButtonFormField<AppLanguagePreference>(
                   key: ValueKey('language-${controller.preference.id}'),
-                  initialValue: controller.preference,
+                  initialValue:
+                      controller.preference == AppLanguagePreference.system ||
+                          LanguagePolicy.production.enabled.contains(
+                            controller.preference.id,
+                          )
+                      ? controller.preference
+                      : AppLanguagePreference.system,
                   isExpanded: true,
                   decoration: InputDecoration(
                     labelText: context.l10n.language,

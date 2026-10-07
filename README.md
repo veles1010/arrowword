@@ -280,3 +280,16 @@ Run `flutter gen-l10n` after UI edits and
 `--extract-tr` regenerates the pack from approved catalogue text; it does not translate.
 English editorial decisions/statistics are recorded in `docs/english_clue_review.md`.
 The four new packs have separate editorial review documents under `docs/`.
+
+Milestone 3B is in progress: Japanese, Korean, Simplified Chinese, Indonesian and
+Russian have UI foundations, but are not gameplay-enabled until their complete
+900-clue packs and editorial audits are ready. Production still has six locales.
+The prepared policy maps zh-Hans/CN/SG to Simplified Chinese only when complete;
+bare zh and zh-Hant/TW/HK/MO use English. Stable future preference IDs are
+`ja`, `ko`, `zh-Hans`, `id`, `ru`.
+
+The non-Latin input audit added composition safety: unfinished IME text is not
+consumed, non-Latin commits cannot erase letters, and only single ASCII A-Z letters
+enter the game. Native Japanese/Korean/Chinese/Russian keyboards may still need a
+manual switch to Latin; no custom keyboard or bundled CJK font was added. Real
+keyboard/glyph playtesting remains necessary.

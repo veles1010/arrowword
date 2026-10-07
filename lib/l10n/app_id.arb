@@ -1,0 +1,357 @@
+{
+  "@@locale": "id",
+  "home": "Beranda",
+  "puzzles": "Teka-teki",
+  "daily": "Harian",
+  "statistics": "Statistik",
+  "settings": "Pengaturan",
+  "about": "Tentang",
+  "appearance": "Tampilan",
+  "theme": "Tema",
+  "system": "Sistem",
+  "light": "Terang",
+  "dark": "Gelap",
+  "appInformation": "Informasi aplikasi",
+  "easy": "Mudah",
+  "medium": "Sedang",
+  "hard": "Sulit",
+  "puzzle": "Teka-teki",
+  "clear": "Hapus",
+  "check": "Periksa",
+  "continueGame": "Lanjutkan",
+  "start": "Mulai",
+  "replay": "Main ulang",
+  "replayLower": "main ulang",
+  "play": "Main",
+  "resume": "Lanjutkan",
+  "dailyTitle": "Teka-teki Harian",
+  "dailyHistory": "Riwayat Harian",
+  "seeResult": "Lihat hasil",
+  "share": "Bagikan",
+  "returnHome": "Kembali ke Beranda",
+  "returnPuzzles": "Kembali ke teka-teki",
+  "chooseDifficulty": "Pilih kesulitan",
+  "viewPuzzles": "Lihat teka-teki",
+  "nextPuzzle": "Teka-teki berikutnya",
+  "close": "Tutup",
+  "back": "Kembali",
+  "closeSession": "Tutup permainan",
+  "restart": "Mulai lagi",
+  "retry": "Coba lagi",
+  "locked": "Terkunci",
+  "completed": "Selesai",
+  "completedLower": "selesai",
+  "score": "Skor",
+  "time": "Waktu",
+  "hints": "Petunjuk",
+  "wrongChecks": "Pemeriksaan salah",
+  "best": "Terbaik",
+  "thisAttempt": "Percobaan ini",
+  "newRecord": "Rekor baru!",
+  "puzzleCompleted": "Teka-teki selesai!",
+  "dailyCompleted": "Teka-teki Harian selesai!",
+  "rewardHint": "Petunjuk via iklan",
+  "adLoading": "Memuat iklan",
+  "adUnavailable": "Iklan belum tersedia. Coba lagi.",
+  "puzzleLoading": "Menyiapkan teka-teki…",
+  "puzzlePreparing": "Menyiapkan teka-teki",
+  "dailyPreparing": "Menyiapkan Teka-teki Harian",
+  "generationError": "Teka-teki belum bisa disiapkan. Coba lagi.",
+  "shareError": "Hasil belum bisa dibagikan. Coba lagi.",
+  "dailyUnavailable": "Teka-teki Harian tidak tersedia dalam sesi ini.",
+  "emptyHistory": "Belum ada Teka-teki Harian yang selesai.",
+  "noScore": "Belum ada",
+  "completedPuzzles": "Teka-teki selesai",
+  "scoredPuzzles": "Teka-teki dengan skor",
+  "totalScore": "Total skor",
+  "averageScore": "Rata-rata skor",
+  "bestScore": "Skor tertinggi",
+  "hintFree": "Selesai tanpa petunjuk",
+  "errorFree": "Selesai tanpa kesalahan",
+  "dailyStatistics": "Teka-teki Harian",
+  "dailyCount": "Harian selesai",
+  "currentStreak": "Rangkaian saat ini",
+  "longestStreak": "Rangkaian terpanjang",
+  "statisticsIntro": "Teka-teki selesai dan skor terbaik yang tersimpan.",
+  "statisticsExplanation": "Statistik skor memakai hasil terbaik tiap teka-teki. Penyelesaian lama tanpa skor hanya dihitung sebagai teka-teki selesai.",
+  "withinDifficulty": "Bandingkan skor pada kesulitan yang sama.",
+  "hintLocked": "Terungkap lewat petunjuk, terkunci",
+  "development": "Pengembangan · Progres tidak disimpan",
+  "allCorrect": "Semua huruf benar.",
+  "legacyScore": "Teka-teki ini selesai sebelum fitur skor diperkenalkan.",
+  "appDescription": "Temukan kata bahasa Inggris lewat petunjuk. Nikmati progres teka-teki, main ulang, dan Teka-teki Harian.",
+  "workingName": "Arrowword adalah nama sementara; nama final belum diputuskan.",
+  "versionLoading": "Memuat informasi versi…",
+  "versionUnavailable": "Informasi versi belum tersedia.",
+  "puzzleNumber": "Teka-teki {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty} · Teka-teki {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "Teka-teki {number} · Main ulang",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "Tingkat {difficulty} selesai!",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "{completed} / {total} selesai",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score} poin",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "Selesai hari ini · {score} poin",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "{count} hari berturut-turut",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "{count} teka-teki selesai",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "Versi {version} · Build {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "Teka-teki {number} · {seconds} dtk",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "Catatan lama · {seconds} dtk",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration} · {hints} petunjuk · {checks} pemeriksaan salah",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue} ({length})",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}, {length} huruf, {direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "mendatar",
+  "down": "menurun",
+  "tileSemantics": "Teka-teki {number}, {status}{completed, select, yes{, selesai} other{}}{scored, select, yes{, {score} poin} other{}}{replayable, select, yes{, bisa dimainkan ulang} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label}: {score}\n{hasBest, select, yes{Terbaik: {best}\n} other{}}Waktu: {duration}\nPetunjuk: {hints}\nPemeriksaan salah: {checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — Teka-teki Harian\n{date}\n\nSkor: {score}\nWaktu: {duration}\nPetunjuk: {hints}\nPemeriksaan salah: {checks}{hasStreak, select, yes{\nRangkaian: {streak} hari} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{day} {month} {year}",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "Petunjuk ini belum tersedia.",
+  "uiPreview": "Pengembangan · Pratinjau UI Inggris saja",
+  "invalidDevConfig": "Teka-teki pengembangan tidak dapat dibuka.\nARROWWORD_PUZZLE_INDEX harus antara 1 dan {count}.\nARROWWORD_PUZZLE_DIFFICULTY: easy, medium, atau hard.",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "Januari",
+  "month2": "Februari",
+  "month3": "Maret",
+  "month4": "April",
+  "month5": "Mei",
+  "month6": "Juni",
+  "month7": "Juli",
+  "month8": "Agustus",
+  "month9": "September",
+  "month10": "Oktober",
+  "month11": "November",
+  "month12": "Desember",
+  "versionFailed": "Informasi versi tidak dapat dimuat.",
+  "puzzleGenerationFailed": "Teka-teki tidak dapat dibuat. Coba lagi.",
+  "replayGenerationFailed": "Teka-teki tidak dapat dipulihkan. Coba lagi.",
+  "dailyGenerationFailed": "Teka-teki Harian tidak dapat dibuat. Coba lagi.",
+  "legacyScoringMessage": "Teka-teki ini selesai sebelum fitur skor diperkenalkan.",
+  "restartGame": "Mulai ulang",
+  "emptyProgress": "Belum ada teka-teki selesai",
+  "language": "Bahasa",
+  "systemDefault": "Default sistem",
+  "englishName": "English",
+  "turkishName": "Türkçe"
+}

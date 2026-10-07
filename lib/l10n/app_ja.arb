@@ -1,0 +1,357 @@
+{
+  "@@locale": "ja",
+  "home": "ホーム",
+  "puzzles": "パズル",
+  "daily": "デイリー",
+  "statistics": "統計",
+  "settings": "設定",
+  "about": "このアプリについて",
+  "appearance": "表示",
+  "theme": "テーマ",
+  "system": "システム",
+  "light": "ライト",
+  "dark": "ダーク",
+  "appInformation": "アプリ情報",
+  "easy": "かんたん",
+  "medium": "ふつう",
+  "hard": "むずかしい",
+  "puzzle": "パズル",
+  "clear": "消去",
+  "check": "確認",
+  "continueGame": "続ける",
+  "start": "はじめる",
+  "replay": "もう一度遊ぶ",
+  "replayLower": "リプレイ",
+  "play": "遊ぶ",
+  "resume": "続ける",
+  "dailyTitle": "今日のパズル",
+  "dailyHistory": "デイリー履歴",
+  "seeResult": "結果を見る",
+  "share": "共有",
+  "returnHome": "ホームへ戻る",
+  "returnPuzzles": "パズル一覧へ戻る",
+  "chooseDifficulty": "難易度を選ぶ",
+  "viewPuzzles": "パズルを見る",
+  "nextPuzzle": "次のパズル",
+  "close": "閉じる",
+  "back": "戻る",
+  "closeSession": "プレイを閉じる",
+  "restart": "最初から",
+  "retry": "もう一度試す",
+  "locked": "ロック中",
+  "completed": "クリア済み",
+  "completedLower": "クリア済み",
+  "score": "スコア",
+  "time": "時間",
+  "hints": "ヒント",
+  "wrongChecks": "誤答チェック",
+  "best": "ベスト",
+  "thisAttempt": "今回の結果",
+  "newRecord": "新記録！",
+  "puzzleCompleted": "パズルクリア！",
+  "dailyCompleted": "今日のパズルクリア！",
+  "rewardHint": "広告でヒント",
+  "adLoading": "広告を読み込み中",
+  "adUnavailable": "今は広告を表示できません。もう一度お試しください。",
+  "puzzleLoading": "パズルを準備中…",
+  "puzzlePreparing": "パズルを準備中",
+  "dailyPreparing": "今日のパズルを準備中",
+  "generationError": "パズルを準備できませんでした。もう一度お試しください。",
+  "shareError": "結果を共有できませんでした。もう一度お試しください。",
+  "dailyUnavailable": "このプレイでは今日のパズルを利用できません。",
+  "emptyHistory": "まだデイリーパズルをクリアしていません。",
+  "noScore": "まだなし",
+  "completedPuzzles": "クリアしたパズル",
+  "scoredPuzzles": "スコアのあるパズル",
+  "totalScore": "合計スコア",
+  "averageScore": "平均スコア",
+  "bestScore": "最高スコア",
+  "hintFree": "ヒントなしクリア",
+  "errorFree": "誤答なしクリア",
+  "dailyStatistics": "デイリーパズル",
+  "dailyCount": "デイリークリア数",
+  "currentStreak": "現在の連続記録",
+  "longestStreak": "最長の連続記録",
+  "statisticsIntro": "クリアしたパズルと保存されたベストスコア。",
+  "statisticsExplanation": "スコア統計には各パズルのベスト記録を使います。スコア導入前の記録はクリア数にのみ含まれます。",
+  "withinDifficulty": "スコアは同じ難易度で比べましょう。",
+  "hintLocked": "ヒントで表示、変更不可",
+  "development": "開発用・進行は保存されません",
+  "allCorrect": "すべての文字が正解です。",
+  "legacyScore": "このパズルはスコア導入前にクリアされました。",
+  "appDescription": "ヒントから英単語を見つけましょう。進行パズル、リプレイ、今日のパズルを楽しめます。",
+  "workingName": "Arrowwordは仮称で、正式名称はまだ決まっていません。",
+  "versionLoading": "バージョン情報を読み込み中…",
+  "versionUnavailable": "現在バージョン情報を取得できません。",
+  "puzzleNumber": "パズル {number}",
+  "@puzzleNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackPuzzle": "{difficulty}・パズル {number}",
+  "@trackPuzzle": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "replayPuzzle": "パズル {number}・リプレイ",
+  "@replayPuzzle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trackFinished": "{difficulty}をすべてクリア！",
+  "@trackFinished": {
+    "placeholders": {
+      "difficulty": {
+        "type": "String"
+      }
+    }
+  },
+  "progress": "{completed} / {total} クリア",
+  "@progress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scorePoints": "{score} 点",
+  "@scorePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "todayCompleted": "今日クリア・{score} 点",
+  "@todayCompleted": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDays": "{count}日連続",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCount": "{count}個のパズルをクリア",
+  "@completedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "versionBuild": "バージョン {version}・ビルド {build}",
+  "@versionBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "bestDetail": "パズル {number}・{seconds}秒",
+  "@bestDetail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyDetail": "以前の記録・{seconds}秒",
+  "@legacyDetail": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDetails": "{duration}・ヒント {hints}・誤答チェック {checks}",
+  "@dailyDetails": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "clueLength": "{clue}（{length}）",
+  "@clueLength": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "clueSemantics": "{clue}、{length}文字、{direction}",
+  "@clueSemantics": {
+    "placeholders": {
+      "clue": {
+        "type": "String"
+      },
+      "length": {
+        "type": "int"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "right": "横",
+  "down": "下",
+  "tileSemantics": "パズル {number}、{status}{completed, select, yes{、クリア済み} other{}}{scored, select, yes{、{score}点} other{}}{replayable, select, yes{、リプレイ可能} other{}}",
+  "@tileSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "scored": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "replayable": {
+        "type": "String"
+      }
+    }
+  },
+  "resultDetails": "{label}: {score}\n{hasBest, select, yes{ベスト: {best}\n} other{}}時間: {duration}\nヒント: {hints}\n誤答チェック: {checks}",
+  "@resultDetails": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "hasBest": {
+        "type": "String"
+      },
+      "best": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyShare": "Arrowword — 今日のパズル\n{date}\n\nスコア: {score}\n時間: {duration}\nヒント: {hints}\n誤答チェック: {checks}{hasStreak, select, yes{\n連続記録: {streak}日} other{}}",
+  "@dailyShare": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "int"
+      },
+      "checks": {
+        "type": "int"
+      },
+      "hasStreak": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+  "dateDisplay": "{year}年{month}{day}日",
+  "@dateDisplay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "clueUnavailable": "このヒントは現在利用できません。",
+  "uiPreview": "開発用・英語UIのみのプレビュー",
+  "invalidDevConfig": "開発用パズルを開けません。\nARROWWORD_PUZZLE_INDEXは1〜{count}で指定してください。\nARROWWORD_PUZZLE_DIFFICULTY: easy、medium、hard。",
+  "@invalidDevConfig": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "month1": "1月",
+  "month2": "2月",
+  "month3": "3月",
+  "month4": "4月",
+  "month5": "5月",
+  "month6": "6月",
+  "month7": "7月",
+  "month8": "8月",
+  "month9": "9月",
+  "month10": "10月",
+  "month11": "11月",
+  "month12": "12月",
+  "versionFailed": "バージョン情報を読み込めませんでした。",
+  "puzzleGenerationFailed": "パズルを作成できませんでした。もう一度お試しください。",
+  "replayGenerationFailed": "パズルを復元できませんでした。もう一度お試しください。",
+  "dailyGenerationFailed": "今日のパズルを作成できませんでした。もう一度お試しください。",
+  "legacyScoringMessage": "このパズルはスコア導入前にクリアされました。",
+  "restartGame": "やり直す",
+  "emptyProgress": "まだクリアしたパズルはありません",
+  "language": "言語",
+  "systemDefault": "システム設定に従う",
+  "englishName": "English",
+  "turkishName": "Türkçe"
+}

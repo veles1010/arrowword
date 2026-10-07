@@ -82,8 +82,11 @@ class ArrowwordApp extends StatelessWidget {
             supportedLocales: AppLocalizations.supportedLocales,
             locale: Locale.fromSubtags(
               languageCode: (preview ?? productionLocale).split('-').first,
-              countryCode: (preview ?? productionLocale).contains('-')
-                  ? (preview ?? productionLocale).split('-').last
+              scriptCode: (preview ?? productionLocale) == 'zh-Hans'
+                  ? 'Hans'
+                  : null,
+              countryCode: (preview ?? productionLocale) == 'pt-BR'
+                  ? 'BR'
                   : null,
             ),
             builder: (context, child) {

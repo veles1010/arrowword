@@ -57,7 +57,10 @@ void main(List<String> arguments) {
   final referenceUi = jsonDecode(
     File('lib/l10n/app_tr.arb').readAsStringSync(),
   ) as Map<String, dynamic>;
-  for (final locale in LanguagePolicy.production.locales) {
+  for (final locale in [
+    ...LanguagePolicy.production.locales,
+    ...LanguagePolicy.prepared,
+  ]) {
     if (locale.uiComplete) {
       final ui = jsonDecode(
         File('lib/l10n/app_${locale.tag.replaceAll('-', '_')}.arb')
