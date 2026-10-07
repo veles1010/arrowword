@@ -53,13 +53,13 @@ class LanguagePolicy {
     LocaleAvailability('de', uiComplete: true, cluesComplete: true),
     LocaleAvailability('fr', uiComplete: true, cluesComplete: true),
     LocaleAvailability('pt-BR', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('ja', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('ko', uiComplete: true, cluesComplete: true),
+    LocaleAvailability('zh-Hans', uiComplete: true, cluesComplete: true),
   ]);
   final List<LocaleAvailability> locales;
   // UI foundations alone must never enable mixed-language gameplay.
   static const prepared = [
-    LocaleAvailability('ja', uiComplete: true, cluesComplete: false),
-    LocaleAvailability('ko', uiComplete: true, cluesComplete: false),
-    LocaleAvailability('zh-Hans', uiComplete: true, cluesComplete: false),
     LocaleAvailability('id', uiComplete: true, cluesComplete: false),
     LocaleAvailability('ru', uiComplete: true, cluesComplete: false),
   ];

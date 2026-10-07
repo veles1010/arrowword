@@ -75,7 +75,7 @@ void main() {
   final packs = {
     'tr': tr,
     'en': en,
-    for (final locale in ['es', 'de', 'fr', 'pt-BR'])
+    for (final locale in ['es', 'de', 'fr', 'pt-BR', 'ja', 'ko', 'zh-Hans'])
       locale: decodeCluePack(
         File('assets/clues/$locale.json').readAsStringSync(),
       ),
@@ -225,7 +225,7 @@ void main() {
     },
   );
   test(
-    'production complete locale registry includes all six complete packs',
+    'production complete locale registry includes all nine complete packs',
     () {
       expect(LanguagePolicy.production.enabled, [
         'tr',
@@ -234,6 +234,9 @@ void main() {
         'de',
         'fr',
         'pt-BR',
+        'ja',
+        'ko',
+        'zh-Hans',
       ]);
       expect(
         LanguagePolicy.production.locales.every(
@@ -265,6 +268,7 @@ void main() {
         'de' => 'de',
         'fr' => 'fr',
         'es' => 'es',
+        'ja' => 'ja',
         _ => 'en',
       });
       expect(policy.resolve(AppLanguagePreference.english, [tag]), 'en');
@@ -385,7 +389,7 @@ void main() {
           device: device,
           directly: true,
         );
-        final locale = ['tr', 'en', 'de', 'fr', 'es'].contains(device)
+        final locale = ['tr', 'en', 'de', 'fr', 'es', 'ja'].contains(device)
                 ? device
                 : 'en',
             puzzle = session.current.puzzle!;

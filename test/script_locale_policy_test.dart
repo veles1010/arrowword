@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final complete = LanguagePolicy([
     ...LanguagePolicy.production.locales,
-    for (final tag in ['ja', 'ko', 'zh-Hans', 'id', 'ru'])
+    for (final tag in ['id', 'ru'])
       LocaleAvailability(tag, uiComplete: true, cluesComplete: true),
   ]);
   for (final entry in {
@@ -51,8 +51,12 @@ void main() {
         final preference = AppLanguagePreference.parse(entry.key);
         expect(preference.id, entry.key);
         expect(preference.autonym, entry.value);
-        expect(LanguagePolicy.production.enabled, isNot(contains(entry.key)));
-        expect(LanguagePolicy.production.resolve(preference, ['en']), 'en');
+        final enabled = ['ja', 'ko', 'zh-Hans'].contains(entry.key);
+        expect(LanguagePolicy.production.enabled.contains(entry.key), enabled);
+        expect(
+          LanguagePolicy.production.resolve(preference, ['en']),
+          enabled ? entry.key : 'en',
+        );
       }
     },
   );

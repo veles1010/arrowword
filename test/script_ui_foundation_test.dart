@@ -56,7 +56,10 @@ void main() {
         expect(copy.completedCount(2), contains('2'));
         expect(copy.dateDisplay(4, copy.month10, 2026), contains('2026'));
         expect(copy.hintLocked, isNot('Revealed with a hint, locked'));
-        expect(LanguagePolicy.production.enabled, isNot(contains(tag)));
+        expect(
+          LanguagePolicy.production.enabled.contains(tag),
+          ['ja', 'ko', 'zh-Hans'].contains(tag),
+        );
       },
     );
     test(
@@ -116,9 +119,15 @@ void main() {
           tester.element(find.byType(SettingsScreen)),
         )!;
         expect(find.text(strings.language), findsOneWidget);
-        // A restored incomplete locale safely displays System instead of causing
-        // DropdownButton's selected-value assertion or exposing unusable choices.
-        expect(find.text(strings.systemDefault), findsOneWidget);
+        // Complete CJK preferences are selectable; unfinished ru/id remain safe.
+        expect(
+          find.text(
+            LanguagePolicy.production.enabled.contains(tag)
+                ? language.preference.autonym
+                : strings.systemDefault,
+          ),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
         await tester.ensureVisible(find.text(strings.appInformation));
         await tester.tap(find.text(strings.appInformation));

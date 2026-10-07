@@ -55,7 +55,7 @@ class _Generator extends PuzzleSequenceGenerator {
 }
 
 void main() {
-  const tags = ['tr', 'en', 'es', 'de', 'fr', 'pt-BR'];
+  const tags = ['tr', 'en', 'es', 'de', 'fr', 'pt-BR', 'ja', 'ko', 'zh-Hans'];
   final sources = {
     for (final tag in tags)
       tag: File('assets/clues/$tag.json').readAsStringSync(),
@@ -72,9 +72,9 @@ void main() {
       prototypeSequenceConfig,
     ).generateNext(puzzleIndex: 1),
   );
-  test('six complete production locales and 5400 clue strings', () {
+  test('nine complete production locales and 8100 clue strings', () {
     expect(LanguagePolicy.production.enabled, tags);
-    expect(packs.values.fold<int>(0, (n, p) => n + p.length), 5400);
+    expect(packs.values.fold<int>(0, (n, p) => n + p.length), 8100);
   });
   for (final tag in tags.skip(2)) {
     final audit = LocalizedClueAudit(words, packs[tag]!, packs['en']!);
@@ -127,7 +127,7 @@ void main() {
     'pt-PT': 'en',
     'pt-AO': 'en',
     'fi-FI': 'en',
-    'ja-JP': 'en',
+    'ja-JP': 'ja',
   }.entries) {
     test(
       'device ${entry.key} resolves ${entry.value}, explicit override wins',
@@ -231,7 +231,8 @@ void main() {
       MaterialApp(
         locale: Locale.fromSubtags(
           languageCode: parts.first,
-          countryCode: parts.length > 1 ? parts.last : null,
+          scriptCode: tag == 'zh-Hans' ? 'Hans' : null,
+          countryCode: tag == 'pt-BR' ? 'BR' : null,
         ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -448,7 +449,8 @@ void main() {
         final strings = await AppLocalizations.delegate.load(
           Locale.fromSubtags(
             languageCode: parts.first,
-            countryCode: parts.length > 1 ? parts.last : null,
+            scriptCode: tag == 'zh-Hans' ? 'Hans' : null,
+            countryCode: tag == 'pt-BR' ? 'BR' : null,
           ),
         );
         final result = DailyPuzzleScore(

@@ -7,6 +7,7 @@ import 'package:arrowword/features/puzzle/localization/clue_pack.dart';
 import 'package:arrowword/features/puzzle/localization/english_clue_audit.dart';
 import 'package:arrowword/l10n/language_policy.dart';
 import 'package:arrowword/features/puzzle/localization/localized_clue_audit.dart';
+import 'package:arrowword/features/puzzle/localization/cjk_clue_audit.dart';
 
 void main(List<String> arguments) {
   final words = [...catalogueWords, ...mediumWords, ...hardWords];
@@ -57,6 +58,39 @@ void main(List<String> arguments) {
   final referenceUi = jsonDecode(
     File('lib/l10n/app_tr.arb').readAsStringSync(),
   ) as Map<String, dynamic>;
+  void validateCjk(String locale, Map<String, String> clues) {
+    if (clues.keys.join('|') != english.keys.join('|')) {
+      throw StateError('CJK clue coverage/order: $locale');
+    }
+    final cjk = CjkClueAudit(locale, words, clues, english);
+    for (final track in ['easy', 'medium', 'hard']) {
+      stdout.writeln('$locale/$track: ${jsonEncode(cjk.statistics(track))}');
+    }
+    stdout.writeln(
+      '$locale: ${clues.length}/900; errors=${cjk.errors.length}; own-answer loan warnings=${cjk.loanWarnings.length}; borrowing/script usage review=${cjk.borrowingWarnings.length}; untranslated=${cjk.untranslatedWarnings.length}; length=${cjk.lengthWarnings.length}',
+    );
+    for (final warning in [
+      ...cjk.errors,
+      ...cjk.loanWarnings,
+      ...cjk.borrowingWarnings,
+      ...cjk.untranslatedWarnings,
+      ...cjk.lengthWarnings,
+    ]) {
+      stdout.writeln(warning);
+    }
+    if (cjk.errors.isNotEmpty || cjk.untranslatedWarnings.isNotEmpty) {
+      throw StateError('CJK editorial validation failed: $locale');
+    }
+  }
+
+  if (arguments.contains('--cjk-drafts')) {
+    for (final locale in ['ja', 'ko', 'zh-Hans']) {
+      validateCjk(
+        locale,
+        decodeCluePack(File('assets/clues/$locale.json').readAsStringSync()),
+      );
+    }
+  }
   for (final locale in [
     ...LanguagePolicy.production.locales,
     ...LanguagePolicy.prepared,
@@ -82,7 +116,9 @@ void main(List<String> arguments) {
       if (clues.keys.join('|') != english.keys.join('|')) {
         throw StateError('Clue key ordering: ${locale.tag}');
       }
-      if (locale.tag != 'tr' && locale.tag != 'en') {
+      if (['ja', 'ko', 'zh-Hans'].contains(locale.tag)) {
+        validateCjk(locale.tag, clues);
+      } else if (locale.tag != 'tr' && locale.tag != 'en') {
         final localized = LocalizedClueAudit(words, clues, english);
         for (final track in ['easy', 'medium', 'hard']) {
           stdout.writeln(

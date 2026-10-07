@@ -251,16 +251,19 @@ Sample AdMob IDs remain TEST-only; no backend/global leaderboard is configured.
 ## Localization
 
 Answers are always English; board geometry, seeds, IDs and progression are
-language-independent. UI strings use Flutter `gen_l10n`. Six separate clue packs
-(tr, en, es, de, fr, pt-BR) each cover all 900 entries: 5,400 clues in total,
+language-independent. UI strings use Flutter `gen_l10n`. Nine separate clue packs
+(tr, en, es, de, fr, pt-BR, ja, ko, zh-Hans) each cover all 900 entries:
+8,100 clues in total,
 keyed by frozen catalogue positions
 (`easy_v3_000001`, `medium_v1_000001`, `hard_v1_000001`, etc.). Legacy content IDs
 and Turkish catalogue fields remain intact; generation never loads locale assets.
 
-Turkish, English, Spanish, German, French and Brazilian Portuguese are complete.
+Turkish, English, Spanish, German, French, Brazilian Portuguese, Japanese, Korean
+and Simplified Chinese are production-complete.
 Settings offers System Default and autonyms English, Türkçe, Español, Deutsch,
-Français, Português (Brasil). Stable preferences (`system`, `en`, `tr`, `es`, `de`,
-`fr`, `pt-BR`) use `arrowword.settings.language`; invalid/missing values use System.
+Français, Português (Brasil), 日本語, 한국어, 简体中文. Stable preferences (`system`,
+`en`, `tr`, `es`, `de`, `fr`, `pt-BR`, `ja`, `ko`, `zh-Hans`) use
+`arrowword.settings.language`; invalid/missing values use System.
 Supported device languages match their base language; pt-BR and bare pt use Brazil,
 but pt-PT and other regional Portuguese variants fall back to English. Unsupported
 languages also use English. Explicit selection wins. UI and clues stay paired,
@@ -268,7 +271,9 @@ including Daily/share; switching preserves boards and attempt state.
 Menus load no clue packs. New packs are cached once on demand; the existing tr/en
 pair stays cached together. Flutter requires a Brazilian-text base `app_pt.arb` for
 gen_l10n, but it is not a separate production locale. Future packs reuse stable IDs;
-Asian languages are planned, not supported yet.
+Japanese/Korean device variants use ja/ko. zh-Hans/CN/SG use Simplified Chinese;
+bare zh and zh-Hant/TW/HK/MO use English. Traditional Chinese is not yet supported.
+The Flutter-required base `app_zh.arb` is not a separate production locale.
 
 Developer UI-only review (debug/profile, ignored in release, never saves language):
 `flutter run --profile --dart-define=ARROWWORD_UI_LOCALE=en`
@@ -279,14 +284,14 @@ Run `flutter gen-l10n` after UI edits and
 `dart run tool/validate_localization.dart` to verify coverage/exact Turkish sync.
 `--extract-tr` regenerates the pack from approved catalogue text; it does not translate.
 English editorial decisions/statistics are recorded in `docs/english_clue_review.md`.
-The four new packs have separate editorial review documents under `docs/`.
+Editorial decisions for every added locale are documented under `docs/`.
 
-Milestone 3B is in progress: Japanese, Korean, Simplified Chinese, Indonesian and
-Russian have UI foundations, but are not gameplay-enabled until their complete
-900-clue packs and editorial audits are ready. Production still has six locales.
-The prepared policy maps zh-Hans/CN/SG to Simplified Chinese only when complete;
-bare zh and zh-Hant/TW/HK/MO use English. Stable future preference IDs are
-`ja`, `ko`, `zh-Hans`, `id`, `ru`.
+Milestone 3B.1 completes Japanese/Korean/Simplified Chinese gameplay. Indonesian
+and Russian remain UI-only foundations (`id`, `ru`), absent from Settings and
+falling back to English on those devices until their 900-clue packs are complete
+in Milestone 3B.2. CJK packs are loaded lazily, never at Home startup. The validator
+reports all borrowing/script-usage warnings for editorial review, rather than
+treating every katakana word as English leakage.
 
 The non-Latin input audit added composition safety: unfinished IME text is not
 consumed, non-Latin commits cannot erase letters, and only single ASCII A-Z letters

@@ -251,7 +251,17 @@ void main() {
   test(
     'complete tr/en packs enable gameplay; UI-only locale remains gated',
     () {
-      expect(policy.enabled, ['tr', 'en', 'es', 'de', 'fr', 'pt-BR']);
+      expect(policy.enabled, [
+        'tr',
+        'en',
+        'es',
+        'de',
+        'fr',
+        'pt-BR',
+        'ja',
+        'ko',
+        'zh-Hans',
+      ]);
       expect(
         policy.locales.singleWhere((l) => l.tag == 'en').uiComplete,
         isTrue,
