@@ -59,7 +59,7 @@ Map<GridPosition, String> _solution(Puzzle puzzle) => {
 
 Future<void> _enter(WidgetTester tester, GridPosition p, String letter) async {
   await tester.tap(find.byKey(ValueKey('cell-${p.row}-${p.column}')));
-  await tester.enterText(find.byType(TextField), letter);
+  await tester.tap(find.byKey(ValueKey('keyboard-$letter')));
   await tester.pump();
 }
 

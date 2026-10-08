@@ -111,10 +111,10 @@ void main() {
     await open(tester, ad, (_, h) => hints = h);
     await tester.tap(find.text('Reklamla Harf Aç'));
     await tester.pump();
-    await tester.enterText(
-      find.byType(TextField),
-      manualPuzzle.answers.first.solution[0],
-    );
+    // Simulate an external state update during the ad. The in-app keyboard is
+    // intentionally disabled until dismissal, but reward revalidation remains.
+    final dynamic state = tester.state(find.byType(PuzzleScreen));
+    state.game.enterLetter(manualPuzzle.answers.first.solution[0]);
     ad.reward();
     await tester.pumpAndSettle();
     expect(hints, isEmpty);

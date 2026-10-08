@@ -553,7 +553,7 @@ void main() {
           await tester.tap(
             find.byKey(ValueKey('cell-${entry.key.row}-${entry.key.column}')),
           );
-          await tester.enterText(find.byType(TextField), entry.value);
+          await tester.tap(find.byKey(ValueKey('keyboard-${entry.value}')));
           await tester.pump();
         }
         await tester.pumpAndSettle();

@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 
 import 'puzzle.dart';
 
+enum LetterInputResult { ignored, entered, hintPassed, hintRejected }
+
 class PuzzleGame extends ChangeNotifier {
   PuzzleGame(this.puzzle, {int wrongChecks = 0})
     : assert(wrongChecks >= 0),
@@ -82,11 +84,29 @@ class PuzzleGame extends ChangeNotifier {
     notifyListeners();
   }
 
-  void enterLetter(String s) {
-    if (isHint(_selectedPosition)) return;
-    if (!RegExp(r'^[a-zA-Z]$').hasMatch(s)) return;
+  LetterInputResult enterLetter(String s) {
+    if (!RegExp(r'^[a-zA-Z]$').hasMatch(s)) {
+      return LetterInputResult.ignored;
+    }
     final l = s.toUpperCase();
-    if (!RegExp(r'^[A-Z]$').hasMatch(l)) return;
+    if (isHint(_selectedPosition)) {
+      if (l != _expected(_selectedPosition)) {
+        return LetterInputResult.hintRejected;
+      }
+      final positions = _activeAnswer.positions;
+      for (
+        var i = positions.indexOf(_selectedPosition) + 1;
+        i < positions.length;
+        i++
+      ) {
+        if (!isHint(positions[i])) {
+          _selectedPosition = positions[i];
+          break;
+        }
+      }
+      notifyListeners();
+      return LetterInputResult.hintPassed;
+    }
     _letters[_selectedPosition] = l;
     _showValidation = false;
     final i = _activeAnswer.positions.indexOf(_selectedPosition);
@@ -94,17 +114,21 @@ class PuzzleGame extends ChangeNotifier {
       _selectedPosition = _activeAnswer.positions[i + 1];
     }
     notifyListeners();
+    return LetterInputResult.entered;
   }
 
   void backspace() {
-    if (isHint(_selectedPosition)) return;
-    if (_letters.containsKey(_selectedPosition)) {
+    if (!isHint(_selectedPosition) && _letters.containsKey(_selectedPosition)) {
       _letters.remove(_selectedPosition);
     } else {
       final i = _activeAnswer.positions.indexOf(_selectedPosition);
-      if (i > 0) {
-        _selectedPosition = _activeAnswer.positions[i - 1];
-        if (!isHint(_selectedPosition)) _letters.remove(_selectedPosition);
+      for (var previous = i - 1; previous >= 0; previous--) {
+        final position = _activeAnswer.positions[previous];
+        if (!isHint(position)) {
+          _selectedPosition = position;
+          _letters.remove(position);
+          break;
+        }
       }
     }
     _showValidation = false;

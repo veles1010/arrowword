@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:arrowword/features/puzzle/data/manual_puzzle.dart';
 import 'package:arrowword/features/puzzle/presentation/puzzle_screen.dart';
 import 'package:flutter/material.dart';
@@ -41,13 +43,19 @@ void main() {
       expect(board.left, greaterThanOrEqualTo(10));
       final activeClue = find.byKey(const ValueKey('active-clue'));
       expect(tester.getRect(activeClue).bottom, lessThanOrEqualTo(board.top));
-      // With these safe areas, 320x640 is height-limited even when closed.
-      // The taller 412x844 case uses the full width until the keyboard opens.
-      if (scenario.name == 'wide closed') {
-        expect(board.width, closeTo(scenario.width - 20, 0.001));
-      } else {
-        expect(board.width, lessThan(scenario.width - 20));
-      }
+      // The persistent in-app keyboard now reserves height even without an IME.
+      final boardArea = tester.getSize(
+        find
+            .ancestor(
+              of: find.byKey(const ValueKey('puzzle-board')),
+              matching: find.byType(Center),
+            )
+            .first,
+      );
+      expect(
+        board.width,
+        closeTo(math.min(scenario.width - 20, boardArea.height * 0.7), 0.001),
+      );
 
       for (final label in ['Temizle', 'Kontrol Et']) {
         final control = find.widgetWithText(

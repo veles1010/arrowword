@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import '../../../l10n/clue_presentation.dart';
 import '../../../l10n/ui_strings.dart';
 import '../../../audio/game_audio.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import '../../../theme/arrowword_visuals.dart';
 
@@ -15,6 +18,7 @@ import 'board_size.dart';
 import 'clue_text.dart';
 import 'active_play_timer.dart';
 import 'puzzle_completion.dart';
+import 'puzzle_keyboard.dart';
 
 final puzzleRouteObserver = RouteObserver<ModalRoute<dynamic>>();
 
@@ -90,6 +94,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   GameAudio? _audio;
   VoidCallback? _leaveAudioGameplay;
   late bool _wasComplete;
+  GridPosition? _rejectedHint;
+  Timer? _hintFeedback;
   @override
   void initState() {
     super.initState();
@@ -115,7 +121,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
         WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
     WidgetsBinding.instance.addObserver(this);
     input = TextEditingController(text: s);
-    focus = FocusNode();
+    focus = FocusNode(onKeyEvent: _hardwareInput);
     if (game.isComplete) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _changed();
@@ -125,6 +131,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
   @override
   void dispose() {
+    _hintFeedback?.cancel();
     _leaveAudioGameplay?.call();
     timer.pause();
     widget.onElapsedChanged?.call(timer.elapsed);
@@ -237,6 +244,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     } else if (result != HintAdResult.dismissed) {
       _adUnavailable();
     }
+    if (!game.isComplete) focus.requestFocus();
     _syncTimer();
   }
 
@@ -366,17 +374,72 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     _inputWasComposing = false;
     final x = t.replaceAll(RegExp(r'[^a-zA-Z]'), '').toUpperCase();
     if (t.isEmpty && !compositionEnded) {
-      game.backspace();
+      _backspace();
     } else if (x.isNotEmpty) {
-      final position = game.selectedPosition;
-      final before = game.letterAt(position);
-      game.enterLetter(x.substring(x.length - 1));
-      if (game.letterAt(position) != before) _audio?.playLetter();
+      _enterLetter(x.substring(x.length - 1));
     }
     input.value = const TextEditingValue(
       text: s,
       selection: TextSelection.collapsed(offset: 1),
     );
+  }
+
+  bool get _canInput =>
+      _appActive &&
+      _routeVisible &&
+      !requestingHint &&
+      !shown &&
+      !widget.attemptFinalized &&
+      !ClueLoadingScope.of(context);
+
+  void _enterLetter(String letter) {
+    if (!_canInput) return;
+    focus.requestFocus();
+    final position = game.selectedPosition;
+    final before = game.letterAt(position);
+    final result = game.enterLetter(letter);
+    if (result == LetterInputResult.hintRejected) {
+      _hintFeedback?.cancel();
+      setState(() => _rejectedHint = position);
+      _hintFeedback = Timer(const Duration(milliseconds: 220), () {
+        if (mounted) setState(() => _rejectedHint = null);
+      });
+    } else {
+      _hintFeedback?.cancel();
+      if (_rejectedHint != null) setState(() => _rejectedHint = null);
+      if (result == LetterInputResult.entered &&
+          game.letterAt(position) != before) {
+        _audio?.playLetter();
+      }
+    }
+  }
+
+  void _backspace() {
+    if (_canInput) {
+      focus.requestFocus();
+      game.backspace();
+    }
+  }
+
+  KeyEventResult _hardwareInput(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    if (HardwareKeyboard.instance.isControlPressed ||
+        HardwareKeyboard.instance.isMetaPressed ||
+        HardwareKeyboard.instance.isAltPressed) {
+      return KeyEventResult.ignored;
+    }
+    if (event.logicalKey == LogicalKeyboardKey.backspace) {
+      _backspace();
+      return KeyEventResult.handled;
+    }
+    final letter = event.character;
+    if (letter != null && RegExp(r'^[a-zA-Z]$').hasMatch(letter)) {
+      _enterLetter(letter);
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 
   @override
@@ -415,7 +478,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, contentConstraints) {
-            final compact = keyboardOpen || contentConstraints.maxHeight < 480;
+            final compact = keyboardOpen || contentConstraints.maxHeight < 700;
             return Column(
               children: [
                 Padding(
@@ -497,6 +560,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                                 cell: cell,
                                 p: p,
                                 game: game,
+                                hintRejected: _rejectedHint == p,
                                 onTap: () {
                                   cell.type == PuzzleCellType.clue
                                       ? game.tapClue(cell.clues.first)
@@ -567,17 +631,27 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                     ],
                   ),
                 ),
-                SizedBox(
-                  width: 1,
-                  height: 1,
-                  child: TextField(
-                    controller: input,
-                    focusNode: focus,
-                    onChanged: _input,
-                    textCapitalization: TextCapitalization.characters,
-                    autocorrect: false,
-                    enableSuggestions: false,
-                    decoration: InputDecoration(border: InputBorder.none),
+                PuzzleKeyboard(
+                  onLetter: _enterLetter,
+                  onBackspace: _backspace,
+                  enabled: _canInput,
+                ),
+                ExcludeSemantics(
+                  child: SizedBox(
+                    width: 1,
+                    height: 1,
+                    child: TextField(
+                      controller: input,
+                      focusNode: focus,
+                      autofocus: true,
+                      keyboardType: TextInputType.none,
+                      enableInteractiveSelection: false,
+                      onChanged: _input,
+                      textCapitalization: TextCapitalization.characters,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      decoration: InputDecoration(border: InputBorder.none),
+                    ),
                   ),
                 ),
               ],
@@ -596,11 +670,13 @@ class _Cell extends StatelessWidget {
     required this.p,
     required this.game,
     required this.onTap,
+    this.hintRejected = false,
   });
   final PuzzleCell cell;
   final GridPosition p;
   final PuzzleGame game;
   final VoidCallback onTap;
+  final bool hintRejected;
   @override
   Widget build(BuildContext c) {
     final cs = Theme.of(c).colorScheme;
@@ -651,7 +727,7 @@ class _Cell extends StatelessWidget {
       );
     }
     final selected = game.isSelected(p);
-    final bad = game.isIncorrect(p);
+    final bad = game.isIncorrect(p) || hintRejected;
     final hinted = game.isHint(p);
     final edge = BorderSide(
       color: bad

@@ -66,7 +66,7 @@ Future<void> _enter(
   await tester.tap(
     find.byKey(ValueKey('cell-${position.row}-${position.column}')),
   );
-  await tester.enterText(find.byType(TextField), letter);
+  await tester.tap(find.byKey(ValueKey('keyboard-$letter')));
   await tester.pump();
 }
 
