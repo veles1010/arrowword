@@ -285,7 +285,12 @@ void main() {
         expect(tester.takeException(), isNull);
         await tester.tap(find.text('Português (Brasil)'));
         await tester.pumpAndSettle();
-        await tester.ensureVisible(find.text(strings.appInformation));
+        await tester.scrollUntilVisible(
+          find.text(strings.appInformation),
+          160,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
         await tester.tap(find.text(strings.appInformation));
         await tester.pumpAndSettle();
         expect(find.text('Arrowword'), findsOneWidget);

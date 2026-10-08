@@ -1,4 +1,7 @@
 {
+  "audio": "소리",
+  "music": "음악",
+  "soundEffects": "효과음",
   "answersAlwaysEnglish": "정답은 항상 영어입니다.",
   "@@locale": "ko",
   "home": "홈",

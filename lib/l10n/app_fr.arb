@@ -1,4 +1,7 @@
 {
+  "audio": "Audio",
+  "music": "Musique",
+  "soundEffects": "Effets sonores",
   "answersAlwaysEnglish": "Les réponses sont toujours en anglais.",
   "@@locale": "fr",
   "home": "Accueil",

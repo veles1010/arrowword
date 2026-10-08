@@ -1,4 +1,7 @@
 {
+  "audio": "Audio",
+  "music": "Music",
+  "soundEffects": "Sound Effects",
   "answersAlwaysEnglish": "Answers are always in English.",
   "@@locale": "en",
   "home": "Home",

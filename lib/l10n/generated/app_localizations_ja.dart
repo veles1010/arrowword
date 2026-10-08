@@ -10,6 +10,15 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get audio => 'サウンド';
+
+  @override
+  String get music => '音楽';
+
+  @override
+  String get soundEffects => '効果音';
+
+  @override
   String get answersAlwaysEnglish => '答えは常に英語です。';
 
   @override

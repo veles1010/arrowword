@@ -39,6 +39,7 @@ dependencies:
   google_mobile_ads: ^9.1.0
   share_plus: ^13.3.1
   package_info_plus: ^10.2.2
+  audioplayers: ^6.8.1
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +64,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/audio/
     - assets/clues/tr.json
     - assets/clues/en.json
     - assets/clues/es.json

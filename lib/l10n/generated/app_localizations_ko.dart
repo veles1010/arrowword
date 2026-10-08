@@ -10,6 +10,15 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get audio => '소리';
+
+  @override
+  String get music => '음악';
+
+  @override
+  String get soundEffects => '효과음';
+
+  @override
   String get answersAlwaysEnglish => '정답은 항상 영어입니다.';
 
   @override

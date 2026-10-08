@@ -118,6 +118,24 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
   ];
 
+  /// No description provided for @audio.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ses'**
+  String get audio;
+
+  /// No description provided for @music.
+  ///
+  /// In tr, this message translates to:
+  /// **'Müzik'**
+  String get music;
+
+  /// No description provided for @soundEffects.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ses Efektleri'**
+  String get soundEffects;
+
   /// No description provided for @answersAlwaysEnglish.
   ///
   /// In tr, this message translates to:

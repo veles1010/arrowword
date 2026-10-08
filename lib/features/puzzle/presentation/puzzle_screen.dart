@@ -1,5 +1,6 @@
 import '../../../l10n/clue_presentation.dart';
 import '../../../l10n/ui_strings.dart';
+import '../../../audio/game_audio.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -86,6 +87,9 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   bool _routeVisible = true;
   bool _inputWasComposing = false;
   ModalRoute<dynamic>? _route;
+  GameAudio? _audio;
+  VoidCallback? _leaveAudioGameplay;
+  late bool _wasComplete;
   @override
   void initState() {
     super.initState();
@@ -98,6 +102,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
         revealedCells: widget.initialRevealedCells,
       );
     game.addListener(_changed);
+    _wasComplete = game.isComplete;
     _lastLetters = game.enteredLetters;
     _lastRevealed = game.revealedCells;
     _lastChecks = game.wrongChecks;
@@ -120,6 +125,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
   @override
   void dispose() {
+    _leaveAudioGameplay?.call();
     timer.pause();
     widget.onElapsedChanged?.call(timer.elapsed);
     puzzleRouteObserver.unsubscribe(this);
@@ -135,6 +141,12 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final audio = GameAudioScope.maybeOf(context);
+    if (audio != _audio) {
+      _leaveAudioGameplay?.call();
+      _audio = audio;
+      _leaveAudioGameplay = audio?.enterGameplay();
+    }
     final route = ModalRoute.of(context);
     if (route != _route) {
       puzzleRouteObserver.unsubscribe(this);
@@ -205,16 +217,23 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     _syncTimer();
     focus.unfocus();
     HintAdResult result;
+    final finishAdAudio = await _audio?.beginAd();
+    if (!mounted) {
+      finishAdAudio?.call();
+      return;
+    }
     try {
       result = await ads.show();
     } catch (_) {
       result = HintAdResult.failed;
+    } finally {
+      finishAdAudio?.call();
     }
     if (!mounted) return;
     setState(() => requestingHint = false);
     if (result == HintAdResult.earned) {
       // Selection can change during an ad; grant only to the captured target.
-      game.revealLetter(position);
+      if (game.revealLetter(position)) _audio?.playHintReveal();
     } else if (result != HintAdResult.dismissed) {
       _adUnavailable();
     }
@@ -227,6 +246,10 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   }
 
   void _changed() {
+    if (game.isComplete && !_wasComplete && !widget.attemptFinalized) {
+      _audio?.playPuzzleComplete();
+    }
+    _wasComplete = game.isComplete;
     if (game.isComplete) timer.pause();
     if (!mapEquals(_lastLetters, game.enteredLetters) ||
         !setEquals(_lastRevealed, game.revealedCells) ||
@@ -345,7 +368,10 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     if (t.isEmpty && !compositionEnded) {
       game.backspace();
     } else if (x.isNotEmpty) {
+      final position = game.selectedPosition;
+      final before = game.letterAt(position);
       game.enterLetter(x.substring(x.length - 1));
+      if (game.letterAt(position) != before) _audio?.playLetter();
     }
     input.value = const TextEditingValue(
       text: s,
@@ -528,7 +554,13 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                           style: FilledButton.styleFrom(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                           ),
-                          onPressed: game.check,
+                          onPressed: () {
+                            final before = game.wrongChecks;
+                            game.check();
+                            if (game.wrongChecks > before) {
+                              _audio?.playWrongCheck();
+                            }
+                          },
                           child: Text(context.l10n.check),
                         ),
                       ),

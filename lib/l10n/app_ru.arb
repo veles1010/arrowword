@@ -1,4 +1,7 @@
 {
+  "audio": "Звук",
+  "music": "Музыка",
+  "soundEffects": "Звуковые эффекты",
   "answersAlwaysEnglish": "Ответы всегда на английском языке.",
   "@@locale": "ru",
   "home": "Главная",

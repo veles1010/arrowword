@@ -4,6 +4,14 @@
 Material 3 board supports crossings, native keyboard input, validation, reset and
 completion. The manual puzzle remains an unchanged regression fixture.
 
+## Audio
+
+Independent Music and Sound Effects switches default ON and persist separately
+from gameplay. Original procedural audio provides a quiet menu loop and short
+letter/check/hint/completion feedback. Gameplay has no background music; ads and
+backgrounding suppress app audio. Asset provenance and device listening checks:
+`docs/audio_assets.md`. No custom volume slider or external sample pack is used.
+
 ## Content and sequence
 
 Compatibility **v3** retains all **300 v2 local Dart records** unchanged: 4–7 letters, stable

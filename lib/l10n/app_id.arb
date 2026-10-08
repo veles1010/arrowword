@@ -1,4 +1,7 @@
 {
+  "audio": "Audio",
+  "music": "Musik",
+  "soundEffects": "Efek suara",
   "answersAlwaysEnglish": "Jawaban selalu dalam bahasa Inggris.",
   "@@locale": "id",
   "home": "Beranda",

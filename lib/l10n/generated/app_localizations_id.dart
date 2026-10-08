@@ -10,6 +10,15 @@ class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
   @override
+  String get audio => 'Audio';
+
+  @override
+  String get music => 'Musik';
+
+  @override
+  String get soundEffects => 'Efek suara';
+
+  @override
   String get answersAlwaysEnglish => 'Jawaban selalu dalam bahasa Inggris.';
 
   @override

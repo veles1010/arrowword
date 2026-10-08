@@ -38,7 +38,7 @@ void main() {
         ? const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans')
         : Locale(tag);
     test(
-      '$tag UI foundation has all 131 messages and correct script',
+      '$tag UI foundation has all 134 messages and correct script',
       () async {
         final arb = jsonDecode(
           File('lib/l10n/app_${tag.replaceAll('-', '_')}.arb')
@@ -47,7 +47,7 @@ void main() {
         expect(arb.keys.toSet(), reference.keys.toSet());
         expect(
           arb.keys.where((key) => !(key as String).startsWith('@')),
-          hasLength(131),
+          hasLength(134),
         );
         final copy = await AppLocalizations.delegate.load(locale);
         expect(copy.home, home);
@@ -126,7 +126,12 @@ void main() {
           findsOneWidget,
         );
         expect(tester.takeException(), isNull);
-        await tester.ensureVisible(find.text(strings.appInformation));
+        await tester.scrollUntilVisible(
+          find.text(strings.appInformation),
+          160,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
         await tester.tap(find.text(strings.appInformation));
         await tester.pumpAndSettle();
         expect(find.text('Arrowword'), findsOneWidget);

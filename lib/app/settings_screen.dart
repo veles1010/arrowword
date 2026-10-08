@@ -92,6 +92,25 @@ class SettingsScreen extends StatelessWidget {
               ],
               const SizedBox(height: 24),
               Text(
+                context.l10n.audio,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              SwitchListTile(
+                key: const ValueKey('music-enabled'),
+                contentPadding: EdgeInsets.zero,
+                title: Text(context.l10n.music),
+                value: settings.musicEnabled,
+                onChanged: settings.setMusicEnabled,
+              ),
+              SwitchListTile(
+                key: const ValueKey('sfx-enabled'),
+                contentPadding: EdgeInsets.zero,
+                title: Text(context.l10n.soundEffects),
+                value: settings.sfxEnabled,
+                onChanged: settings.setSfxEnabled,
+              ),
+              const SizedBox(height: 24),
+              Text(
                 context.l10n.about,
                 style: Theme.of(context).textTheme.titleLarge,
               ),

@@ -1,4 +1,7 @@
 {
+  "audio": "サウンド",
+  "music": "音楽",
+  "soundEffects": "効果音",
   "answersAlwaysEnglish": "答えは常に英語です。",
   "@@locale": "ja",
   "home": "ホーム",

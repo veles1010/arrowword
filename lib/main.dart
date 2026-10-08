@@ -9,6 +9,8 @@ import 'l10n/clue_pack_cache.dart';
 import 'l10n/language_policy.dart';
 
 import 'app/app.dart';
+import 'audio/game_audio.dart';
+import 'audio/audioplayers_backend.dart';
 import 'app/app_settings.dart';
 import 'app/development_puzzle.dart';
 import 'app/puzzle_track.dart';
@@ -85,17 +87,20 @@ Future<void> main() async {
     locales: LanguagePolicy.production.enabled,
   );
   runApp(
-    ArrowwordApp(
-      session: session,
-      tracks: tracks,
-      settings: settings,
-      language: language,
-      clueCache: clues,
-      uiLocalePreview: const String.fromEnvironment('ARROWWORD_UI_LOCALE'),
-      dailySession: daily,
-      openPuzzleDirectly: startIndex != null,
-      developmentOverride: launch != null,
-      rewardedAdFactory: createHintAdService,
+    GameAudioHost(
+      audio: GameAudio(settings, AudioplayersBackend()),
+      child: ArrowwordApp(
+        session: session,
+        tracks: tracks,
+        settings: settings,
+        language: language,
+        clueCache: clues,
+        uiLocalePreview: const String.fromEnvironment('ARROWWORD_UI_LOCALE'),
+        dailySession: daily,
+        openPuzzleDirectly: startIndex != null,
+        developmentOverride: launch != null,
+        rewardedAdFactory: createHintAdService,
+      ),
     ),
   );
 }

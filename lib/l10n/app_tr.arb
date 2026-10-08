@@ -1,4 +1,7 @@
 {
+  "audio": "Ses",
+  "music": "Müzik",
+  "soundEffects": "Ses Efektleri",
   "answersAlwaysEnglish": "Cevaplar her zaman İngilizcedir.",
   "@@locale": "tr",
   "home": "Ana Sayfa",

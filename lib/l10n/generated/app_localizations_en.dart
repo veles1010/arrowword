@@ -10,6 +10,15 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get audio => 'Audio';
+
+  @override
+  String get music => 'Music';
+
+  @override
+  String get soundEffects => 'Sound Effects';
+
+  @override
   String get answersAlwaysEnglish => 'Answers are always in English.';
 
   @override

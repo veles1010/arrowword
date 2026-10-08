@@ -10,6 +10,15 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get audio => 'Ses';
+
+  @override
+  String get music => 'Müzik';
+
+  @override
+  String get soundEffects => 'Ses Efektleri';
+
+  @override
   String get answersAlwaysEnglish => 'Cevaplar her zaman İngilizcedir.';
 
   @override

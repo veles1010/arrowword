@@ -10,6 +10,15 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get audio => 'Áudio';
+
+  @override
+  String get music => 'Música';
+
+  @override
+  String get soundEffects => 'Efeitos sonoros';
+
+  @override
   String get answersAlwaysEnglish => 'As respostas são sempre em inglês.';
 
   @override
@@ -541,6 +550,15 @@ class AppLocalizationsPt extends AppLocalizations {
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
   AppLocalizationsPtBr() : super('pt_BR');
+
+  @override
+  String get audio => 'Áudio';
+
+  @override
+  String get music => 'Música';
+
+  @override
+  String get soundEffects => 'Efeitos sonoros';
 
   @override
   String get answersAlwaysEnglish => 'As respostas são sempre em inglês.';

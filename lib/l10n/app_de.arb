@@ -1,4 +1,7 @@
 {
+  "audio": "Audio",
+  "music": "Musik",
+  "soundEffects": "Soundeffekte",
   "answersAlwaysEnglish": "Die Antworten sind immer auf Englisch.",
   "@@locale": "de",
   "home": "Start",

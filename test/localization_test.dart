@@ -519,6 +519,12 @@ void main() {
         find.text('English'),
         findsNothing,
       ); // Standalone screen without a language controller has no selector.
+      await tester.scrollUntilVisible(
+        find.text(copy.appInformation),
+        160,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.text(copy.appInformation));
       await tester.pumpAndSettle();
       expect(find.text(copy.about), findsOneWidget);

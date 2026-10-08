@@ -10,6 +10,15 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get audio => 'Звук';
+
+  @override
+  String get music => 'Музыка';
+
+  @override
+  String get soundEffects => 'Звуковые эффекты';
+
+  @override
   String get answersAlwaysEnglish => 'Ответы всегда на английском языке.';
 
   @override
