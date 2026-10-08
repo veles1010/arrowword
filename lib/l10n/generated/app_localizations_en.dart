@@ -537,4 +537,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get unableToOpenLink => 'Unable to open the link.';
 }

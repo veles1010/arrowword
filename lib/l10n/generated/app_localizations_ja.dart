@@ -491,4 +491,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => 'プライバシーポリシー';
+
+  @override
+  String get support => 'サポート';
+
+  @override
+  String get unableToOpenLink => 'リンクを開けませんでした。';
 }

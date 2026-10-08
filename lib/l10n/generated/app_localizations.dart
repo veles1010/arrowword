@@ -938,6 +938,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Türkçe'**
   String get turkishName;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik Politikası'**
+  String get privacyPolicy;
+
+  /// No description provided for @support.
+  ///
+  /// In tr, this message translates to:
+  /// **'Destek'**
+  String get support;
+
+  /// No description provided for @unableToOpenLink.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı açılamadı.'**
+  String get unableToOpenLink;
 }
 
 class _AppLocalizationsDelegate

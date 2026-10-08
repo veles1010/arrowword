@@ -499,4 +499,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => 'Gizlilik Politikası';
+
+  @override
+  String get support => 'Destek';
+
+  @override
+  String get unableToOpenLink => 'Bağlantı açılamadı.';
 }

@@ -565,4 +565,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => 'Политика конфиденциальности';
+
+  @override
+  String get support => 'Поддержка';
+
+  @override
+  String get unableToOpenLink => 'Не удалось открыть ссылку.';
 }

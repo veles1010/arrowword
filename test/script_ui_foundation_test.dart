@@ -38,7 +38,7 @@ void main() {
         ? const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans')
         : Locale(tag);
     test(
-      '$tag UI foundation has all 133 messages and correct script',
+      '$tag UI foundation has all 136 messages and correct script',
       () async {
         final arb = jsonDecode(
           File('lib/l10n/app_${tag.replaceAll('-', '_')}.arb')
@@ -47,7 +47,7 @@ void main() {
         expect(arb.keys.toSet(), reference.keys.toSet());
         expect(
           arb.keys.where((key) => !(key as String).startsWith('@')),
-          hasLength(133),
+          hasLength(136),
         );
         final copy = await AppLocalizations.delegate.load(locale);
         expect(copy.home, home);

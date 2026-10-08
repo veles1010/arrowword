@@ -499,4 +499,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => 'Kebijakan Privasi';
+
+  @override
+  String get support => 'Bantuan';
+
+  @override
+  String get unableToOpenLink => 'Tautan tidak dapat dibuka.';
 }

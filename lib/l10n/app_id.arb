@@ -356,5 +356,8 @@
   "language": "Bahasa",
   "systemDefault": "Default sistem",
   "englishName": "English",
-  "turkishName": "Türkçe"
+  "turkishName": "Türkçe",
+  "privacyPolicy": "Kebijakan Privasi",
+  "support": "Bantuan",
+  "unableToOpenLink": "Tautan tidak dapat dibuka."
 }

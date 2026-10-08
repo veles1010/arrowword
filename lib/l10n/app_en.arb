@@ -356,5 +356,8 @@
   "language": "Language",
   "systemDefault": "System Default",
   "englishName": "English",
-  "turkishName": "Türkçe"
+  "turkishName": "Türkçe",
+  "privacyPolicy": "Privacy Policy",
+  "support": "Support",
+  "unableToOpenLink": "Unable to open the link."
 }

@@ -356,5 +356,8 @@
   "language": "语言",
   "systemDefault": "系统默认",
   "englishName": "English",
-  "turkishName": "Türkçe"
+  "turkishName": "Türkçe",
+  "privacyPolicy": "隐私政策",
+  "support": "帮助与支持",
+  "unableToOpenLink": "无法打开链接。"
 }

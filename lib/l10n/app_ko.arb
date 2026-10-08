@@ -356,5 +356,8 @@
   "language": "언어",
   "systemDefault": "시스템 기본값",
   "englishName": "English",
-  "turkishName": "Türkçe"
+  "turkishName": "Türkçe",
+  "privacyPolicy": "개인정보 처리방침",
+  "support": "고객 지원",
+  "unableToOpenLink": "링크를 열 수 없습니다."
 }

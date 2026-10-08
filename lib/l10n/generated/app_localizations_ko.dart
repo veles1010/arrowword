@@ -492,4 +492,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => '개인정보 처리방침';
+
+  @override
+  String get support => '고객 지원';
+
+  @override
+  String get unableToOpenLink => '링크를 열 수 없습니다.';
 }

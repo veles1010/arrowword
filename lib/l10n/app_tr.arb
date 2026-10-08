@@ -356,5 +356,8 @@
   "language": "Dil",
   "systemDefault": "Sistem Varsayılanı",
   "englishName": "English",
-  "turkishName": "Türkçe"
+  "turkishName": "Türkçe",
+  "privacyPolicy": "Gizlilik Politikası",
+  "support": "Destek",
+  "unableToOpenLink": "Bağlantı açılamadı."
 }

@@ -540,4 +540,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => 'Política de privacidad';
+
+  @override
+  String get support => 'Ayuda';
+
+  @override
+  String get unableToOpenLink => 'No se pudo abrir el enlace.';
 }

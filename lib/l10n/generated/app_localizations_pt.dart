@@ -541,6 +541,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => 'Política de privacidade';
+
+  @override
+  String get support => 'Suporte';
+
+  @override
+  String get unableToOpenLink => 'Não foi possível abrir o link.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1079,4 +1088,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => 'Política de privacidade';
+
+  @override
+  String get support => 'Suporte';
+
+  @override
+  String get unableToOpenLink => 'Não foi possível abrir o link.';
 }

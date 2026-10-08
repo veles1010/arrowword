@@ -490,6 +490,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => '隐私政策';
+
+  @override
+  String get support => '帮助与支持';
+
+  @override
+  String get unableToOpenLink => '无法打开链接。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -977,4 +986,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get turkishName => 'Türkçe';
+
+  @override
+  String get privacyPolicy => '隐私政策';
+
+  @override
+  String get support => '帮助与支持';
+
+  @override
+  String get unableToOpenLink => '无法打开链接。';
 }
