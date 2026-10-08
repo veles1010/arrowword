@@ -268,10 +268,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Discover English words through clues. Progression puzzles, replay, and a Daily Puzzle.';
 
   @override
-  String get workingName =>
-      'Arrowword is a working title; the final product name has not been decided.';
-
-  @override
   String get versionLoading => 'Loading version information…';
 
   @override

@@ -53,8 +53,9 @@ For a before/after comparison supply a preserved rejected WAV with `--baseline`.
 `python tool/generate_audio.py --menu-only` replaces only menu music; default
 generation retains the four SFX unchanged. Both paths remain deterministic.
 
-Actual device decoding, loop continuity and artistic quality require audition.
-**HUMAN LISTENING APPROVAL REQUIRED.**
+Android emulator human listening has been completed and accepted.
+iOS real-device decoding, loop continuity, and silent-switch behavior remain
+pending verification.
 
 One app-owned audioplayers backend retains one music player and one reusable
 player per effect. Android short effects use the package's low-latency SoundPool

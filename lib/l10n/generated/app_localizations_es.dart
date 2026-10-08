@@ -270,10 +270,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Descubre palabras en inglés mediante pistas. Puzles de progresión, repeticiones y un puzle diario.';
 
   @override
-  String get workingName =>
-      'Arrowword es un nombre provisional; el nombre definitivo aún no está decidido.';
-
-  @override
   String get versionLoading => 'Cargando información de versión…';
 
   @override

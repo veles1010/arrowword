@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'rewarded_hint_ad_service.dart';
@@ -10,12 +11,33 @@ bool get _supported =>
     (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS);
 
-Future<void>? _initialization;
+/// One shared readiness Future, including failure; never reinitializes per route.
+class HintAdsInitialization {
+  HintAdsInitialization(this.initialize);
+  final Future<void> Function() initialize;
+  Future<void>? _pending;
+  Future<void> ensureReady() => _pending ??= Future<void>.sync(initialize);
+}
+
+final _initialization = HintAdsInitialization(
+  () => MobileAds.instance.initialize().then<void>((_) {}),
+);
+
 Future<void> initializeHintAds() async {
   if (!_supported) return;
-  await (_initialization ??= MobileAds.instance.initialize().then<void>(
-    (_) {},
-  ));
+  await _initialization.ensureReady();
+}
+
+/// The first frame never waits on ads. Tests inject a local readiness boundary.
+void scheduleHintAdsInitialization({HintAdsInitialization? initialization}) {
+  if (initialization == null && !_supported) return;
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(
+      (initialization?.ensureReady() ?? initializeHintAds()).catchError(
+        (Object _) {},
+      ),
+    );
+  });
 }
 
 RewardedHintAdService createHintAdService() =>
@@ -23,6 +45,12 @@ RewardedHintAdService createHintAdService() =>
 
 /// TEST ONLY: sample units must be replaced and consent configured before release.
 class GoogleRewardedHintAdService extends RewardedHintAdService {
+  GoogleRewardedHintAdService({
+    Future<void> Function()? initialize,
+    this.loadAd,
+  }) : _initialize = initialize ?? initializeHintAds;
+  final Future<void> Function() _initialize;
+  final Future<void> Function(RewardedAdLoadCallback)? loadAd;
   RewardedAd? _ad;
   RewardedAd? _showing;
   Completer<HintAdResult>? _completion;
@@ -42,26 +70,31 @@ class GoogleRewardedHintAdService extends RewardedHintAdService {
 
   Future<void> _load() async {
     try {
-      await initializeHintAds();
+      await _initialize();
       if (_disposed) return;
-      await RewardedAd.load(
-        adUnitId: defaultTargetPlatform == TargetPlatform.android
-            ? 'ca-app-pub-3940256099942544/5224354917'
-            : 'ca-app-pub-3940256099942544/1712485313',
-        request: const AdRequest(),
-        rewardedAdLoadCallback: RewardedAdLoadCallback(
-          onAdLoaded: (ad) {
-            if (_disposed) {
-              ad.dispose();
-              return;
-            }
-            _ad = ad;
-            _loading = false;
-            notifyListeners();
-          },
-          onAdFailedToLoad: (_) => _loadFailed(),
-        ),
+      final callback = RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          if (_disposed) {
+            ad.dispose();
+            return;
+          }
+          _ad = ad;
+          _loading = false;
+          notifyListeners();
+        },
+        onAdFailedToLoad: (_) => _loadFailed(),
       );
+      if (loadAd case final load?) {
+        await load(callback);
+      } else {
+        await RewardedAd.load(
+          adUnitId: defaultTargetPlatform == TargetPlatform.android
+              ? 'ca-app-pub-3940256099942544/5224354917'
+              : 'ca-app-pub-3940256099942544/1712485313',
+          request: const AdRequest(),
+          rewardedAdLoadCallback: callback,
+        );
+      }
     } catch (_) {
       _loadFailed();
     }

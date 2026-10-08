@@ -268,10 +268,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Découvrez des mots anglais grâce aux indices. Grilles de progression, rejeu et grille du jour.';
 
   @override
-  String get workingName =>
-      'Arrowword est un nom provisoire ; le nom définitif n\'est pas encore choisi.';
-
-  @override
   String get versionLoading => 'Chargement de la version…';
 
   @override

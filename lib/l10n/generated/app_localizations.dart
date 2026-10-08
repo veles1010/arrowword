@@ -622,12 +622,6 @@ abstract class AppLocalizations {
   /// **'Türkçe ipuçlarıyla İngilizce kelimeleri keşfedin. Normal bulmacalar, tekrar oynama ve günün bulmacası.'**
   String get appDescription;
 
-  /// No description provided for @workingName.
-  ///
-  /// In tr, this message translates to:
-  /// **'Arrowword çalışma adıdır; nihai ürün adı henüz belirlenmedi.'**
-  String get workingName;
-
   /// No description provided for @versionLoading.
   ///
   /// In tr, this message translates to:

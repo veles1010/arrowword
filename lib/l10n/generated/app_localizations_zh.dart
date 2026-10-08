@@ -262,9 +262,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appDescription => '根据线索发现英语单词。体验关卡谜题、重玩和每日谜题。';
 
   @override
-  String get workingName => 'Arrowword 为暂定名称，最终产品名称尚未确定。';
-
-  @override
   String get versionLoading => '正在加载版本信息…';
 
   @override
@@ -750,9 +747,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get appDescription => '根据线索发现英语单词。体验关卡谜题、重玩和每日谜题。';
-
-  @override
-  String get workingName => 'Arrowword 为暂定名称，最终产品名称尚未确定。';
 
   @override
   String get versionLoading => '正在加载版本信息…';

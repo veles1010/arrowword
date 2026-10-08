@@ -264,9 +264,6 @@ class AppLocalizationsKo extends AppLocalizations {
       '단서로 영어 단어를 찾아보세요. 단계별 퍼즐, 다시 풀기, 오늘의 퍼즐을 즐길 수 있어요.';
 
   @override
-  String get workingName => 'Arrowword는 임시 이름이며 최종 제품명은 아직 정해지지 않았어요.';
-
-  @override
   String get versionLoading => '버전 정보 로딩 중…';
 
   @override

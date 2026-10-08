@@ -31,8 +31,6 @@ class _AboutScreenState extends State<AboutScreen> {
             Text(context.l10n.appDescription),
             const SizedBox(height: 12),
             Text(context.l10n.answersAlwaysEnglish),
-            const SizedBox(height: 12),
-            Text(context.l10n.workingName),
             const SizedBox(height: 24),
             FutureBuilder<PackageInfo>(
               future: _info,

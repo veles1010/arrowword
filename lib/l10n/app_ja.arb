@@ -84,7 +84,6 @@
   "allCorrect": "すべての文字が正解です。",
   "legacyScore": "このパズルはスコア導入前にクリアされました。",
   "appDescription": "ヒントから英単語を見つけましょう。進行パズル、リプレイ、今日のパズルを楽しめます。",
-  "workingName": "Arrowwordは仮称で、正式名称はまだ決まっていません。",
   "versionLoading": "バージョン情報を読み込み中…",
   "versionUnavailable": "現在バージョン情報を取得できません。",
   "puzzleNumber": "パズル {number}",

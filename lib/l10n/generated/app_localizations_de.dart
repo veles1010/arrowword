@@ -271,10 +271,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Entdecke englische Wörter anhand von Hinweisen. Fortschrittsrätsel, Wiederholungen und ein Tagesrätsel.';
 
   @override
-  String get workingName =>
-      'Arrowword ist ein Arbeitstitel; der endgültige Produktname steht noch nicht fest.';
-
-  @override
   String get versionLoading => 'Versionsinformationen werden geladen…';
 
   @override

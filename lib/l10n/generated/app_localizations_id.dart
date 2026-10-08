@@ -267,10 +267,6 @@ class AppLocalizationsId extends AppLocalizations {
       'Temukan kata bahasa Inggris lewat petunjuk. Nikmati progres teka-teki, main ulang, dan Teka-teki Harian.';
 
   @override
-  String get workingName =>
-      'Arrowword adalah nama sementara; nama final belum diputuskan.';
-
-  @override
   String get versionLoading => 'Memuat informasi versi…';
 
   @override

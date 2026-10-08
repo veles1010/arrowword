@@ -263,9 +263,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appDescription => 'ヒントから英単語を見つけましょう。進行パズル、リプレイ、今日のパズルを楽しめます。';
 
   @override
-  String get workingName => 'Arrowwordは仮称で、正式名称はまだ決まっていません。';
-
-  @override
   String get versionLoading => 'バージョン情報を読み込み中…';
 
   @override

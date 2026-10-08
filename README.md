@@ -1,7 +1,7 @@
-# Arrowword Flutter prototype
+# Arrowword
 
-“Arrowword” is a working name. English answers use localized clues. The responsive
-Material 3 board supports crossings, native keyboard input, validation, reset and
+English answers use localized clues. The responsive Material 3 board supports
+crossings, an in-app A–Z keyboard with hardware input, validation, reset and
 completion. The manual puzzle remains an unchanged regression fixture.
 
 ## Audio

@@ -268,10 +268,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Находите английские слова по подсказкам. Головоломки с прогрессом, повторное прохождение и головоломка дня.';
 
   @override
-  String get workingName =>
-      'Arrowword — рабочее название; окончательное название ещё не выбрано.';
-
-  @override
   String get versionLoading => 'Загрузка сведений о версии…';
 
   @override

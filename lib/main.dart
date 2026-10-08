@@ -61,10 +61,6 @@ Future<void> main() async {
     );
     return;
   }
-  // Test-ad initialization failure must not prevent normal gameplay startup.
-  try {
-    await initializeHintAds();
-  } catch (_) {}
   // Generate outside widget builds; development replay happens once.
   final startIndex = launch?.index;
   final PuzzleSession? session = startIndex == null
@@ -103,4 +99,6 @@ Future<void> main() async {
       ),
     ),
   );
+  // Ads are optional: paint the app before beginning SDK initialization.
+  scheduleHintAdsInitialization();
 }

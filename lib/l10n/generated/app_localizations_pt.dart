@@ -270,10 +270,6 @@ class AppLocalizationsPt extends AppLocalizations {
       'Descubra palavras em inglês pelas pistas. Desafios de progressão, novas tentativas e um desafio diário.';
 
   @override
-  String get workingName =>
-      'Arrowword é um nome provisório; o nome final ainda não foi decidido.';
-
-  @override
   String get versionLoading => 'Carregando informações da versão…';
 
   @override
@@ -810,10 +806,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get appDescription =>
       'Descubra palavras em inglês pelas pistas. Desafios de progressão, novas tentativas e um desafio diário.';
-
-  @override
-  String get workingName =>
-      'Arrowword é um nome provisório; o nome final ainda não foi decidido.';
 
   @override
   String get versionLoading => 'Carregando informações da versão…';

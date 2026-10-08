@@ -267,10 +267,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Türkçe ipuçlarıyla İngilizce kelimeleri keşfedin. Normal bulmacalar, tekrar oynama ve günün bulmacası.';
 
   @override
-  String get workingName =>
-      'Arrowword çalışma adıdır; nihai ürün adı henüz belirlenmedi.';
-
-  @override
   String get versionLoading => 'Sürüm bilgisi yükleniyor…';
 
   @override
