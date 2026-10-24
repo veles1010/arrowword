@@ -10,6 +10,9 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get adPrivacyOptions => '广告隐私选项';
+
+  @override
   String get audio => '声音';
 
   @override
@@ -996,3 +999,4 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get unableToOpenLink => '无法打开链接。';
 }
+

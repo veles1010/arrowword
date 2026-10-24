@@ -10,6 +10,9 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get adPrivacyOptions => 'Настройки конфиденциальности рекламы';
+
+  @override
   String get audio => 'Звук';
 
   @override
@@ -575,3 +578,4 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get unableToOpenLink => 'Не удалось открыть ссылку.';
 }
+

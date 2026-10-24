@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'app_settings.dart';
 import 'about_screen.dart';
+import '../features/puzzle/ads/ad_privacy_options_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({required this.settings, this.language, super.key});
@@ -114,6 +115,7 @@ class SettingsScreen extends StatelessWidget {
                 context.l10n.about,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
+              const AdPrivacyOptionsTile(),
               ListTile(
                 minVerticalPadding: 16,
                 leading: const Icon(Icons.info_outline),
@@ -130,3 +132,4 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
+

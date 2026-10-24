@@ -118,6 +118,9 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
   ];
 
+  /// Ad privacy choices shown when required by UMP.
+  String get adPrivacyOptions;
+
   /// No description provided for @audio.
   ///
   /// In tr, this message translates to:
@@ -1044,3 +1047,4 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     'that was used.',
   );
 }
+

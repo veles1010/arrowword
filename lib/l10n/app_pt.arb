@@ -359,5 +359,7 @@
   "turkishName": "Türkçe",
   "privacyPolicy": "Política de privacidade",
   "support": "Suporte",
-  "unableToOpenLink": "Não foi possível abrir o link."
+  "unableToOpenLink": "Não foi possível abrir o link.",
+  "adPrivacyOptions": "Opções de privacidade dos anúncios"
 }
+

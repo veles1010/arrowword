@@ -10,6 +10,9 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get adPrivacyOptions => '広告のプライバシー設定';
+
+  @override
   String get audio => 'サウンド';
 
   @override
@@ -501,3 +504,4 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get unableToOpenLink => 'リンクを開けませんでした。';
 }
+

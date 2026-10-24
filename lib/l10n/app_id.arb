@@ -359,5 +359,7 @@
   "turkishName": "Türkçe",
   "privacyPolicy": "Kebijakan Privasi",
   "support": "Bantuan",
-  "unableToOpenLink": "Tautan tidak dapat dibuka."
+  "unableToOpenLink": "Tautan tidak dapat dibuka.",
+  "adPrivacyOptions": "Pilihan privasi iklan"
 }
+

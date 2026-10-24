@@ -10,6 +10,9 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get adPrivacyOptions => 'Reklam gizlilik tercihleri';
+
+  @override
   String get audio => 'Ses';
 
   @override
@@ -509,3 +512,4 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get unableToOpenLink => 'Bağlantı açılamadı.';
 }
+

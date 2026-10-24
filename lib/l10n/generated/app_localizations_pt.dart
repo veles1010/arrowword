@@ -10,6 +10,9 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get adPrivacyOptions => 'Opções de privacidade dos anúncios';
+
+  @override
   String get audio => 'Áudio';
 
   @override
@@ -1098,3 +1101,4 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get unableToOpenLink => 'Não foi possível abrir o link.';
 }
+

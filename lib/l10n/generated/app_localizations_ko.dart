@@ -10,6 +10,9 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get adPrivacyOptions => '광고 개인정보 보호 설정';
+
+  @override
   String get audio => '소리';
 
   @override
@@ -502,3 +505,4 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get unableToOpenLink => '링크를 열 수 없습니다.';
 }
+

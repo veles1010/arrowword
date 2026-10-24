@@ -10,6 +10,9 @@ class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
   @override
+  String get adPrivacyOptions => 'Pilihan privasi iklan';
+
+  @override
   String get audio => 'Audio';
 
   @override
@@ -509,3 +512,4 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get unableToOpenLink => 'Tautan tidak dapat dibuka.';
 }
+
