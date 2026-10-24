@@ -18,6 +18,7 @@ import 'board_size.dart';
 import 'clue_text.dart';
 import 'active_play_timer.dart';
 import 'puzzle_completion.dart';
+import 'puzzle_celebration.dart';
 import 'puzzle_keyboard.dart';
 
 final puzzleRouteObserver = RouteObserver<ModalRoute<dynamic>>();
@@ -254,7 +255,9 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   }
 
   void _changed() {
-    if (game.isComplete && !_wasComplete && !widget.attemptFinalized) {
+    final celebrate =
+        game.isComplete && !_wasComplete && !widget.attemptFinalized;
+    if (celebrate) {
       _audio?.playPuzzleComplete();
     }
     _wasComplete = game.isComplete;
@@ -292,42 +295,47 @@ class _PuzzleScreenState extends State<PuzzleScreen>
               onPopInvokedWithResult: (didPop, _) {
                 if (!didPop && widget.completion != null) _finishCompletion(c);
               },
-              child: AlertDialog(
-                scrollable: true,
-                title: Text(widget.completion?.title ?? c.l10n.puzzleCompleted),
-                content:
-                    widget.completion?.contentBuilder(c) ??
-                    _completionContent(c),
-                actions: widget.completion != null
-                    ? [
-                        FilledButton(
-                          onPressed: () => _finishCompletion(c),
-                          child: Text(widget.completion!.actionLabel),
-                        ),
-                      ]
-                    : [
-                        TextButton(
-                          onPressed: () => Navigator.pop(c),
-                          child: Text(c.l10n.close),
-                        ),
-                        FilledButton(
-                          onPressed: () {
-                            Navigator.pop(c);
-                            if (widget.onNextPuzzle != null) {
-                              widget.onNextPuzzle!();
-                              return;
-                            }
-                            shown = false;
-                            game.reset();
-                            focus.requestFocus();
-                          },
-                          child: Text(
-                            widget.onNextPuzzle == null
-                                ? c.l10n.restartGame
-                                : c.l10n.nextPuzzle,
+              child: PuzzleCelebration(
+                celebrate: celebrate,
+                child: AlertDialog(
+                  scrollable: true,
+                  title: PuzzleCompletionTitle(
+                    widget.completion?.title ?? c.l10n.puzzleCompleted,
+                  ),
+                  content:
+                      widget.completion?.contentBuilder(c) ??
+                      _completionContent(c),
+                  actions: widget.completion != null
+                      ? [
+                          FilledButton(
+                            onPressed: () => _finishCompletion(c),
+                            child: Text(widget.completion!.actionLabel),
                           ),
-                        ),
-                      ],
+                        ]
+                      : [
+                          TextButton(
+                            onPressed: () => Navigator.pop(c),
+                            child: Text(c.l10n.close),
+                          ),
+                          FilledButton(
+                            onPressed: () {
+                              Navigator.pop(c);
+                              if (widget.onNextPuzzle != null) {
+                                widget.onNextPuzzle!();
+                                return;
+                              }
+                              shown = false;
+                              game.reset();
+                              focus.requestFocus();
+                            },
+                            child: Text(
+                              widget.onNextPuzzle == null
+                                  ? c.l10n.restartGame
+                                  : c.l10n.nextPuzzle,
+                            ),
+                          ),
+                        ],
+                ),
               ),
             ),
           );
@@ -800,3 +808,4 @@ class _Cell extends StatelessWidget {
     );
   }
 }
+
