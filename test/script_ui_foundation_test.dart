@@ -38,20 +38,17 @@ void main() {
         ? const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans')
         : Locale(tag);
     test(
-      '$tag UI foundation has all 136 messages and correct script',
+      '$tag UI foundation has all reference messages and correct script',
       () async {
         final arb = jsonDecode(
           File('lib/l10n/app_${tag.replaceAll('-', '_')}.arb')
               .readAsStringSync(),
         ) as Map;
         expect(arb.keys.toSet(), reference.keys.toSet());
-        expect(
-          arb.keys.where((key) => !(key as String).startsWith('@')),
-          hasLength(136),
-        );
         final copy = await AppLocalizations.delegate.load(locale);
         expect(copy.home, home);
         expect(copy.rewardHint, hint);
+        expect(copy.adPrivacyOptions, arb['adPrivacyOptions']);
         expect(copy.puzzleNumber(36), contains('36'));
         expect(copy.completedCount(2), contains('2'));
         expect(copy.dateDisplay(4, copy.month10, 2026), contains('2026'));
