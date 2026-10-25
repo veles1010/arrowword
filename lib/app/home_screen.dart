@@ -152,7 +152,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           child: LayoutBuilder(
             builder: (context, constraints) => SingleChildScrollView(
               child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                // Fill both axes so the daily card cannot shrink-wrap the entire
+                // group against the leading edge of a wide tablet viewport.
+                constraints: BoxConstraints(
+                  minWidth: constraints.maxWidth,
+                  minHeight: constraints.maxHeight,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(
@@ -289,3 +294,4 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 }
+
