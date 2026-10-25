@@ -51,15 +51,21 @@ RewardedHintAdService createHintAdService() =>
 String rewardedHintAdUnitId({
   required TargetPlatform platform,
   required bool releaseMode,
+  String androidUnitId = const String.fromEnvironment(
+    'ADMOB_ANDROID_REWARDED_AD_UNIT_ID',
+    defaultValue: 'ca-app-pub-2059856067409159/6285655323',
+  ),
   String iosUnitId = const String.fromEnvironment(
     'ADMOB_IOS_REWARDED_AD_UNIT_ID',
     defaultValue: 'ca-app-pub-2059856067409159/9548444613',
   ),
 }) => platform == TargetPlatform.iOS
     ? (releaseMode ? iosUnitId : 'ca-app-pub-3940256099942544/1712485313')
-    : 'ca-app-pub-3940256099942544/5224354917';
+    : (releaseMode
+          ? androidUnitId
+          : 'ca-app-pub-3940256099942544/5224354917');
 
-/// Debug/profile use sample units; iOS release uses the configured real unit.
+/// Debug/profile use sample units; mobile release uses configured real units.
 class GoogleRewardedHintAdService extends RewardedHintAdService {
   GoogleRewardedHintAdService({
     Future<void> Function()? initialize,

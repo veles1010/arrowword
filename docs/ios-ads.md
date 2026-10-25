@@ -4,8 +4,8 @@
 - Rewarded hint: `ca-app-pub-2059856067409159/9548444613`.
 - Debug and profile always use Google's iOS sample rewarded unit. Release uses
   the real iOS unit, optionally overridden with `ADMOB_IOS_REWARDED_AD_UNIT_ID`.
-- Android retains its existing sample rewarded unit; production Android IDs
-  still need configuration before an Android production release.
+- Android production configuration is documented in [android-ads.md](android-ads.md).
+  Debug/profile use sample units on both mobile platforms.
 - No purchases, banner ads or interstitial ads were added.
 
 ## Consent

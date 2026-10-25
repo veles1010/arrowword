@@ -1,11 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="Arrowword"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <!-- TEST ONLY Google sample app ID; replace before release. -->
+        <!-- Arrowword Android AdMob app; Dart debug/profile use sample ad units. -->
         <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-2059856067409159~6267053038" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

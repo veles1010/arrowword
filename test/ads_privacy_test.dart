@@ -124,7 +124,7 @@ void main() {
     requiredPrivacy.dispose();
   });
 
-  test('debug/profile cannot select real iOS ads, release can', () {
+  test('debug/profile use samples and mobile release uses production units', () {
     expect(rewardedHintAdUnitId(
       platform: TargetPlatform.iOS, releaseMode: false, iosUnitId: 'real',
     ), 'ca-app-pub-3940256099942544/1712485313');
@@ -133,6 +133,17 @@ void main() {
     ), 'ca-app-pub-2059856067409159/9548444613');
     expect(rewardedHintAdUnitId(
       platform: TargetPlatform.android, releaseMode: true,
+    ), 'ca-app-pub-2059856067409159/6285655323');
+    expect(rewardedHintAdUnitId(
+      platform: TargetPlatform.android, releaseMode: false,
+      androidUnitId: 'real-android',
     ), 'ca-app-pub-3940256099942544/5224354917');
+    expect(rewardedHintAdUnitId(
+      platform: TargetPlatform.android, releaseMode: true,
+      androidUnitId: 'override-android',
+    ), 'override-android');
+    expect(rewardedHintAdUnitId(
+      platform: TargetPlatform.iOS, releaseMode: true, iosUnitId: 'override-ios',
+    ), 'override-ios');
   });
 }
